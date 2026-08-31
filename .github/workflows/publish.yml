@@ -28,5 +28,3 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm publish --workspace @mcpdesc/core --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
