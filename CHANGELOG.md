@@ -16,6 +16,7 @@ All notable changes to this repository are documented here.
 
 - Contribution guidance now uses lockfile-exact installation and links to the
   release procedure.
+- The `Validate` workflow is enabled as a required check for `main`.
 
 ## [0.1.0] - 2026-08-31
 
