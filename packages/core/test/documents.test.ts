@@ -39,6 +39,36 @@ describe('MCP Description source documents', () => {
     });
   });
 
+  it('rejects duplicate JSON keys with a source location', () => {
+    const result = parseMcpDescriptionSource(
+      '{\n  "mcpdesc": "0.7.0",\n  "mcpdesc": "0.8.0"\n}',
+    );
+    expect(result).toEqual({
+      ok: false,
+      diagnostics: [
+        expect.objectContaining({
+          code: 'document-parse',
+          message: 'Invalid JSON: Duplicate property "mcpdesc"',
+          location: { line: 3, column: 3 },
+        }),
+      ],
+    });
+  });
+
+  it('rejects non-finite JSON numbers', () => {
+    const result = parseMcpDescriptionSource('{"value": 1e400}');
+    expect(result).toEqual({
+      ok: false,
+      diagnostics: [
+        expect.objectContaining({
+          code: 'document-parse',
+          message: 'Invalid JSON: numbers must be finite',
+          location: { line: 1, column: 11 },
+        }),
+      ],
+    });
+  });
+
   it('reports duplicate YAML keys with a source location', () => {
     const result = parseMcpDescriptionSource(
       'mcpdesc: 0.8.0\nmcpdesc: 0.8.0\n',
@@ -73,12 +103,12 @@ describe('MCP Description source documents', () => {
   });
 
   it('serializes object keys deterministically', () => {
-    const value = { z: 1, nested: { b: 2, a: 1 }, a: 2 };
+    const value = { ä: 3, z: 1, nested: { b: 2, a: 1 }, a: 2 };
     expect(serializeMcpDescription(value, { format: 'json' })).toBe(
-      '{\n  "a": 2,\n  "nested": {\n    "a": 1,\n    "b": 2\n  },\n  "z": 1\n}\n',
+      '{\n  "a": 2,\n  "nested": {\n    "a": 1,\n    "b": 2\n  },\n  "z": 1,\n  "ä": 3\n}\n',
     );
     expect(serializeMcpDescription(value, { format: 'yaml' })).toBe(
-      'a: 2\nnested:\n  a: 1\n  b: 2\nz: 1\n',
+      'a: 2\nnested:\n  a: 1\n  b: 2\nz: 1\nä: 3\n',
     );
   });
 });

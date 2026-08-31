@@ -1,4 +1,10 @@
-import { parse, printParseErrorCode, type ParseError } from 'jsonc-parser';
+import {
+  getNodeValue,
+  parseTree,
+  printParseErrorCode,
+  type Node,
+  type ParseError,
+} from 'jsonc-parser';
 import { parseDocument as parseYamlDocument, stringify } from 'yaml';
 
 import type { JsonValue } from './model.js';
@@ -63,10 +69,10 @@ function failure(
 
 function parseJson(source: string): ParseMcpDescriptionSourceResult {
   const errors: ParseError[] = [];
-  const value = parse(source, errors, {
+  const root = parseTree(source, errors, {
     allowTrailingComma: false,
     disallowComments: true,
-  }) as JsonValue;
+  });
   const error = errors[0];
   if (error) {
     return failure(
@@ -74,7 +80,51 @@ function parseJson(source: string): ParseMcpDescriptionSourceResult {
       lineAndColumn(source, error.offset),
     );
   }
+  if (!root) return failure('Invalid JSON: ValueExpected');
+
+  const duplicate = findDuplicateProperty(root);
+  if (duplicate) {
+    return failure(
+      `Invalid JSON: Duplicate property ${JSON.stringify(duplicate.value)}`,
+      lineAndColumn(source, duplicate.offset),
+    );
+  }
+  const nonFinite = findNonFiniteNumber(root);
+  if (nonFinite) {
+    return failure(
+      'Invalid JSON: numbers must be finite',
+      lineAndColumn(source, nonFinite.offset),
+    );
+  }
+
+  const value = getNodeValue(root) as JsonValue;
   return { ok: true, value, format: 'json', diagnostics: [] };
+}
+
+function findDuplicateProperty(node: Node): Node | undefined {
+  if (node.type === 'object') {
+    const names = new Set<string>();
+    for (const property of node.children ?? []) {
+      const name = property.children?.[0];
+      if (!name || typeof name.value !== 'string') continue;
+      if (names.has(name.value)) return name;
+      names.add(name.value);
+    }
+  }
+  for (const child of node.children ?? []) {
+    const duplicate = findDuplicateProperty(child);
+    if (duplicate) return duplicate;
+  }
+  return undefined;
+}
+
+function findNonFiniteNumber(node: Node): Node | undefined {
+  if (node.type === 'number' && !Number.isFinite(node.value)) return node;
+  for (const child of node.children ?? []) {
+    const nonFinite = findNonFiniteNumber(child);
+    if (nonFinite) return nonFinite;
+  }
+  return undefined;
 }
 
 function jsonCompatibleYaml(
@@ -165,7 +215,7 @@ function sortValue(value: JsonValue): JsonValue {
   if (value !== null && typeof value === 'object') {
     return Object.fromEntries(
       Object.entries(value)
-        .sort(([left], [right]) => left.localeCompare(right))
+        .sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))
         .map(([key, child]) => [key, sortValue(child)]),
     );
   }

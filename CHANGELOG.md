@@ -13,6 +13,7 @@ All notable changes to this repository are documented here.
   host I/O.
 - JSON-compatible YAML enforcement for finite numbers, string mapping keys,
   plain values, and acyclic structures.
+- Strict JSON enforcement for unique object keys and finite numbers.
 - `selectMcpDescriptionDeclarations`, a pure Draft 4 operation for selecting
   tools, resources, resource templates, and prompts by their normative
   identities while retaining scoped variants and omitting empty collections.
