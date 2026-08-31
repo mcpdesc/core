@@ -10,16 +10,16 @@ export interface JsonObject {
   [key: string]: JsonValue;
 }
 
-export interface ProtocolScopedDeclaration extends JsonObject {
+export type ProtocolScopedDeclaration = JsonObject & {
   protocolVersions?: string[];
-}
+};
 
-export interface McpDescriptionDocument extends JsonObject {
+export type McpDescriptionDocument = JsonObject & {
   $schema?: string;
   mcpdesc: string;
   info: JsonObject;
   protocolVersions: string[];
-}
+};
 
 export type DiagnosticPhase = 'operation' | 'result' | 'source';
 

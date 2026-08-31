@@ -16,6 +16,14 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./documents": {
+      "types": "./dist/documents.d.ts",
+      "import": "./dist/documents.js"
+    },
+    "./selection": {
+      "types": "./dist/selection.d.ts",
+      "import": "./dist/selection.js"
     }
   },
   "files": [
@@ -38,7 +46,7 @@
     "typecheck": "tsc --build --pretty false"
   },
   "dependencies": {
-    "@mcpdesc/validator": "0.4.0",
+    "@mcpdesc/validator": "0.5.0",
     "jsonc-parser": "3.3.1",
     "yaml": "2.9.0"
   }

@@ -4,6 +4,16 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- CSP-safe `@mcpdesc/core/documents` and `@mcpdesc/core/selection` subpath
+  exports, with browser checks that keep document parsing validator-free.
+
+### Changed
+
+- Validator-backed operations now use `@mcpdesc/validator/standalone` 0.5.0 to
+  avoid runtime code generation under strict browser CSP.
+
 ## [0.2.0] - 2026-08-31
 
 ### Added
