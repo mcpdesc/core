@@ -4,8 +4,24 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-31
+
 ### Added
 
+- `parseMcpDescriptionSource` and `serializeMcpDescription`, browser-safe pure
+  operations for source-aware JSON/YAML parsing and deterministic output without
+  host I/O.
+- JSON-compatible YAML enforcement for finite numbers, string mapping keys,
+  plain values, and acyclic structures.
+- `selectMcpDescriptionDeclarations`, a pure Draft 4 operation for selecting
+  tools, resources, resource templates, and prompts by their normative
+  identities while retaining scoped variants and omitting empty collections.
+- Source/result validation, structured diagnostics, immutability tests, browser
+  bundling, tarball checks, and isolated-consumer coverage for declaration
+  selection.
+- `migrateMcpDescription07ToDraft4`, a pure migration for caller-validated 0.7.0
+  documents with deterministic inline-security extraction, empty collection
+  normalization, generated-name diagnostics, and Draft 4 result validation.
 - A maintainer-controlled release procedure covering tarball review, version and
   tag consistency, first-publication bootstrap, trusted npm publishing,
   provenance, and post-publication verification.
@@ -47,5 +63,6 @@ tarball verification. The corresponding Git tag has not yet been created.
 - Apache-2.0 licensing, provenance, contribution guidance, and repository
   instructions for coding assistants.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/mcpdesc/core/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/mcpdesc/core/releases/tag/v0.1.0
