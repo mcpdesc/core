@@ -8,7 +8,7 @@ repository.
 
 - [x] Land the initial repository baseline and enable required CI checks.
 - [x] Review the `@mcpdesc/core@0.1.0` tarball and publish it to npm.
-- [ ] Make an explicit decision about the first Git tag.
+- [x] Make an explicit decision about the first Git tag.
 - [x] Document the release process and package provenance before publishing.
 
 ## 2. Integrate initial consumers
@@ -21,6 +21,11 @@ repository.
 
 ## 3. Add reusable semantic operations
 
+- [x] Add identity-based declaration selection for focused document subsets.
+- [x] Add pure JSON/YAML source parsing and deterministic serialization without
+      host file or stream access.
+- [x] Add validated 0.7.0-to-Draft-4 migration with deterministic security
+      scheme extraction and explicit source-validation responsibility.
 - Define and implement deterministic document merge behavior only after its
   contract is grounded in the active specification snapshot and conformance
   fixtures.
@@ -47,5 +52,5 @@ normative schema applies.
 - Moving `@mcpdesc/validator` from the specification repository.
 - Stable `1.0` API commitments while MCP Description 0.8 remains a community
   working draft.
-- Network reference retrieval, filesystem access, transport selection, runtime
-  discovery, or deployed-server fidelity claims in the core package.
+- Network reference retrieval, filesystem or stream access, transport selection,
+  runtime discovery, or deployed-server fidelity claims in the core package.

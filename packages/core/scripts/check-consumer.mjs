@@ -36,7 +36,11 @@ try {
       import {
         DRAFT_4_SCHEMA_URI,
         draft4Snapshot,
+        migrateMcpDescription07ToDraft4,
+        parseMcpDescriptionSource,
         projectEffectiveProtocolView,
+        selectMcpDescriptionDeclarations,
+        serializeMcpDescription,
       } from '@mcpdesc/core';
 
       const source = {
@@ -57,6 +61,12 @@ try {
           },
         ],
       };
+      const parsed = parseMcpDescriptionSource(
+        serializeMcpDescription(source, { format: 'yaml' }),
+      );
+      assert.equal(parsed.ok, true);
+      assert.deepEqual(parsed.value, source);
+
       const result = projectEffectiveProtocolView(source, {
         specification: '0.8.0-draft.4',
         protocolVersion: '2026-07-28',
@@ -65,6 +75,29 @@ try {
       assert.equal(result.ok, true);
       assert.deepEqual(result.value.protocolVersions, ['2026-07-28']);
       assert.deepEqual(result.value.tools.map((tool) => tool.name), ['current']);
+
+      const selection = selectMcpDescriptionDeclarations(source, {
+        specification: '0.8.0-draft.4',
+        selections: { tools: ['legacy'] },
+      });
+      assert.equal(selection.ok, true);
+      assert.deepEqual(selection.value.tools.map((tool) => tool.name), ['legacy']);
+
+      const migration = migrateMcpDescription07ToDraft4({
+        mcpdesc: '0.7.0',
+        info: {
+          name: 'legacy-consumer-smoke',
+          version: '1.0.0',
+          protocolVersion: '2025-11-25',
+        },
+        transports: [{ type: 'stdio', command: 'server' }],
+        tools: [{ name: 'legacy', inputSchema: { type: 'object' } }],
+      }, {
+        specification: '0.8.0-draft.4',
+        sourceValidated: true,
+      });
+      assert.equal(migration.ok, true);
+      assert.deepEqual(migration.value.protocolVersions, ['2025-11-25']);
       assert.equal(draft4Snapshot.specification, '0.8.0-draft.4');
     `,
   );
@@ -76,9 +109,9 @@ try {
       'utf8',
     ),
   );
-  if (installed.version !== '0.1.0') {
+  if (installed.version !== '0.2.0') {
     throw new Error(
-      `Expected installed core 0.1.0, found ${installed.version}`,
+      `Expected installed core 0.2.0, found ${installed.version}`,
     );
   }
 

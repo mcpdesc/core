@@ -25,8 +25,9 @@ creating a second source of normative semantics.
 - `@mcpdesc/validator` remains the conformance authority until an explicit,
   separately reviewed repository migration occurs.
 - Do not copy validator semantic rules into core operations.
-- Keep parsing, file access, network access, capture, and generation outside the
-  pure core package.
+- Keep file access, network access, capture, and generation outside the pure
+  core package. Pure source parsing and serialization may live in core when they
+  do not read files or streams and remain browser-compatible.
 
 ## Snapshot discipline
 
