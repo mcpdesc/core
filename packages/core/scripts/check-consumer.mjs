@@ -149,9 +149,9 @@ try {
       'utf8',
     ),
   );
-  if (installed.version !== '0.2.0') {
+  if (installed.version !== '0.3.0') {
     throw new Error(
-      `Expected installed core 0.2.0, found ${installed.version}`,
+      `Expected installed core 0.3.0, found ${installed.version}`,
     );
   }
 
