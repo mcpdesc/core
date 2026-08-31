@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   DRAFT_4_SCHEMA_URI,
+  RC_1_SCHEMA_URI,
   selectMcpDescriptionDeclarations,
 } from '../src/index.js';
 
@@ -99,5 +100,24 @@ describe('selectMcpDescriptionDeclarations', () => {
         phase: 'source',
       }),
     );
+  });
+
+  it('selects declarations from an RC.1 document', () => {
+    const result = selectMcpDescriptionDeclarations(
+      { ...source, $schema: RC_1_SCHEMA_URI },
+      {
+        specification: '0.8.0-rc.1',
+        selections: { tools: ['other'] },
+      },
+    );
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.tools).toEqual([
+      {
+        name: 'other',
+        inputSchema: { type: 'object', additionalProperties: false },
+      },
+    ]);
   });
 });

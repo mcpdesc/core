@@ -10,7 +10,9 @@ export type {
 } from './model.js';
 export {
   migrateMcpDescription07ToDraft4,
+  migrateMcpDescription07ToRc1,
   type MigrateMcpDescription07Options,
+  type MigrateMcpDescription07ToRc1Options,
 } from './migration.js';
 export {
   parseMcpDescriptionSource,
@@ -34,5 +36,9 @@ export {
 export {
   DRAFT_4_SCHEMA_URI,
   DRAFT_4_SPECIFICATION,
+  RC_1_SCHEMA_URI,
+  RC_1_SPECIFICATION,
   draft4Snapshot,
+  rc1Snapshot,
+  type SupportedCoreSpecification,
 } from './snapshot.js';

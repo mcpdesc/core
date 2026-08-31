@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest';
 
 import {
   DRAFT_4_SCHEMA_URI,
+  RC_1_SCHEMA_URI,
   draft4Snapshot,
   projectEffectiveProtocolView,
+  rc1Snapshot,
 } from '../src/index.js';
 
 const source = {
@@ -136,6 +138,26 @@ describe('projectEffectiveProtocolView', () => {
         '93ed03f74059b5b3ce7509a96b59161bdab2c3cf7734397a9bec5a7588d0b03b',
     });
     expect(Object.isFrozen(draft4Snapshot)).toBe(true);
+  });
+
+  it('projects and publishes immutable RC.1 snapshot metadata', () => {
+    const result = projectEffectiveProtocolView(
+      { ...source, $schema: RC_1_SCHEMA_URI },
+      {
+        specification: '0.8.0-rc.1',
+        protocolVersion: '2026-07-28',
+      },
+    );
+
+    expect(result.ok).toBe(true);
+    expect(rc1Snapshot).toMatchObject({
+      specification: '0.8.0-rc.1',
+      schemaUri: RC_1_SCHEMA_URI,
+      snapshotTag: 'v0.8.0-rc.1',
+      schemaSha256:
+        '936a0f24ade501fcabf3d6498c0440c445daa672a575573a35954cee49430ac4',
+    });
+    expect(Object.isFrozen(rc1Snapshot)).toBe(true);
   });
 
   it('projects every scoped root collection and preserves unscoped semantics', () => {
