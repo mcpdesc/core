@@ -49,13 +49,9 @@ Trusted publishing automatically generates provenance for a public package in a
 public repository. After verifying it works, disallow token-based publishing in
 the npm package settings.
 
-The first publication may need to bootstrap the npm package before its trusted
-publisher can be configured. If npm does not allow trusted-publisher setup for
-an unpublished package, add a short-lived granular npm token as the `NPM_TOKEN`
-GitHub Actions secret, allow it to publish only `@mcpdesc/core`, and require 2FA
-when creating it. Delete the secret and token immediately after `0.1.0` is
-published, then configure and verify the trusted publisher before any later
-release.
+Version `0.1.0` was published manually to bootstrap the npm package. The package
+now trusts the `publish.yml` GitHub Actions workflow; do not configure an npm
+token or `NPM_TOKEN` repository secret for later releases.
 
 ## Release
 

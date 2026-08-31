@@ -17,11 +17,13 @@ All notable changes to this repository are documented here.
 - Contribution guidance now uses lockfile-exact installation and links to the
   release procedure.
 - The `Validate` workflow is enabled as a required check for `main`.
+- Future npm releases use GitHub Actions trusted publishing without a stored npm
+  token.
 
 ## [0.1.0] - 2026-08-31
 
-Initial experimental package baseline. This version is prepared as a verified
-local tarball and has not been published to npm.
+Initial experimental package baseline, published manually to npm after local
+tarball verification. The corresponding Git tag has not yet been created.
 
 ### Added
 

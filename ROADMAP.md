@@ -7,8 +7,8 @@ repository.
 ## 1. Establish the package
 
 - [x] Land the initial repository baseline and enable required CI checks.
-- [ ] Review the `@mcpdesc/core@0.1.0` tarball, then make an explicit decision
-      about the first npm publication and Git tag.
+- [x] Review the `@mcpdesc/core@0.1.0` tarball and publish it to npm.
+- [ ] Make an explicit decision about the first Git tag.
 - [x] Document the release process and package provenance before publishing.
 
 ## 2. Integrate initial consumers
