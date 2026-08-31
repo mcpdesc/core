@@ -12,7 +12,10 @@ import type {
   OperationResult,
   ProtocolScopedDeclaration,
 } from './model.js';
-import { DRAFT_4_SPECIFICATION } from './snapshot.js';
+import {
+  isSupportedCoreSpecification,
+  type SupportedCoreSpecification,
+} from './snapshot.js';
 
 const scopedCollections = [
   'transports',
@@ -24,7 +27,7 @@ const scopedCollections = [
 ] as const;
 
 export interface ProjectEffectiveProtocolViewOptions {
-  readonly specification: typeof DRAFT_4_SPECIFICATION;
+  readonly specification: SupportedCoreSpecification;
   readonly protocolVersion: SupportedProtocolVersion;
 }
 
@@ -168,7 +171,7 @@ export function projectEffectiveProtocolView(
   document: unknown,
   options: ProjectEffectiveProtocolViewOptions,
 ): OperationResult<McpDescriptionDocument> {
-  if (options.specification !== DRAFT_4_SPECIFICATION) {
+  if (!isSupportedCoreSpecification(options.specification)) {
     return {
       ok: false,
       diagnostics: [
@@ -183,7 +186,7 @@ export function projectEffectiveProtocolView(
   }
 
   const sourceValidation = validateMcpDescription(document, {
-    specification: DRAFT_4_SPECIFICATION,
+    specification: options.specification,
   });
   const sourceDiagnostics = diagnosticsForPhase(
     sourceValidation.diagnostics,
@@ -212,7 +215,7 @@ export function projectEffectiveProtocolView(
 
   const value = projectDocument(source, options.protocolVersion);
   const resultValidation = validateMcpDescription(value, {
-    specification: DRAFT_4_SPECIFICATION,
+    specification: options.specification,
   });
   const diagnostics = uniqueDiagnostics(
     sourceDiagnostics,

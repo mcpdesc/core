@@ -11,7 +11,13 @@ import type {
   McpDescriptionDocument,
   OperationResult,
 } from './model.js';
-import { DRAFT_4_SCHEMA_URI, DRAFT_4_SPECIFICATION } from './snapshot.js';
+import {
+  DRAFT_4_SCHEMA_URI,
+  DRAFT_4_SPECIFICATION,
+  RC_1_SCHEMA_URI,
+  RC_1_SPECIFICATION,
+  type SupportedCoreSpecification,
+} from './snapshot.js';
 
 const rootCollections = [
   'transports',
@@ -34,6 +40,15 @@ export interface MigrateMcpDescription07Options {
   readonly protocolVersion?: SupportedProtocolVersion;
   readonly sourceValidated: true;
 }
+
+export interface MigrateMcpDescription07ToRc1Options {
+  readonly specification: typeof RC_1_SPECIFICATION;
+  readonly protocolVersion?: SupportedProtocolVersion;
+  readonly sourceValidated: true;
+}
+
+type SupportedMigrationOptions =
+  MigrateMcpDescription07Options | MigrateMcpDescription07ToRc1Options;
 
 function operationDiagnostic(
   code: string,
@@ -210,11 +225,13 @@ function migrateSecurity(
   return undefined;
 }
 
-export function migrateMcpDescription07ToDraft4(
+function migrateMcpDescription07(
   source: unknown,
-  options: MigrateMcpDescription07Options,
+  options: SupportedMigrationOptions,
+  targetSpecification: SupportedCoreSpecification,
+  targetSchemaUri: typeof DRAFT_4_SCHEMA_URI | typeof RC_1_SCHEMA_URI,
 ): OperationResult<McpDescriptionDocument> {
-  if (options.specification !== DRAFT_4_SPECIFICATION) {
+  if (options.specification !== targetSpecification) {
     return {
       ok: false,
       diagnostics: [
@@ -289,7 +306,7 @@ export function migrateMcpDescription07ToDraft4(
   }
 
   const value = structuredClone(source);
-  value.$schema = DRAFT_4_SCHEMA_URI;
+  value.$schema = targetSchemaUri;
   value.mcpdesc = '0.8.0';
   value.protocolVersions = [protocolVersion];
   if (isJsonObject(value.info)) delete value.info.protocolVersion;
@@ -308,7 +325,7 @@ export function migrateMcpDescription07ToDraft4(
   if (securityError) return { ok: false, diagnostics: [securityError] };
 
   const validation = validateMcpDescription(value, {
-    specification: DRAFT_4_SPECIFICATION,
+    specification: targetSpecification,
   });
   diagnostics.push(...resultDiagnostics(validation.diagnostics));
   if (!validation.valid) return { ok: false, diagnostics };
@@ -318,4 +335,28 @@ export function migrateMcpDescription07ToDraft4(
     value: value as McpDescriptionDocument,
     diagnostics,
   };
+}
+
+export function migrateMcpDescription07ToDraft4(
+  source: unknown,
+  options: MigrateMcpDescription07Options,
+): OperationResult<McpDescriptionDocument> {
+  return migrateMcpDescription07(
+    source,
+    options,
+    DRAFT_4_SPECIFICATION,
+    DRAFT_4_SCHEMA_URI,
+  );
+}
+
+export function migrateMcpDescription07ToRc1(
+  source: unknown,
+  options: MigrateMcpDescription07ToRc1Options,
+): OperationResult<McpDescriptionDocument> {
+  return migrateMcpDescription07(
+    source,
+    options,
+    RC_1_SPECIFICATION,
+    RC_1_SCHEMA_URI,
+  );
 }

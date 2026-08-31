@@ -4,6 +4,19 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-09-01
+
+### Added
+
+- Immutable MCP Description `0.8.0-rc.1` constants and provenance metadata.
+- `migrateMcpDescription07ToRc1`, a dedicated migration that emits and validates
+  the exact RC.1 schema snapshot.
+
+### Changed
+
+- Effective Protocol View projection and declaration selection now accept exact
+  Draft 4 or RC.1 selectors while preserving all published Draft 4 behavior.
+
 ## [0.3.0] - 2026-09-01
 
 ### Added
@@ -76,7 +89,8 @@ tarball verification. The corresponding Git tag has not yet been created.
 - Apache-2.0 licensing, provenance, contribution guidance, and repository
   instructions for coding assistants.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/mcpdesc/core/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/mcpdesc/core/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/mcpdesc/core/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/mcpdesc/core/releases/tag/v0.1.0

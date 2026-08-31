@@ -28,6 +28,8 @@ repository.
       host file or stream access.
 - [x] Add validated 0.7.0-to-Draft-4 migration with deterministic security
       scheme extraction and explicit source-validation responsibility.
+- [x] Add exact MCP Description RC.1 snapshot support without changing Draft 4
+      selector behavior.
 - Define and implement deterministic document merge behavior only after its
   contract is grounded in the active specification snapshot and conformance
   fixtures.
@@ -45,7 +47,8 @@ normative schema applies.
 - Adopt shared operations in the editor and Inspector where they replace
   duplicated semantic logic.
 - Add support for later immutable MCP Description snapshots without silently
-  changing behavior for existing selectors.
+  changing behavior for existing selectors; Draft 4 and RC.1 establish this
+  additive pattern.
 - Revisit package boundaries as concrete parser, serialization, or capture
   requirements emerge; keep file and network access out of `@mcpdesc/core`.
 

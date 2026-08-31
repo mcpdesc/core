@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 
 import {
   DRAFT_4_SCHEMA_URI,
+  RC_1_SCHEMA_URI,
   migrateMcpDescription07ToDraft4,
+  migrateMcpDescription07ToRc1,
 } from '../src/index.js';
 
 const source = {
@@ -123,5 +125,20 @@ describe('migrateMcpDescription07ToDraft4', () => {
         phase: 'result',
       }),
     );
+  });
+});
+
+describe('migrateMcpDescription07ToRc1', () => {
+  it('emits and validates the exact RC.1 snapshot', () => {
+    const result = migrateMcpDescription07ToRc1(source, {
+      specification: '0.8.0-rc.1',
+      sourceValidated: true,
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.$schema).toBe(RC_1_SCHEMA_URI);
+    expect(result.value.mcpdesc).toBe('0.8.0');
+    expect(result.value.protocolVersions).toEqual(['2025-11-25']);
   });
 });

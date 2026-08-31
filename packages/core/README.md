@@ -4,11 +4,11 @@ Experimental, side-effect-free source and semantic operations for MCP
 Description documents.
 
 The package API remains experimental and may change while MCP Description 0.8
-remains a community working draft.
+remains pre-1.0.
 
 ```ts
 import {
-  migrateMcpDescription07ToDraft4,
+  migrateMcpDescription07ToRc1,
   projectEffectiveProtocolView,
 } from '@mcpdesc/core';
 import {
@@ -23,7 +23,7 @@ if (!parsed.ok) {
 }
 
 const result = projectEffectiveProtocolView(document, {
-  specification: '0.8.0-draft.4',
+  specification: '0.8.0-rc.1',
   protocolVersion: '2026-07-28',
 });
 
@@ -34,32 +34,34 @@ if (result.ok) {
 }
 
 const subset = selectMcpDescriptionDeclarations(document, {
-  specification: '0.8.0-draft.4',
+  specification: '0.8.0-rc.1',
   selections: {
     tools: ['search'],
     resources: ['docs://index'],
   },
 });
 
-const migrated = migrateMcpDescription07ToDraft4(validatedLegacyDocument, {
-  specification: '0.8.0-draft.4',
+const migrated = migrateMcpDescription07ToRc1(validatedLegacyDocument, {
+  specification: '0.8.0-rc.1',
   sourceValidated: true,
 });
 ```
 
-Draft 4 semantic operations validate their source and result with
+Semantic operations require an exact immutable selector and support both
+`0.8.0-draft.4` and `0.8.0-rc.1`. They validate their source and result with
 `@mcpdesc/validator`. Declaration selection uses MCP Description identities:
 tool and prompt `name`, resource `uri`, and resource template `uriTemplate`. It
 preserves all selected protocol-scoped variants and omits empty declaration
-collections.
+collections. Draft 4 constants and operations remain available without being
+silently retargeted to RC.1.
 
 Migration accepts a caller-validated MCP Description 0.7.0 value and validates
-the Draft 4 result. It moves the protocol revision to root scope, wraps server
-capabilities, omits optional empty arrays, and converts inline legacy security
-schemes to deterministic named definitions and requirements. Generated names and
-deduplication are reported as warnings for author review. The package does not
-ship or duplicate the frozen 0.7.0 schema, so callers must validate that source
-before setting `sourceValidated: true`.
+the result against the exact target snapshot. It moves the protocol revision to
+root scope, wraps server capabilities, omits optional empty arrays, and converts
+inline legacy security schemes to deterministic named definitions and
+requirements. Generated names and deduplication are reported as warnings for
+author review. The package does not ship or duplicate the frozen 0.7.0 schema,
+so callers must validate that source before setting `sourceValidated: true`.
 
 Source parsing accepts text and returns a JSON-compatible value or structured
 source diagnostics; serialization emits deterministic JSON or YAML. These
@@ -75,6 +77,6 @@ validator entry. The root entry is also CSP-safe.
 ## Package verification
 
 The repository verifies the exact tarball contents, installs that tarball into
-an isolated temporary consumer, imports only the public package entry point, and
-executes a Draft 4 projection. Run all checks with `npm run check` from the
+an isolated temporary consumer, imports the public package entry points, and
+executes an RC.1 projection. Run all checks with `npm run check` from the
 repository root.

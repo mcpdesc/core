@@ -10,7 +10,10 @@ import type {
   McpDescriptionDocument,
   OperationResult,
 } from './model.js';
-import { DRAFT_4_SPECIFICATION } from './snapshot.js';
+import {
+  isSupportedCoreSpecification,
+  type SupportedCoreSpecification,
+} from './snapshot.js';
 
 const declarationIdentities = {
   tools: 'name',
@@ -27,7 +30,7 @@ export interface DeclarationSelections {
 }
 
 export interface SelectMcpDescriptionDeclarationsOptions {
-  readonly specification: typeof DRAFT_4_SPECIFICATION;
+  readonly specification: SupportedCoreSpecification;
   readonly selections: DeclarationSelections;
 }
 
@@ -102,7 +105,7 @@ export function selectMcpDescriptionDeclarations(
   document: unknown,
   options: SelectMcpDescriptionDeclarationsOptions,
 ): OperationResult<McpDescriptionDocument> {
-  if (options.specification !== DRAFT_4_SPECIFICATION) {
+  if (!isSupportedCoreSpecification(options.specification)) {
     return {
       ok: false,
       diagnostics: [
@@ -118,7 +121,7 @@ export function selectMcpDescriptionDeclarations(
   }
 
   const sourceValidation = validateMcpDescription(document, {
-    specification: DRAFT_4_SPECIFICATION,
+    specification: options.specification,
   });
   const sourceDiagnostics = diagnosticsForPhase(
     sourceValidation.diagnostics,
@@ -133,7 +136,7 @@ export function selectMcpDescriptionDeclarations(
     options.selections,
   );
   const resultValidation = validateMcpDescription(value, {
-    specification: DRAFT_4_SPECIFICATION,
+    specification: options.specification,
   });
   const diagnostics = uniqueDiagnostics(
     sourceDiagnostics,
