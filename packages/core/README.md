@@ -3,17 +3,19 @@
 Experimental, side-effect-free source and semantic operations for MCP
 Description documents.
 
-Version `0.1.0` is the first experimental package boundary. Its API may change
-while MCP Description 0.8 remains a community working draft.
+The package API remains experimental and may change while MCP Description 0.8
+remains a community working draft.
 
 ```ts
 import {
   migrateMcpDescription07ToDraft4,
-  parseMcpDescriptionSource,
   projectEffectiveProtocolView,
-  selectMcpDescriptionDeclarations,
-  serializeMcpDescription,
 } from '@mcpdesc/core';
+import {
+  parseMcpDescriptionSource,
+  serializeMcpDescription,
+} from '@mcpdesc/core/documents';
+import { selectMcpDescriptionDeclarations } from '@mcpdesc/core/selection';
 
 const parsed = parseMcpDescriptionSource(sourceText);
 if (!parsed.ok) {
@@ -64,6 +66,11 @@ source diagnostics; serialization emits deterministic JSON or YAML. These
 operations do not read files or streams. The package does not retrieve
 references, select a transport, materialize inherited values, or claim that a
 description is complete or faithful to a deployed server.
+
+Strict-CSP browser consumers can import parsing and serialization from
+`@mcpdesc/core/documents` without bundling validator code. Declaration selection
+is available from `@mcpdesc/core/selection` and uses the CSP-safe standalone
+validator entry. The root entry is also CSP-safe.
 
 ## Package verification
 

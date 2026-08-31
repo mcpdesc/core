@@ -1,7 +1,7 @@
 import {
   validateMcpDescription,
   type McpDescriptionDiagnostic,
-} from '@mcpdesc/validator';
+} from '@mcpdesc/validator/standalone';
 
 import type {
   CoreDiagnostic,

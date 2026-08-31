@@ -17,6 +17,8 @@ repository.
   Description CLI and generator CLI behind their existing parsing and file I/O
   boundaries.
 - Exercise the same public package entry point in Node.js and browser consumers.
+- [x] Provide CSP-safe document and declaration-selection entry points for
+      browser consumers.
 - Gather consumer feedback before broadening the `0.x` API.
 
 ## 3. Add reusable semantic operations

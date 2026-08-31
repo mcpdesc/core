@@ -2,7 +2,7 @@ import {
   validateMcpDescription,
   type McpDescriptionDiagnostic,
   type SupportedProtocolVersion,
-} from '@mcpdesc/validator';
+} from '@mcpdesc/validator/standalone';
 
 import type {
   CoreDiagnostic,

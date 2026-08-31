@@ -1,7 +1,7 @@
 import {
   specificationProvenance,
   supportedProtocolVersions,
-} from '@mcpdesc/validator';
+} from '@mcpdesc/validator/standalone';
 
 export const DRAFT_4_SPECIFICATION = '0.8.0-draft.4' as const;
 export const DRAFT_4_SCHEMA_URI =

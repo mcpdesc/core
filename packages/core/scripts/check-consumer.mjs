@@ -8,6 +8,13 @@ import { fileURLToPath } from 'node:url';
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const node = process.execPath;
 const packageRoot = fileURLToPath(new URL('..', import.meta.url));
+const repositoryRoot = fileURLToPath(new URL('../../..', import.meta.url));
+const tsc = path.join(
+  repositoryRoot,
+  'node_modules',
+  '.bin',
+  process.platform === 'win32' ? 'tsc.cmd' : 'tsc',
+);
 const consumerRoot = mkdtempSync(path.join(tmpdir(), 'mcpdesc-core-consumer-'));
 
 try {
@@ -37,11 +44,13 @@ try {
         DRAFT_4_SCHEMA_URI,
         draft4Snapshot,
         migrateMcpDescription07ToDraft4,
-        parseMcpDescriptionSource,
         projectEffectiveProtocolView,
-        selectMcpDescriptionDeclarations,
-        serializeMcpDescription,
       } from '@mcpdesc/core';
+      import {
+        parseMcpDescriptionSource,
+        serializeMcpDescription,
+      } from '@mcpdesc/core/documents';
+      import { selectMcpDescriptionDeclarations } from '@mcpdesc/core/selection';
 
       const source = {
         $schema: DRAFT_4_SCHEMA_URI,
@@ -102,6 +111,37 @@ try {
     `,
   );
   execFileSync(node, ['smoke.mjs'], { cwd: consumerRoot, stdio: 'pipe' });
+
+  writeFileSync(
+    path.join(consumerRoot, 'consumer.ts'),
+    `
+      import { parseMcpDescriptionSource } from '@mcpdesc/core/documents';
+      import { selectMcpDescriptionDeclarations } from '@mcpdesc/core/selection';
+
+      const parsed = parseMcpDescriptionSource('{"mcpdesc":"0.8.0"}');
+      if (parsed.ok) {
+        selectMcpDescriptionDeclarations(parsed.value, {
+          specification: '0.8.0-draft.4',
+          selections: { tools: ['search'] },
+        });
+      }
+    `,
+  );
+  execFileSync(
+    tsc,
+    [
+      '--noEmit',
+      '--strict',
+      '--module',
+      'NodeNext',
+      '--moduleResolution',
+      'NodeNext',
+      '--target',
+      'ES2023',
+      'consumer.ts',
+    ],
+    { cwd: consumerRoot, stdio: 'pipe' },
+  );
 
   const installed = JSON.parse(
     readFileSync(
