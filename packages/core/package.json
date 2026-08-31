@@ -1,0 +1,43 @@
+{
+  "name": "@mcpdesc/core",
+  "version": "0.1.0",
+  "description": "Pure semantic operations for MCP Description documents",
+  "type": "module",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcpdesc/core.git",
+    "directory": "packages/core"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "MODIFICATIONS.md",
+    "ORIGIN.md",
+    "README.md",
+    "NOTICE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "check:consumer": "node scripts/check-consumer.mjs",
+    "check:package": "node scripts/check-package.mjs",
+    "test": "vitest run",
+    "test:browser": "node scripts/check-browser-bundle.mjs",
+    "typecheck": "tsc --build --pretty false"
+  },
+  "dependencies": {
+    "@mcpdesc/validator": "0.4.0"
+  }
+}

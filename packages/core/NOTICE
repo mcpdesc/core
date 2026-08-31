@@ -1,0 +1,11 @@
+MCP Description tooling
+
+This package includes an Effective Protocol View implementation derived from
+community development in the MCP Description specification repository, which in
+turn contains material derived from the Cisco Open mcptoolkit-contract project.
+
+mcpcontract (mcptoolkit-contract)
+Copyright 2026 Cisco Systems, Inc. and its affiliates
+
+This product includes software developed at Cisco Systems, Inc. and is licensed
+under the Apache License, Version 2.0.
