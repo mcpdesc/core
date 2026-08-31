@@ -4,7 +4,18 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
-No changes yet.
+### Added
+
+- A maintainer-controlled release procedure covering tarball review, version and
+  tag consistency, first-publication bootstrap, trusted npm publishing,
+  provenance, and post-publication verification.
+- A tag-triggered GitHub Actions workflow that runs the full validation suite
+  and publishes `@mcpdesc/core` with npm provenance support.
+
+### Changed
+
+- Contribution guidance now uses lockfile-exact installation and links to the
+  release procedure.
 
 ## [0.1.0] - 2026-08-31
 

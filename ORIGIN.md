@@ -11,3 +11,7 @@ Description specification repository:
 The specification repository contains material derived from Cisco Open
 `mcptoolkit-contract`. Cisco-originated contributions retain their applicable
 copyright and attribution. See `NOTICE` and `MODIFICATIONS.md`.
+
+Published npm provenance records identify the package build and publication
+workflow. They complement, but do not replace, this source-origin record or the
+normative specification snapshot. See [RELEASING.md](RELEASING.md).

@@ -1,0 +1,32 @@
+name: Publish
+
+'on':
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - name: Verify release version
+        run: |
+          package_version=$(node --input-type=module --eval "import packageMetadata from './packages/core/package.json' with { type: 'json' }; console.log(packageMetadata.version)")
+          test "$GITHUB_REF_NAME" = "v$package_version"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)"
+      - run: npm ci
+      - run: npm run check
+      - run: npm publish --workspace @mcpdesc/core --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

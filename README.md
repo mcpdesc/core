@@ -17,7 +17,8 @@ npm package versions, MCP Description versions, immutable snapshot selectors,
 schema identities, and MCP protocol revisions are separate version axes.
 
 See [CHANGELOG.md](CHANGELOG.md) for delivered behavior and
-[ROADMAP.md](ROADMAP.md) for the staged next steps and deferred decisions.
+[ROADMAP.md](ROADMAP.md) for the staged next steps and deferred decisions. See
+[RELEASING.md](RELEASING.md) for the maintainer-controlled release process.
 
 ## Development
 
