@@ -4,6 +4,8 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-01
+
 ### Added
 
 - CSP-safe `@mcpdesc/core/documents` and `@mcpdesc/core/selection` subpath
@@ -74,6 +76,7 @@ tarball verification. The corresponding Git tag has not yet been created.
 - Apache-2.0 licensing, provenance, contribution guidance, and repository
   instructions for coding assistants.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/mcpdesc/core/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/mcpdesc/core/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/mcpdesc/core/releases/tag/v0.1.0
