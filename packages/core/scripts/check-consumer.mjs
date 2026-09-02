@@ -8,6 +8,9 @@ import { fileURLToPath } from 'node:url';
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const node = process.execPath;
 const packageRoot = fileURLToPath(new URL('..', import.meta.url));
+const validatorRoot = fileURLToPath(
+  new URL('../../validator', import.meta.url),
+);
 const repositoryRoot = fileURLToPath(new URL('../../..', import.meta.url));
 const tsc = path.join(
   repositoryRoot,
@@ -25,6 +28,13 @@ try {
   );
   const [pack] = JSON.parse(packOutput);
   const tarball = path.join(consumerRoot, pack.filename);
+  const validatorPackOutput = execFileSync(
+    npm,
+    ['pack', '--json', '--ignore-scripts', '--pack-destination', consumerRoot],
+    { cwd: validatorRoot, encoding: 'utf8' },
+  );
+  const [validatorPack] = JSON.parse(validatorPackOutput);
+  const validatorTarball = path.join(consumerRoot, validatorPack.filename);
 
   writeFileSync(
     path.join(consumerRoot, 'package.json'),
@@ -32,7 +42,14 @@ try {
   );
   execFileSync(
     npm,
-    ['install', '--ignore-scripts', '--no-audit', '--no-fund', tarball],
+    [
+      'install',
+      '--ignore-scripts',
+      '--no-audit',
+      '--no-fund',
+      validatorTarball,
+      tarball,
+    ],
     { cwd: consumerRoot, stdio: 'pipe' },
   );
 
@@ -52,6 +69,7 @@ try {
         serializeMcpDescription,
       } from '@mcpdesc/core/documents';
       import { selectMcpDescriptionDeclarations } from '@mcpdesc/core/selection';
+      import { validateMcpDescription } from '@mcpdesc/validator/browser';
 
       const source = {
         $schema: RC_1_SCHEMA_URI,
@@ -131,6 +149,9 @@ try {
         JSON.parse(serializeMcpDescriptionMigrationReport(defaultedMigration.report)),
         defaultedMigration.report,
       );
+      assert.equal(validateMcpDescription(defaultedMigration.value, {
+        specification: '0.8.0-rc.1',
+      }).valid, true);
       assert.equal(rc1Snapshot.specification, '0.8.0-rc.1');
     `,
   );
@@ -194,9 +215,20 @@ try {
       `Expected installed core 0.5.0, found ${installed.version}`,
     );
   }
+  const installedValidator = JSON.parse(
+    readFileSync(
+      path.join(consumerRoot, 'node_modules/@mcpdesc/validator/package.json'),
+      'utf8',
+    ),
+  );
+  if (installedValidator.version !== '0.7.0') {
+    throw new Error(
+      `Expected installed validator 0.7.0, found ${installedValidator.version}`,
+    );
+  }
 
   console.log(
-    `Consumer smoke test passed for @mcpdesc/core@${installed.version}.`,
+    `Consumer smoke test passed for @mcpdesc/core@${installed.version} with @mcpdesc/validator@${installedValidator.version}.`,
   );
 } finally {
   rmSync(consumerRoot, { force: true, recursive: true });

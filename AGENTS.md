@@ -1,9 +1,9 @@
-# AGENTS.md - MCP Description tooling
+# AGENTS.md - MCP Description tooling and validation
 
 ## Mission
 
-Maintain small, deterministic, reusable MCP Description operations without
-creating a second source of normative semantics.
+Maintain small, deterministic MCP Description operations and executable
+validation without creating a second source of normative specification text.
 
 ## Starting a work session
 
@@ -19,11 +19,13 @@ creating a second source of normative semantics.
 
 ## Ownership boundaries
 
-- The MCP Description specification repository owns normative text, schemas,
-  immutable snapshot definitions, and conformance fixtures.
-- This repository owns executable tooling packages and their public APIs.
-- `@mcpdesc/validator` remains the conformance authority until an explicit,
-  separately reviewed repository migration occurs.
+- The MCP Description specification repository owns normative text, canonical
+  schemas, mutable draft fixtures, and candidate semantic validation used while
+  developing a snapshot.
+- This repository owns executable tooling packages, immutable validator
+  snapshots, frozen package-test fixtures, and their public APIs.
+- `@mcpdesc/validator` is the executable conformance authority. Core operations
+  must consume it rather than duplicate its schema or semantic rules.
 - Do not copy validator semantic rules into core operations.
 - Keep file access, network access, capture, and generation outside the pure
   core package. Pure source parsing and serialization may live in core when they
@@ -34,6 +36,11 @@ creating a second source of normative semantics.
 - Require exact immutable snapshot selectors.
 - Do not infer a draft selector from `mcpdesc: "0.8.0"` alone.
 - Do not change behavior captured for a published selector silently.
+- Import a new snapshot only from an explicitly approved specification tag or
+  commit, with exact schema, semantic implementation, fixture, and digest
+  provenance. Never require a sibling specification checkout in routine CI.
+- Existing directories under `packages/validator/src/snapshots/` and
+  `packages/validator/test/snapshots/` are immutable. Add sibling selectors.
 - Keep npm versions, format versions, snapshot selectors, schema identities, and
   MCP protocol revisions separate.
 
@@ -45,8 +52,12 @@ Run:
 npm run check
 ```
 
-Projection changes must validate their source and result and include focused
-tests for protocol scopes, omission, input immutability, and browser bundling.
+Validator changes must preserve the default, browser, and standalone entry
+points, Node.js 20 support, deterministic diagnostics, offline behavior, and
+strict-CSP checks. See `packages/validator/AGENTS.md` for package-specific
+rules. Projection changes must validate their source and result and include
+focused tests for protocol scopes, omission, input immutability, and browser
+bundling.
 
 ## AI disclosure
 

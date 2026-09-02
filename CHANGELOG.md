@@ -4,6 +4,17 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- `@mcpdesc/validator` as an independently versioned workspace package,
+  preserving its immutable snapshots, frozen fixtures, public APIs, and
+  strict-CSP browser contracts from `0.6.0`.
+
+### Changed
+
+- Core development now consumes the repository-owned validator `0.7.0` workspace
+  package through the existing standalone entry.
+
 ## [0.5.0] - 2026-09-02
 
 ### Added

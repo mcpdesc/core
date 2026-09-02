@@ -11,10 +11,10 @@
   },
   "scripts": {
     "build": "npm run build --workspaces --if-present",
-    "check": "npm run format:check && npm run typecheck && npm test && npm run build && npm run test:browser --workspace @mcpdesc/core && npm run check:package --workspace @mcpdesc/core && npm run check:consumer --workspace @mcpdesc/core",
+    "check": "npm run format:check && npm run typecheck && npm test && npm run build && npm run test:browser --workspace @mcpdesc/core && npm run check:package --workspaces --if-present && npm run check:consumer --workspace @mcpdesc/core",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "vitest run",
+    "test": "vitest run packages/core/test && npm test --workspace @mcpdesc/validator",
     "typecheck": "tsc --build --pretty false"
   },
   "devDependencies": {
@@ -22,6 +22,7 @@
     "esbuild": "^0.28.0",
     "prettier": "^3.6.0",
     "typescript": "^5.9.0",
+    "vite": "^6.4.3",
     "vitest": "^4.0.0"
   }
 }

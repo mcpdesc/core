@@ -11,8 +11,8 @@ release.
 - Start from a clean `main` checkout whose required `Validate` check has passed.
 - Confirm that `origin` points to `https://github.com/mcpdesc/core` or an
   equivalent SSH URL for that repository.
-- Confirm that the package version is unused on npm and matches the intended Git
-  tag in the form `v<version>`.
+- Confirm that the package version is unused on npm and matches its intended Git
+  tag: `v<version>` for core or `validator-v<version>` for validator.
 - Record user-visible changes in `CHANGELOG.md` and keep `ROADMAP.md` aligned
   with the work actually delivered.
 
@@ -24,6 +24,7 @@ From the repository root:
 npm ci
 npm run check
 npm pack --workspace @mcpdesc/core --dry-run
+npm pack --workspace @mcpdesc/validator --dry-run
 ```
 
 Review the package metadata, dependency versions, packed files, package size,
@@ -36,22 +37,22 @@ and review pass.
 
 ## Configure npm publishing
 
-The `publish.yml` workflow runs on GitHub-hosted infrastructure and requests an
-OIDC identity token. For an existing npm package, configure its trusted
-publisher with these exact values:
+The `publish.yml` and `publish-validator.yml` workflows run on GitHub-hosted
+infrastructure and request OIDC identity tokens. Configure each npm package's
+trusted publisher for organization `mcpdesc`, repository `core`, allowed action
+`npm publish`, and its corresponding workflow filename.
 
-- organization: `mcpdesc`;
-- repository: `core`;
-- workflow filename: `publish.yml`;
-- allowed action: `npm publish`.
+- `@mcpdesc/core`: `publish.yml`;
+- `@mcpdesc/validator`: `publish-validator.yml`.
 
 Trusted publishing automatically generates provenance for a public package in a
 public repository. After verifying it works, disallow token-based publishing in
 the npm package settings.
 
-Version `0.1.0` was published manually to bootstrap the npm package. The package
-now trusts the `publish.yml` GitHub Actions workflow; do not configure an npm
-token or `NPM_TOKEN` repository secret for later releases.
+Core `0.1.0` was published manually to bootstrap that package. Validator
+versions through `0.6.0` were published from the specification repository;
+`0.7.0` is the first release maintained here. Do not configure an npm token or
+`NPM_TOKEN` repository secret for either package.
 
 ## Release
 
@@ -60,13 +61,16 @@ After an explicit maintainer decision to tag and publish:
 ```bash
 git tag -s v<version> -m "Release @mcpdesc/core <version>"
 git push origin v<version>
+
+git tag -s validator-v<version> -m "Release @mcpdesc/validator <version>"
+git push origin validator-v<version>
 ```
 
-The tag starts `publish.yml`. The workflow verifies that the tag and package
-versions agree and that the tagged commit is the current `origin/main` tip. It
-installs from the lockfile without a dependency cache, runs the full check, and
-publishes the workspace package publicly with provenance. Never reuse or move a
-release tag after publication.
+Each tag starts only its package workflow. The workflow verifies that the tag
+and package version agree and that the tagged commit is the current
+`origin/main` tip. Core publication runs the full repository check; validator
+publication runs the complete validator package suite. Both publish publicly
+with provenance. Never reuse or move a release tag after publication.
 
 ## Verify
 
@@ -75,6 +79,10 @@ After the workflow succeeds:
 ```bash
 npm view @mcpdesc/core@<version> version dist.integrity dist.tarball
 npm install --ignore-scripts @mcpdesc/core@<version>
+npm audit signatures
+
+npm view @mcpdesc/validator@<version> version dist.integrity dist.tarball
+npm install --ignore-scripts @mcpdesc/validator@<version>
 npm audit signatures
 ```
 
