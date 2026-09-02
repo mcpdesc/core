@@ -32,6 +32,8 @@ repository.
       selector behavior.
 - [x] Extend RC.1 migration with caller-selected protocol defaults and stable
       conversion reports without adding a built-in default.
+- [x] Move `@mcpdesc/validator` maintenance and publication from the
+      specification repository while preserving immutable snapshot behavior.
 - Define and implement deterministic document merge behavior only after its
   contract is grounded in the active specification snapshot and conformance
   fixtures.
@@ -56,7 +58,6 @@ normative schema applies.
 
 ## Deferred decisions
 
-- Moving `@mcpdesc/validator` from the specification repository.
 - Stable `1.0` API commitments while MCP Description 0.8 remains a community
   working draft.
 - Network reference retrieval, filesystem or stream access, transport selection,

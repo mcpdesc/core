@@ -15,7 +15,14 @@ npm ci
 npm run check
 ```
 
-Do not add filesystem or network access to `@mcpdesc/core`. New dependencies
-must work in Node.js 22 and browser bundles. Pull requests containing
-AI-assisted content must disclose the tool and extent of assistance. Releases
-follow the maintainer-controlled process in [RELEASING.md](RELEASING.md).
+Do not add filesystem or network access to `@mcpdesc/core`. New core
+dependencies must work in Node.js 22 and browser bundles.
+
+Validator changes must preserve Node.js 20 support, deterministic offline
+validation, and strict-CSP behavior. Never modify an existing published snapshot
+directory. A later approved specification snapshot is added as a sibling with
+exact source, schema digest, semantic, and fixture provenance.
+
+Pull requests containing AI-assisted content must disclose the tool and extent
+of assistance. Releases follow the maintainer-controlled process in
+[RELEASING.md](RELEASING.md).
