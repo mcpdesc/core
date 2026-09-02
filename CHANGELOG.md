@@ -4,6 +4,15 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-09-02
+
+### Added
+
+- Optional RC.1 migration protocol defaults with snapshot validation and a
+  stable `migration-default-protocol-version` warning when applied.
+- Deterministic, JSON-compatible conversion reports for successful, warned, and
+  failed migrations, plus pretty-printed report serialization.
+
 ## [0.4.0] - 2026-09-01
 
 ### Added
@@ -89,7 +98,8 @@ tarball verification. The corresponding Git tag has not yet been created.
 - Apache-2.0 licensing, provenance, contribution guidance, and repository
   instructions for coding assistants.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/mcpdesc/core/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/mcpdesc/core/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/mcpdesc/core/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/mcpdesc/core/compare/v0.1.0...v0.2.0

@@ -30,6 +30,8 @@ repository.
       scheme extraction and explicit source-validation responsibility.
 - [x] Add exact MCP Description RC.1 snapshot support without changing Draft 4
       selector behavior.
+- [x] Extend RC.1 migration with caller-selected protocol defaults and stable
+      conversion reports without adding a built-in default.
 - Define and implement deterministic document merge behavior only after its
   contract is grounded in the active specification snapshot and conformance
   fixtures.

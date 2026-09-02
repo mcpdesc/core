@@ -45,6 +45,7 @@ try {
         migrateMcpDescription07ToRc1,
         projectEffectiveProtocolView,
         rc1Snapshot,
+        serializeMcpDescriptionMigrationReport,
       } from '@mcpdesc/core';
       import {
         parseMcpDescriptionSource,
@@ -107,6 +108,29 @@ try {
       });
       assert.equal(migration.ok, true);
       assert.deepEqual(migration.value.protocolVersions, ['2025-11-25']);
+      assert.equal(migration.report.status, 'success');
+
+      const defaultedMigration = migrateMcpDescription07ToRc1({
+        mcpdesc: '0.7.0',
+        info: { name: 'defaulted-consumer-smoke', version: '1.0.0' },
+        transports: [{ type: 'stdio', command: 'server' }],
+      }, {
+        specification: '0.8.0-rc.1',
+        defaultProtocolVersion: '2026-07-28',
+        sourceValidated: true,
+      });
+      assert.equal(defaultedMigration.ok, true);
+      assert.deepEqual(defaultedMigration.value.protocolVersions, ['2026-07-28']);
+      assert.equal(defaultedMigration.report.status, 'success-with-warnings');
+      assert.deepEqual(defaultedMigration.report.defaultsApplied, [{
+        code: 'migration-default-protocol-version',
+        path: ['info', 'protocolVersion'],
+        protocolVersion: '2026-07-28',
+      }]);
+      assert.deepEqual(
+        JSON.parse(serializeMcpDescriptionMigrationReport(defaultedMigration.report)),
+        defaultedMigration.report,
+      );
       assert.equal(rc1Snapshot.specification, '0.8.0-rc.1');
     `,
   );
@@ -117,6 +141,11 @@ try {
     `
       import { parseMcpDescriptionSource } from '@mcpdesc/core/documents';
       import { selectMcpDescriptionDeclarations } from '@mcpdesc/core/selection';
+      import {
+        migrateMcpDescription07ToRc1,
+        serializeMcpDescriptionMigrationReport,
+        type MigrateMcpDescription07ToRc1Options,
+      } from '@mcpdesc/core';
 
       const parsed = parseMcpDescriptionSource('{"mcpdesc":"0.8.0"}');
       if (parsed.ok) {
@@ -125,6 +154,17 @@ try {
           selections: { tools: ['search'] },
         });
       }
+
+      const migrationOptions: MigrateMcpDescription07ToRc1Options = {
+        specification: '0.8.0-rc.1',
+        defaultProtocolVersion: '2026-07-28',
+        sourceValidated: true,
+      };
+      const migration = migrateMcpDescription07ToRc1(
+        { mcpdesc: '0.7.0', info: { name: 'typed', version: '1.0.0' } },
+        migrationOptions,
+      );
+      serializeMcpDescriptionMigrationReport(migration.report);
     `,
   );
   execFileSync(
@@ -149,9 +189,9 @@ try {
       'utf8',
     ),
   );
-  if (installed.version !== '0.4.0') {
+  if (installed.version !== '0.5.0') {
     throw new Error(
-      `Expected installed core 0.4.0, found ${installed.version}`,
+      `Expected installed core 0.5.0, found ${installed.version}`,
     );
   }
 

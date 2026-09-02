@@ -9,13 +9,14 @@ import type {
   JsonObject,
   JsonValue,
   McpDescriptionDocument,
-  OperationResult,
 } from './model.js';
 import {
   DRAFT_4_SCHEMA_URI,
   DRAFT_4_SPECIFICATION,
   RC_1_SCHEMA_URI,
   RC_1_SPECIFICATION,
+  draft4Snapshot,
+  rc1Snapshot,
   type SupportedCoreSpecification,
 } from './snapshot.js';
 
@@ -43,6 +44,7 @@ export interface MigrateMcpDescription07Options {
 
 export interface MigrateMcpDescription07ToRc1Options {
   readonly specification: typeof RC_1_SPECIFICATION;
+  readonly defaultProtocolVersion?: SupportedProtocolVersion;
   readonly protocolVersion?: SupportedProtocolVersion;
   readonly sourceValidated: true;
 }
@@ -50,13 +52,92 @@ export interface MigrateMcpDescription07ToRc1Options {
 type SupportedMigrationOptions =
   MigrateMcpDescription07Options | MigrateMcpDescription07ToRc1Options;
 
+export interface McpDescriptionMigrationDefault {
+  readonly code: 'migration-default-protocol-version';
+  readonly path: readonly (number | string)[];
+  readonly protocolVersion: SupportedProtocolVersion;
+}
+
+export interface McpDescriptionMigrationChange {
+  readonly code: string;
+  readonly message: string;
+  readonly path: readonly (number | string)[];
+  readonly protocolVersion?: SupportedProtocolVersion;
+}
+
+export interface McpDescriptionMigrationReport {
+  readonly status: 'failed' | 'success' | 'success-with-warnings';
+  readonly sourceSpecification: '0.7.0';
+  readonly targetSpecification: SupportedCoreSpecification;
+  readonly diagnostics: readonly CoreDiagnostic[];
+  readonly defaultsApplied: readonly McpDescriptionMigrationDefault[];
+  readonly changes: readonly McpDescriptionMigrationChange[];
+}
+
+export type McpDescriptionMigrationResult =
+  | {
+      readonly ok: true;
+      readonly value: McpDescriptionDocument;
+      readonly diagnostics: readonly CoreDiagnostic[];
+      readonly report: McpDescriptionMigrationReport;
+    }
+  | {
+      readonly ok: false;
+      readonly diagnostics: readonly CoreDiagnostic[];
+      readonly report: McpDescriptionMigrationReport;
+    };
+
 function operationDiagnostic(
   code: string,
   severity: 'error' | 'warning',
   message: string,
   path: readonly (number | string)[],
+  protocolVersion?: SupportedProtocolVersion,
 ): CoreDiagnostic {
-  return { code, severity, message, path, phase: 'operation' };
+  return {
+    code,
+    severity,
+    message,
+    path,
+    phase: 'operation',
+    ...(protocolVersion === undefined ? {} : { protocolVersion }),
+  };
+}
+
+function migrationReport(
+  targetSpecification: SupportedCoreSpecification,
+  diagnostics: readonly CoreDiagnostic[],
+  defaultsApplied: readonly McpDescriptionMigrationDefault[],
+  changes: readonly McpDescriptionMigrationChange[],
+): McpDescriptionMigrationReport {
+  const failed = diagnostics.some(({ severity }) => severity === 'error');
+  const warned = diagnostics.some(({ severity }) => severity === 'warning');
+  return {
+    status: failed ? 'failed' : warned ? 'success-with-warnings' : 'success',
+    sourceSpecification: '0.7.0',
+    targetSpecification,
+    diagnostics,
+    defaultsApplied,
+    changes,
+  };
+}
+
+function failedMigration(
+  targetSpecification: SupportedCoreSpecification,
+  diagnostics: readonly CoreDiagnostic[],
+  defaultsApplied: readonly McpDescriptionMigrationDefault[] = [],
+  changes: readonly McpDescriptionMigrationChange[] = [],
+): McpDescriptionMigrationResult {
+  return {
+    ok: false,
+    diagnostics,
+    report: migrationReport(
+      targetSpecification,
+      diagnostics,
+      defaultsApplied,
+      changes,
+    ),
+  };
 }
 
 function resultDiagnostics(
@@ -122,6 +203,7 @@ function normalizeOptionalArrays(document: JsonObject): void {
 function migrateSecurity(
   document: JsonObject,
   diagnostics: CoreDiagnostic[],
+  changes: McpDescriptionMigrationChange[],
 ): CoreDiagnostic | undefined {
   const definitions = new Map<
     string,
@@ -178,6 +260,11 @@ function migrateSecurity(
           [...path, index],
         ),
       );
+      changes.push({
+        code: 'migration-extracted-security-scheme',
+        message: `Extracted inline security scheme as ${JSON.stringify(name)}`,
+        path: [...path, index],
+      });
       requirements.push({ [name]: [] });
     }
     return { value: requirements };
@@ -220,6 +307,11 @@ function migrateSecurity(
           ['securitySchemes', definition.name],
         ),
       );
+      changes.push({
+        code: 'migration-deduplicated-security-scheme',
+        message: `Reused ${JSON.stringify(definition.name)} for ${definition.count} identical inline security schemes`,
+        path: ['securitySchemes', definition.name],
+      });
     }
   }
   return undefined;
@@ -230,45 +322,37 @@ function migrateMcpDescription07(
   options: SupportedMigrationOptions,
   targetSpecification: SupportedCoreSpecification,
   targetSchemaUri: typeof DRAFT_4_SCHEMA_URI | typeof RC_1_SCHEMA_URI,
-): OperationResult<McpDescriptionDocument> {
+  targetProtocolVersions: readonly SupportedProtocolVersion[],
+): McpDescriptionMigrationResult {
   if (options.specification !== targetSpecification) {
-    return {
-      ok: false,
-      diagnostics: [
-        operationDiagnostic(
-          'unsupported-specification',
-          'error',
-          `MCP Description migration does not support ${JSON.stringify(options.specification)}`,
-          [],
-        ),
-      ],
-    };
+    return failedMigration(targetSpecification, [
+      operationDiagnostic(
+        'unsupported-specification',
+        'error',
+        `MCP Description migration does not support ${JSON.stringify(options.specification)}`,
+        [],
+      ),
+    ]);
   }
   if (options.sourceValidated !== true) {
-    return {
-      ok: false,
-      diagnostics: [
-        operationDiagnostic(
-          'migration-source-validation-required',
-          'error',
-          'Migration requires a source validated against MCP Description 0.7.0',
-          [],
-        ),
-      ],
-    };
+    return failedMigration(targetSpecification, [
+      operationDiagnostic(
+        'migration-source-validation-required',
+        'error',
+        'Migration requires a source validated against MCP Description 0.7.0',
+        [],
+      ),
+    ]);
   }
   if (!isJsonObject(source) || source.mcpdesc !== '0.7.0') {
-    return {
-      ok: false,
-      diagnostics: [
-        operationDiagnostic(
-          'migration-invalid-source-version',
-          'error',
-          'Migration source must be an MCP Description 0.7.0 document',
-          ['mcpdesc'],
-        ),
-      ],
-    };
+    return failedMigration(targetSpecification, [
+      operationDiagnostic(
+        'migration-invalid-source-version',
+        'error',
+        'Migration source must be an MCP Description 0.7.0 document',
+        ['mcpdesc'],
+      ),
+    ]);
   }
 
   const info = source.info;
@@ -278,32 +362,80 @@ function migrateMcpDescription07(
     declaredVersion !== undefined &&
     options.protocolVersion !== declaredVersion
   ) {
-    return {
-      ok: false,
-      diagnostics: [
-        operationDiagnostic(
-          'migration-protocol-version-conflict',
-          'error',
-          `Provided protocol version ${JSON.stringify(options.protocolVersion)} conflicts with info.protocolVersion ${JSON.stringify(declaredVersion)}`,
-          ['info', 'protocolVersion'],
-        ),
-      ],
-    };
+    return failedMigration(targetSpecification, [
+      operationDiagnostic(
+        'migration-protocol-version-conflict',
+        'error',
+        `Provided protocol version ${JSON.stringify(options.protocolVersion)} conflicts with info.protocolVersion ${JSON.stringify(declaredVersion)}`,
+        ['info', 'protocolVersion'],
+      ),
+    ]);
   }
-  const protocolVersion = options.protocolVersion ?? declaredVersion;
+  const defaultProtocolVersion =
+    targetSpecification === RC_1_SPECIFICATION &&
+    'defaultProtocolVersion' in options
+      ? options.defaultProtocolVersion
+      : undefined;
+  const selectedDefault =
+    options.protocolVersion === undefined &&
+    declaredVersion === undefined &&
+    defaultProtocolVersion !== undefined;
+  if (
+    selectedDefault &&
+    (typeof defaultProtocolVersion !== 'string' ||
+      !targetProtocolVersions.includes(
+        defaultProtocolVersion as SupportedProtocolVersion,
+      ))
+  ) {
+    return failedMigration(targetSpecification, [
+      operationDiagnostic(
+        'migration-unsupported-default-protocol-version',
+        'error',
+        `Default protocol version ${JSON.stringify(defaultProtocolVersion)} is not supported by ${targetSpecification}`,
+        ['info', 'protocolVersion'],
+      ),
+    ]);
+  }
+  const protocolVersion =
+    options.protocolVersion ?? declaredVersion ?? defaultProtocolVersion;
   if (typeof protocolVersion !== 'string') {
-    return {
-      ok: false,
-      diagnostics: [
-        operationDiagnostic(
-          'migration-protocol-version-required',
-          'error',
-          'Migration requires info.protocolVersion or an explicit protocolVersion option',
-          ['info', 'protocolVersion'],
-        ),
-      ],
-    };
+    return failedMigration(targetSpecification, [
+      operationDiagnostic(
+        'migration-protocol-version-required',
+        'error',
+        'Migration requires info.protocolVersion or an explicit protocol version option',
+        ['info', 'protocolVersion'],
+      ),
+    ]);
   }
+
+  const diagnostics: CoreDiagnostic[] = [];
+  const defaultsApplied: McpDescriptionMigrationDefault[] = [];
+  const changes: McpDescriptionMigrationChange[] = [];
+  if (selectedDefault) {
+    const selectedProtocolVersion =
+      defaultProtocolVersion as SupportedProtocolVersion;
+    diagnostics.push(
+      operationDiagnostic(
+        'migration-default-protocol-version',
+        'warning',
+        `Used caller-provided default protocol version ${JSON.stringify(selectedProtocolVersion)}`,
+        ['info', 'protocolVersion'],
+        selectedProtocolVersion,
+      ),
+    );
+    defaultsApplied.push({
+      code: 'migration-default-protocol-version',
+      path: ['info', 'protocolVersion'],
+      protocolVersion: selectedProtocolVersion,
+    });
+  }
+  changes.push({
+    code: 'migration-selected-protocol-version',
+    message: `Selected protocol version ${JSON.stringify(protocolVersion)}`,
+    path: ['protocolVersions'],
+    protocolVersion: protocolVersion as SupportedProtocolVersion,
+  });
 
   const value = structuredClone(source);
   value.$schema = targetSchemaUri;
@@ -314,49 +446,80 @@ function migrateMcpDescription07(
   if (isJsonObject(value.capabilities)) {
     if (Object.keys(value.capabilities).length > 0) {
       value.capabilities = [value.capabilities];
+      changes.push({
+        code: 'migration-wrapped-capabilities',
+        message: 'Wrapped legacy capabilities in a protocol-scoped collection',
+        path: ['capabilities'],
+        protocolVersion: protocolVersion as SupportedProtocolVersion,
+      });
     } else {
       delete value.capabilities;
     }
   }
   normalizeOptionalArrays(value);
 
-  const diagnostics: CoreDiagnostic[] = [];
-  const securityError = migrateSecurity(value, diagnostics);
-  if (securityError) return { ok: false, diagnostics: [securityError] };
+  const securityError = migrateSecurity(value, diagnostics, changes);
+  if (securityError)
+    return failedMigration(
+      targetSpecification,
+      [...diagnostics, securityError],
+      defaultsApplied,
+      changes,
+    );
 
   const validation = validateMcpDescription(value, {
     specification: targetSpecification,
   });
   diagnostics.push(...resultDiagnostics(validation.diagnostics));
-  if (!validation.valid) return { ok: false, diagnostics };
+  if (!validation.valid)
+    return failedMigration(
+      targetSpecification,
+      diagnostics,
+      defaultsApplied,
+      changes,
+    );
 
   return {
     ok: true,
     value: value as McpDescriptionDocument,
     diagnostics,
+    report: migrationReport(
+      targetSpecification,
+      diagnostics,
+      defaultsApplied,
+      changes,
+    ),
   };
+}
+
+export function serializeMcpDescriptionMigrationReport(
+  report: McpDescriptionMigrationReport,
+): string {
+  return `${JSON.stringify(report, null, 2)}\n`;
 }
 
 export function migrateMcpDescription07ToDraft4(
   source: unknown,
   options: MigrateMcpDescription07Options,
-): OperationResult<McpDescriptionDocument> {
+): McpDescriptionMigrationResult {
   return migrateMcpDescription07(
     source,
     options,
     DRAFT_4_SPECIFICATION,
     DRAFT_4_SCHEMA_URI,
+    draft4Snapshot.protocolVersions,
   );
 }
 
 export function migrateMcpDescription07ToRc1(
   source: unknown,
   options: MigrateMcpDescription07ToRc1Options,
-): OperationResult<McpDescriptionDocument> {
+): McpDescriptionMigrationResult {
   return migrateMcpDescription07(
     source,
     options,
     RC_1_SPECIFICATION,
     RC_1_SCHEMA_URI,
+    rc1Snapshot.protocolVersions,
   );
 }

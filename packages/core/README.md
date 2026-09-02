@@ -10,6 +10,7 @@ remains pre-1.0.
 import {
   migrateMcpDescription07ToRc1,
   projectEffectiveProtocolView,
+  serializeMcpDescriptionMigrationReport,
 } from '@mcpdesc/core';
 import {
   parseMcpDescriptionSource,
@@ -43,8 +44,11 @@ const subset = selectMcpDescriptionDeclarations(document, {
 
 const migrated = migrateMcpDescription07ToRc1(validatedLegacyDocument, {
   specification: '0.8.0-rc.1',
+  defaultProtocolVersion: '2026-07-28',
   sourceValidated: true,
 });
+
+console.log(serializeMcpDescriptionMigrationReport(migrated.report));
 ```
 
 Semantic operations require an exact immutable selector and support both
@@ -60,8 +64,13 @@ the result against the exact target snapshot. It moves the protocol revision to
 root scope, wraps server capabilities, omits optional empty arrays, and converts
 inline legacy security schemes to deterministic named definitions and
 requirements. Generated names and deduplication are reported as warnings for
-author review. The package does not ship or duplicate the frozen 0.7.0 schema,
-so callers must validate that source before setting `sourceValidated: true`.
+author review. RC.1 callers may opt into `defaultProtocolVersion` when the
+source omits `info.protocolVersion`; the source value always takes precedence,
+and no built-in default is applied. Every migration result includes a stable,
+JSON-compatible report that distinguishes success, success with warnings, and
+failure and records diagnostics, applied defaults, and proven conversion
+changes. The package does not ship or duplicate the frozen 0.7.0 schema, so
+callers must validate that source before setting `sourceValidated: true`.
 
 Source parsing accepts text and returns a JSON-compatible value or structured
 source diagnostics; serialization emits deterministic JSON or YAML. These

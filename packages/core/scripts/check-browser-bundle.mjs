@@ -1,9 +1,27 @@
 import { build } from 'esbuild';
 
 const entries = [
-  { name: 'root', path: '../src/index.ts', allowsValidator: true },
-  { name: 'documents', path: '../src/documents.ts', allowsValidator: false },
-  { name: 'selection', path: '../src/selection.ts', allowsValidator: true },
+  {
+    name: 'root',
+    path: '../src/index.ts',
+    allowsValidator: true,
+    requiredExports: [
+      'migrateMcpDescription07ToRc1',
+      'serializeMcpDescriptionMigrationReport',
+    ],
+  },
+  {
+    name: 'documents',
+    path: '../src/documents.ts',
+    allowsValidator: false,
+    requiredExports: [],
+  },
+  {
+    name: 'selection',
+    path: '../src/selection.ts',
+    allowsValidator: true,
+    requiredExports: [],
+  },
 ];
 
 for (const entry of entries) {
@@ -44,6 +62,22 @@ for (const entry of entries) {
     )
   ) {
     throw new Error(`${entry.name} browser bundle contains validator code`);
+  }
+  if (
+    entry.allowsValidator &&
+    inputs.some(
+      (input) =>
+        input.includes('@mcpdesc/validator/src/') || input.includes('/ajv/'),
+    )
+  ) {
+    throw new Error(
+      `${entry.name} browser bundle contains the validator runtime entry`,
+    );
+  }
+  for (const requiredExport of entry.requiredExports) {
+    if (!source.includes(requiredExport)) {
+      throw new Error(`${entry.name} browser bundle omits ${requiredExport}`);
+    }
   }
 
   console.log(

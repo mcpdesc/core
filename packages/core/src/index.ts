@@ -11,6 +11,11 @@ export type {
 export {
   migrateMcpDescription07ToDraft4,
   migrateMcpDescription07ToRc1,
+  serializeMcpDescriptionMigrationReport,
+  type McpDescriptionMigrationChange,
+  type McpDescriptionMigrationDefault,
+  type McpDescriptionMigrationReport,
+  type McpDescriptionMigrationResult,
   type MigrateMcpDescription07Options,
   type MigrateMcpDescription07ToRc1Options,
 } from './migration.js';
