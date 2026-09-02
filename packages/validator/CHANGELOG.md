@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this package follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Dates for published releases are the UTC publication dates recorded by npm.
 
+## [Unreleased]
+
+### Changed
+
+- Added an explicit package-specific homepage and expanded the README with the
+	validator's purpose, boundaries, result model, installation, and newest-first
+	snapshot support.
+
 ## [0.7.0] - 2026-09-02
 
 ### Changed

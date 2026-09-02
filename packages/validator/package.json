@@ -10,6 +10,8 @@
     "url": "git+https://github.com/mcpdesc/core.git",
     "directory": "packages/validator"
   },
+  "homepage": "https://github.com/mcpdesc/core/tree/main/packages/validator#readme",
+  "bugs": "https://github.com/mcpdesc/core/issues",
   "engines": {
     "node": ">=20"
   },

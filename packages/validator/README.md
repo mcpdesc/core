@@ -1,36 +1,60 @@
 # @mcpdesc/validator
 
-Isomorphic structural and semantic validation for immutable MCP Description specification snapshots.
+Validate parsed MCP Description documents against exact, immutable specification
+snapshots. The package:
 
-Version `0.7.0` cumulatively supports these immutable snapshots. This release
-moves package maintenance from the MCP Description specification repository to
-the MCP Description tooling repository without changing conformance behavior.
+- checks document structure against the snapshot's embedded JSON Schema;
+- applies semantic rules that JSON Schema alone cannot express;
+- returns deterministic error and warning diagnostics with document paths; and
+- runs synchronously and offline in Node.js 20+ and browser bundles.
 
-| Selector | Tag | Embedded schema SHA-256 |
-|---|---|---|
-| `0.8.0-draft.1` | `v0.8.0-draft.1` | `4ceb6042c3fd31703199cd3db869ec5c35c17d2fe9ab7b2f5b96a2a3af0cebe4` |
-| `0.8.0-draft.2` | `v0.8.0-draft.2` | `ab692c1a5a0f7e5f29be1940aa8c64a56d4620be0a19d00cf0a64680b7e517fa` |
-| `0.8.0-draft.3` | `v0.8.0-draft.3` | `8823c1f1946360b2a44d00920e2092e5e4acd139a1964befad4eb0bf3ce96002` |
-| `0.8.0-draft.4` | `v0.8.0-draft.4` | `93ed03f74059b5b3ce7509a96b59161bdab2c3cf7734397a9bec5a7588d0b03b` |
-| `0.8.0-rc.1` | `v0.8.0-rc.1` | `936a0f24ade501fcabf3d6498c0440c445daa672a575573a35954cee49430ac4` |
+Use it when accepting, generating, migrating, or transforming MCP Description
+documents and you need to know whether the result conforms to a specific
+published draft or release candidate. It validates MCP Description documents,
+not live MCP servers or MCP protocol messages.
 
-Repository changes alone do not publish the package or create specification or validator tags.
+## Install
 
-## Usage
+```bash
+npm install @mcpdesc/validator
+```
+
+## Quick start
 
 ```js
 import { validateMcpDescription } from '@mcpdesc/validator';
 
 const result = validateMcpDescription(parsedDocument, {
-  specification: '0.8.0-rc.1'
+  specification: '0.8.0-rc.1',
 });
 
+for (const diagnostic of result.diagnostics) {
+  console.log(diagnostic.severity, diagnostic.path, diagnostic.message);
+}
+
 if (!result.valid) {
-  console.error(result.diagnostics);
+  // At least one error diagnostic was returned.
 }
 ```
 
-Callers provide an already parsed JavaScript value. JSON and YAML parsing are outside this package.
+Callers provide an already parsed JavaScript value. JSON and YAML parsing, file
+access, network access, and live-server inspection are outside this package.
+The exact `specification` selector is required so validation never changes when
+a later draft is published.
+
+## Supported snapshots
+
+Version `0.7.0` supports these immutable snapshots, newest first:
+
+| Selector | Tag | Embedded schema SHA-256 |
+|---|---|---|
+| `0.8.0-rc.1` | `v0.8.0-rc.1` | `936a0f24ade501fcabf3d6498c0440c445daa672a575573a35954cee49430ac4` |
+| `0.8.0-draft.4` | `v0.8.0-draft.4` | `93ed03f74059b5b3ce7509a96b59161bdab2c3cf7734397a9bec5a7588d0b03b` |
+| `0.8.0-draft.3` | `v0.8.0-draft.3` | `8823c1f1946360b2a44d00920e2092e5e4acd139a1964befad4eb0bf3ce96002` |
+| `0.8.0-draft.2` | `v0.8.0-draft.2` | `ab692c1a5a0f7e5f29be1940aa8c64a56d4620be0a19d00cf0a64680b7e517fa` |
+| `0.8.0-draft.1` | `v0.8.0-draft.1` | `4ceb6042c3fd31703199cd3db869ec5c35c17d2fe9ab7b2f5b96a2a3af0cebe4` |
+
+## Usage
 
 The `options` argument and exact `specification` selector are required. The unqualified selector `0.8.0` is intentionally unsupported because draft and release-candidate iterations are immutable compatibility contracts.
 
