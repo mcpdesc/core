@@ -4,6 +4,8 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-09-02
+
 ### Added
 
 - `@mcpdesc/validator` as an independently versioned workspace package,
@@ -109,7 +111,8 @@ tarball verification. The corresponding Git tag has not yet been created.
 - Apache-2.0 licensing, provenance, contribution guidance, and repository
   instructions for coding assistants.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/mcpdesc/core/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/mcpdesc/core/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/mcpdesc/core/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/mcpdesc/core/compare/v0.2.0...v0.3.0

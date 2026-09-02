@@ -210,9 +210,9 @@ try {
       'utf8',
     ),
   );
-  if (installed.version !== '0.5.0') {
+  if (installed.version !== '0.6.0') {
     throw new Error(
-      `Expected installed core 0.5.0, found ${installed.version}`,
+      `Expected installed core 0.6.0, found ${installed.version}`,
     );
   }
   const installedValidator = JSON.parse(
