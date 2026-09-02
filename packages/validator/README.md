@@ -44,7 +44,7 @@ a later draft is published.
 
 ## Supported snapshots
 
-Version `0.7.0` supports these immutable snapshots, newest first:
+Version `0.7.1` supports these immutable snapshots, newest first:
 
 | Selector | Tag | Embedded schema SHA-256 |
 |---|---|---|

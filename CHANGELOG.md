@@ -4,6 +4,12 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+### Changed
+
+- Core development now consumes `@mcpdesc/validator` `0.7.1`, whose package
+  documentation and npm homepage identify the validator's purpose and package
+  directory more clearly.
+
 ## [0.6.0] - 2026-09-02
 
 ### Added

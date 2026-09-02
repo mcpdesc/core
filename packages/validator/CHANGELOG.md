@@ -8,6 +8,8 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-09-02
+
 ### Changed
 
 - Added an explicit package-specific homepage and expanded the README with the
@@ -77,7 +79,8 @@ Dates for published releases are the UTC publication dates recorded by npm.
 - Added synchronous structural and semantic validation for parsed JavaScript values with deterministic diagnostics and exact selector dispatch.
 - Added ESM browser support, TypeScript declarations, embedded schema provenance, frozen fixtures, and package-content checks.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/validator-v0.7.0...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/validator-v0.7.1...HEAD
+[0.7.1]: https://github.com/mcpdesc/core/compare/validator-v0.7.0...validator-v0.7.1
 [0.7.0]: https://github.com/mcpdesc/core/releases/tag/validator-v0.7.0
 [0.6.0]: https://github.com/mcpdesc/mcpdesc-specification/compare/validator-v0.5.0...validator-v0.6.0
 [0.5.0]: https://github.com/mcpdesc/mcpdesc-specification/compare/17cc533e79b19ea2dbc1edcf06e30ba68a7d9b79...validator-v0.5.0
