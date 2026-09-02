@@ -221,9 +221,9 @@ try {
       'utf8',
     ),
   );
-  if (installedValidator.version !== '0.7.0') {
+  if (installedValidator.version !== '0.7.1') {
     throw new Error(
-      `Expected installed validator 0.7.0, found ${installedValidator.version}`,
+      `Expected installed validator 0.7.1, found ${installedValidator.version}`,
     );
   }
 

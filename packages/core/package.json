@@ -46,7 +46,7 @@
     "typecheck": "tsc --build --pretty false"
   },
   "dependencies": {
-    "@mcpdesc/validator": "0.7.0",
+    "@mcpdesc/validator": "0.7.1",
     "jsonc-parser": "3.3.1",
     "yaml": "2.9.0"
   }
