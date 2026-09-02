@@ -4,11 +4,13 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-09-02
+
 ### Changed
 
-- Core development now consumes `@mcpdesc/validator` `0.7.1`, whose package
-  documentation and npm homepage identify the validator's purpose and package
-  directory more clearly.
+- Core now pins `@mcpdesc/validator` `0.7.1`, whose package documentation and
+  npm homepage identify the validator's purpose and package directory more
+  clearly.
 
 ## [0.6.0] - 2026-09-02
 
@@ -117,7 +119,8 @@ tarball verification. The corresponding Git tag has not yet been created.
 - Apache-2.0 licensing, provenance, contribution guidance, and repository
   instructions for coding assistants.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/v0.6.1...HEAD
+[0.6.1]: https://github.com/mcpdesc/core/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/mcpdesc/core/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/mcpdesc/core/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/mcpdesc/core/compare/v0.3.0...v0.4.0
