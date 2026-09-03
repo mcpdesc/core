@@ -8,6 +8,21 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-09-03
+
+### Added
+
+- Added RC.1-only `resolveMcpDescriptionComponentReferences` to the default,
+	browser, and standalone entries, returning the existing resolved clone,
+	diagnostics, and substitution count plus deterministic terminal-target
+	provenance.
+
+### Changed
+
+- Recorded the maintainer-approved additive provenance correction to the RC.1
+	snapshot implementation. Its schema, conformance results, diagnostics, and
+	frozen fixtures remain unchanged.
+
 ## [0.7.1] - 2026-09-02
 
 ### Changed
@@ -79,7 +94,8 @@ Dates for published releases are the UTC publication dates recorded by npm.
 - Added synchronous structural and semantic validation for parsed JavaScript values with deterministic diagnostics and exact selector dispatch.
 - Added ESM browser support, TypeScript declarations, embedded schema provenance, frozen fixtures, and package-content checks.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/validator-v0.7.1...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/validator-v0.8.0...HEAD
+[0.8.0]: https://github.com/mcpdesc/core/compare/validator-v0.7.1...validator-v0.8.0
 [0.7.1]: https://github.com/mcpdesc/core/compare/validator-v0.7.0...validator-v0.7.1
 [0.7.0]: https://github.com/mcpdesc/core/releases/tag/validator-v0.7.0
 [0.6.0]: https://github.com/mcpdesc/mcpdesc-specification/compare/validator-v0.5.0...validator-v0.6.0

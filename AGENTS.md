@@ -41,6 +41,10 @@ validation without creating a second source of normative specification text.
   provenance. Never require a sibling specification checkout in routine CI.
 - Existing directories under `packages/validator/src/snapshots/` and
   `packages/validator/test/snapshots/` are immutable. Add sibling selectors.
+- A maintainer may approve an additive tooling-metadata correction to a
+  published snapshot implementation only when its schema, conformance results,
+  diagnostics, and frozen fixtures remain unchanged. Record each exception in
+  `snapshot-integrity.json` and the validator changelog.
 - Keep npm versions, format versions, snapshot selectors, schema identities, and
   MCP protocol revisions separate.
 

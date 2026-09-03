@@ -1,6 +1,6 @@
 {
   "name": "@mcpdesc/core",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "Pure semantic operations for MCP Description documents",
   "type": "module",
   "license": "Apache-2.0",
@@ -20,6 +20,10 @@
     "./documents": {
       "types": "./dist/documents.d.ts",
       "import": "./dist/documents.js"
+    },
+    "./components": {
+      "types": "./dist/components.d.ts",
+      "import": "./dist/components.js"
     },
     "./selection": {
       "types": "./dist/selection.d.ts",
@@ -46,7 +50,7 @@
     "typecheck": "tsc --build --pretty false"
   },
   "dependencies": {
-    "@mcpdesc/validator": "0.7.1",
+    "@mcpdesc/validator": "0.8.0",
     "jsonc-parser": "3.3.1",
     "yaml": "2.9.0"
   }

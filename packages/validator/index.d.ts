@@ -25,6 +25,22 @@ export interface ValidateMcpDescriptionOptions {
   specification: McpDescriptionSpecification;
 }
 
+export interface McpDescriptionComponentReferenceProvenance {
+  readonly referencePath: Array<string | number>;
+  readonly targetPath: Array<string | number>;
+}
+
+export interface McpDescriptionComponentResolutionResult {
+  readonly document: unknown;
+  readonly diagnostics: McpDescriptionDiagnostic[];
+  readonly substitutions: number;
+  readonly provenance: McpDescriptionComponentReferenceProvenance[];
+}
+
+export interface ResolveMcpDescriptionComponentReferencesOptions {
+  readonly specification: '0.8.0-rc.1';
+}
+
 export interface SpecificationProvenance {
   readonly '0.8.0-draft.1': {
     readonly snapshotTag: 'v0.8.0-draft.1';
@@ -95,3 +111,8 @@ export declare function validateMcpDescription(
   document: unknown,
   options: ValidateMcpDescriptionOptions
 ): McpDescriptionValidationResult;
+
+export declare function resolveMcpDescriptionComponentReferences(
+  document: unknown,
+  options: ResolveMcpDescriptionComponentReferencesOptions
+): McpDescriptionComponentResolutionResult;

@@ -3,6 +3,7 @@ import * as draft2 from './snapshots/0.8.0-draft.2/index.js';
 import * as draft3 from './snapshots/0.8.0-draft.3/index.js';
 import * as draft4 from './snapshots/0.8.0-draft.4/index.js';
 import * as rc1 from './snapshots/0.8.0-rc.1/index.js';
+import { resolveComponentReferences as resolveRc1ComponentReferences } from './snapshots/0.8.0-rc.1/semantic.js';
 
 const snapshots = Object.freeze({
   [draft1.specification]: draft1,
@@ -142,4 +143,15 @@ export function validateMcpDescription(document, options) {
   }
 
   return snapshots[options.specification].validate(document);
+}
+
+export function resolveMcpDescriptionComponentReferences(document, options) {
+  if (!options || typeof options !== 'object' || Array.isArray(options) || !Object.hasOwn(options, 'specification')) {
+    throw new TypeError('options.specification is required');
+  }
+  if (options.specification !== '0.8.0-rc.1') {
+    throw new RangeError(`Component reference resolution does not support specification: ${String(options.specification)}`);
+  }
+
+  return resolveRc1ComponentReferences(document);
 }
