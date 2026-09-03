@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import test from 'node:test';
 
 import {
+  resolveMcpDescriptionComponentReferences,
   resolveMcpDescriptionSpecification,
   specificationProvenance,
   supportedProtocolVersions,
@@ -28,6 +29,7 @@ function validate(document, specification = '0.8.0-draft.1') {
 
 test('exports the cumulative validator API', () => {
   assert.equal(typeof validateMcpDescription, 'function');
+  assert.equal(typeof resolveMcpDescriptionComponentReferences, 'function');
   assert.deepEqual(supportedSpecifications, ['0.8.0-draft.1', '0.8.0-draft.2', '0.8.0-draft.3', '0.8.0-draft.4', '0.8.0-rc.1']);
   assert.deepEqual(supportedProtocolVersions, [
     '2024-11-05',
@@ -63,6 +65,30 @@ test('exports the cumulative validator API', () => {
       schemaSha256: '936a0f24ade501fcabf3d6498c0440c445daa672a575573a35954cee49430ac4'
     }
   });
+});
+
+test('resolves RC.1 component references with terminal provenance', () => {
+  const document = fixture('expected-valid', 'reusable-components.json', '0.8.0-rc.1');
+  const original = structuredClone(document);
+  const first = resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-rc.1' });
+  const second = resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-rc.1' });
+
+  assert.deepEqual(first, second);
+  assert.deepEqual(first.document.tools[0].inputSchema, document.components.schemas.Input);
+  assert.deepEqual(first.provenance.find((record) => record.referencePath.join('.') === 'tools.0.inputSchema'), {
+    referencePath: ['tools', 0, 'inputSchema'],
+    targetPath: ['components', 'schemas', 'Input']
+  });
+  assert.ok(first.substitutions > first.provenance.length);
+  assert.deepEqual(document, original);
+});
+
+test('restricts public component resolution to RC.1', () => {
+  const document = fixture('expected-valid', 'reusable-components.json', '0.8.0-draft.4');
+  assert.throws(
+    () => resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-draft.4' }),
+    /does not support specification: 0\.8\.0-draft\.4/
+  );
 });
 
 test('requires an explicit exact specification selector', () => {

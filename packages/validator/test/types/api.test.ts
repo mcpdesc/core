@@ -1,4 +1,5 @@
 import {
+  resolveMcpDescriptionComponentReferences,
   resolveMcpDescriptionSpecification,
   specificationProvenance,
   supportedProtocolVersions,
@@ -15,6 +16,10 @@ declare const document: unknown;
 const result: McpDescriptionValidationResult = validateMcpDescription(document, {
   specification: '0.8.0-draft.1'
 });
+const componentResolution = resolveMcpDescriptionComponentReferences(document, {
+  specification: '0.8.0-rc.1'
+});
+const referencePath: readonly (string | number)[] | undefined = componentResolution.provenance[0]?.referencePath;
 validateMcpDescription(document, { specification: '0.8.0-draft.2' });
 validateMcpDescription(document, { specification: '0.8.0-draft.3' });
 validateMcpDescription(document, { specification: '0.8.0-draft.4' });
@@ -57,6 +62,7 @@ void draft4SchemaUri;
 void rc1SchemaUri;
 void browserResult;
 void standaloneResult;
+void referencePath;
 
 // @ts-expect-error The options argument is required.
 validateMcpDescription(document);
@@ -68,3 +74,5 @@ validateMcpDescription(document, { specification: '0.8.0-draft.5' });
 supportedSpecifications.push('0.8.0-draft.1');
 // @ts-expect-error Provenance is only available for supported selectors.
 specificationProvenance['0.8.0-draft.5'];
+// @ts-expect-error Component resolution is intentionally RC.1-only.
+resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-draft.4' });

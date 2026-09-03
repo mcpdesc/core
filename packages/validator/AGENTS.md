@@ -19,6 +19,10 @@ schemas remain in `mcpdesc/mcpdesc-specification`.
 ## Snapshot changes
 
 - Never modify a published selector under `src/snapshots/` or `test/snapshots/`.
+- Exception: a maintainer may approve additive tooling result metadata in a
+  published `src/snapshots/` implementation when schema validation, semantic
+  conformance, diagnostics, and frozen fixtures remain unchanged. Record the
+  exact file and reason in `snapshot-integrity.json` and the package changelog.
 - Import approved specification artifacts with exact source commit, tag, schema
   digest, semantic implementation, and frozen fixture provenance.
 - Add later snapshots as siblings and update the registry, declarations,

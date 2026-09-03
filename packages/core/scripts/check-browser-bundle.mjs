@@ -1,4 +1,5 @@
 import { build } from 'esbuild';
+import { readFileSync } from 'node:fs';
 
 const entries = [
   {
@@ -15,6 +16,12 @@ const entries = [
     path: '../src/documents.ts',
     allowsValidator: false,
     requiredExports: [],
+  },
+  {
+    name: 'components',
+    path: '../src/components.ts',
+    allowsValidator: true,
+    requiredExports: ['resolveMcpDescriptionComponentReferences'],
   },
   {
     name: 'selection',
@@ -84,3 +91,48 @@ for (const entry of entries) {
     `${entry.name} browser bundle passed (${result.outputFiles[0].contents.length} bytes).`,
   );
 }
+
+const originalEval = globalThis.eval;
+const OriginalFunction = globalThis.Function;
+let codegenAttempts = 0;
+globalThis.eval = () => {
+  codegenAttempts += 1;
+  throw new EvalError('eval blocked by test CSP');
+};
+globalThis.Function = function BlockedFunction() {
+  codegenAttempts += 1;
+  throw new EvalError('Function blocked by test CSP');
+};
+
+try {
+  const root = await import('../dist/index.js');
+  const components = await import('../dist/components.js');
+  const fixture = JSON.parse(
+    readFileSync(
+      new URL(
+        '../../validator/test/snapshots/0.8.0-rc.1/fixtures/expected-valid/reusable-components.json',
+        import.meta.url,
+      ),
+      'utf8',
+    ),
+  );
+  for (const operation of [
+    root.resolveMcpDescriptionComponentReferences,
+    components.resolveMcpDescriptionComponentReferences,
+  ]) {
+    const result = operation(fixture, { specification: '0.8.0-rc.1' });
+    if (!result.ok || result.provenance.length === 0) {
+      throw new Error('Component resolution failed under strict CSP');
+    }
+  }
+} finally {
+  globalThis.eval = originalEval;
+  globalThis.Function = OriginalFunction;
+}
+
+if (codegenAttempts !== 0) {
+  throw new Error(`Runtime code generation attempted ${codegenAttempts} times`);
+}
+console.log(
+  'Root and components operations passed with runtime code generation blocked.',
+);

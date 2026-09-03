@@ -62,6 +62,7 @@ try {
         migrateMcpDescription07ToRc1,
         projectEffectiveProtocolView,
         rc1Snapshot,
+        resolveMcpDescriptionComponentReferences,
         serializeMcpDescriptionMigrationReport,
       } from '@mcpdesc/core';
       import {
@@ -69,6 +70,7 @@ try {
         serializeMcpDescription,
       } from '@mcpdesc/core/documents';
       import { selectMcpDescriptionDeclarations } from '@mcpdesc/core/selection';
+      import { resolveMcpDescriptionComponentReferences as resolveComponentsSubpath } from '@mcpdesc/core/components';
       import { validateMcpDescription } from '@mcpdesc/validator/browser';
 
       const source = {
@@ -153,6 +155,23 @@ try {
         specification: '0.8.0-rc.1',
       }).valid, true);
       assert.equal(rc1Snapshot.specification, '0.8.0-rc.1');
+
+      const reusable = {
+        ...source,
+        components: { schemas: { Input: { type: 'object' } } },
+        tools: [{
+          name: 'referenced',
+          inputSchema: { $componentRef: '#/components/schemas/Input' },
+        }],
+      };
+      for (const operation of [resolveMcpDescriptionComponentReferences, resolveComponentsSubpath]) {
+        const resolution = operation(reusable, { specification: '0.8.0-rc.1' });
+        assert.equal(resolution.ok, true);
+        assert.deepEqual(resolution.provenance, [{
+          referencePath: ['tools', 0, 'inputSchema'],
+          targetPath: ['components', 'schemas', 'Input'],
+        }]);
+      }
     `,
   );
   execFileSync(node, ['smoke.mjs'], { cwd: consumerRoot, stdio: 'pipe' });
@@ -162,6 +181,11 @@ try {
     `
       import { parseMcpDescriptionSource } from '@mcpdesc/core/documents';
       import { selectMcpDescriptionDeclarations } from '@mcpdesc/core/selection';
+      import {
+        resolveMcpDescriptionComponentReferences,
+        type McpDescComponentReference,
+        type McpDescComponentRegistries,
+      } from '@mcpdesc/core/components';
       import {
         migrateMcpDescription07ToRc1,
         serializeMcpDescriptionMigrationReport,
@@ -186,6 +210,16 @@ try {
         migrationOptions,
       );
       serializeMcpDescriptionMigrationReport(migration.report);
+      const reference: McpDescComponentReference = {
+        $componentRef: '#/components/schemas/Input',
+      };
+      const components: McpDescComponentRegistries = {
+        schemas: { Input: { type: 'object' }, Alias: reference },
+      };
+      resolveMcpDescriptionComponentReferences(
+        { mcpdesc: '0.8.0', info: {}, protocolVersions: [], components },
+        { specification: '0.8.0-rc.1' },
+      );
     `,
   );
   execFileSync(
@@ -210,9 +244,9 @@ try {
       'utf8',
     ),
   );
-  if (installed.version !== '0.6.1') {
+  if (installed.version !== '0.7.0') {
     throw new Error(
-      `Expected installed core 0.6.1, found ${installed.version}`,
+      `Expected installed core 0.7.0, found ${installed.version}`,
     );
   }
   const installedValidator = JSON.parse(
@@ -221,9 +255,9 @@ try {
       'utf8',
     ),
   );
-  if (installedValidator.version !== '0.7.1') {
+  if (installedValidator.version !== '0.8.0') {
     throw new Error(
-      `Expected installed validator 0.7.1, found ${installedValidator.version}`,
+      `Expected installed validator 0.8.0, found ${installedValidator.version}`,
     );
   }
 

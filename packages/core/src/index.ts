@@ -4,10 +4,24 @@ export type {
   JsonObject,
   JsonPrimitive,
   JsonValue,
+  McpDescComponentNamespace,
+  McpDescComponentReference,
+  McpDescComponentRegistries,
+  McpDescPromptExampleComponentMap,
+  McpDescResourceExampleComponentMap,
+  McpDescResourceTemplateExampleComponentMap,
+  McpDescSchemaComponentMap,
+  McpDescToolExampleComponentMap,
   McpDescriptionDocument,
   OperationResult,
   ProtocolScopedDeclaration,
 } from './model.js';
+export {
+  resolveMcpDescriptionComponentReferences,
+  type McpDescriptionComponentReferenceProvenance,
+  type ResolveMcpDescriptionComponentReferencesOptions,
+  type ResolveMcpDescriptionComponentReferencesResult,
+} from './components.js';
 export {
   migrateMcpDescription07ToDraft4,
   migrateMcpDescription07ToRc1,

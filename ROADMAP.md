@@ -37,8 +37,9 @@ repository.
 - Define and implement deterministic document merge behavior only after its
   contract is grounded in the active specification snapshot and conformance
   fixtures.
-- Define reusable-component and local-reference resolution as a separate pure
-  operation with explicit unresolved-reference diagnostics.
+- [x] Expose reusable-component resolution as a separate RC.1-only pure
+      operation with deterministic terminal-target provenance and existing
+      unresolved-reference diagnostics.
 - Add normalization or comparison operations only where multiple consumers
   demonstrate the same requirement.
 

@@ -4,6 +4,20 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-09-03
+
+### Added
+
+- `resolveMcpDescriptionComponentReferences` in the root and CSP-safe
+  `@mcpdesc/core/components` entry points for validated RC.1 component
+  resolution, with deterministic authored-to-terminal provenance and typed
+  component references and registries.
+
+### Changed
+
+- Core now pins `@mcpdesc/validator` `0.8.0` and reaches the snapshot-owned
+  resolver only through its CSP-safe standalone entry.
+
 ## [0.6.1] - 2026-09-02
 
 ### Changed
@@ -119,7 +133,8 @@ tarball verification. The corresponding Git tag has not yet been created.
 - Apache-2.0 licensing, provenance, contribution guidance, and repository
   instructions for coding assistants.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/v0.6.1...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/mcpdesc/core/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/mcpdesc/core/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/mcpdesc/core/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/mcpdesc/core/compare/v0.4.0...v0.5.0

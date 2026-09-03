@@ -5,6 +5,12 @@
     "commit": "6eb1b54330f8b7dc11468c7e31614214c7521cd0",
     "tag": "validator-v0.6.0"
   },
+  "approvedExceptions": [
+    {
+      "path": "src/snapshots/0.8.0-rc.1/semantic.js",
+      "reason": "Add terminal component-reference provenance without changing the RC.1 schema, conformance results, diagnostics, or fixtures."
+    }
+  ],
   "files": [
     {
       "path": "src/snapshots/0.8.0-draft.1/index.js",
@@ -80,7 +86,7 @@
     },
     {
       "path": "src/snapshots/0.8.0-rc.1/semantic.js",
-      "sha256": "993f7e535c3917639ee797584171ddcf9e6d6f2f43a3f994b79e1a95ecff3add"
+      "sha256": "e4ce47ac925a68b4680fb4791919fb392ea21eed7f77134452e1ee6ad672de90"
     },
     {
       "path": "test/snapshots/0.8.0-draft.1/README.md",

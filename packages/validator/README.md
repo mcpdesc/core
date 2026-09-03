@@ -44,7 +44,7 @@ a later draft is published.
 
 ## Supported snapshots
 
-Version `0.7.1` supports these immutable snapshots, newest first:
+Version `0.8.0` supports these immutable snapshots, newest first:
 
 | Selector | Tag | Embedded schema SHA-256 |
 |---|---|---|
@@ -134,6 +134,11 @@ Structural paths start with AJV's instance path. A `required` error appends its 
 The package exports frozen `supportedSpecifications`, `supportedProtocolVersions`, and `specificationProvenance` values. Provenance records include the snapshot tag, recorded schema URI, and embedded schema SHA-256 digest. Public validation dispatches through a registry keyed by exact specification selectors. The current repository selector set is `0.8.0-draft.1`, `0.8.0-draft.2`, `0.8.0-draft.3`, `0.8.0-draft.4`, and `0.8.0-rc.1`; the protocol-version export is the deduplicated union supported by those snapshots.
 
 npm package SemVer tracks implementation releases independently from specification snapshot identity. Adding a later snapshot is additive: it must use a sibling implementation and selector rather than changing an existing snapshot's schema, semantics, metadata, fixtures, or results.
+
+The RC.1 component resolver has one maintainer-approved additive tooling
+correction: successful substitutions also report authored and terminal target
+paths. The correction does not change the RC.1 schema, validation results,
+diagnostics, or fixtures and is recorded in the integrity manifest.
 
 The runtime bundles its schema, performs no network fetches for external schema references, and imports no Node.js built-ins. Unresolved external Tool-schema references produce incomplete-validation warnings and are preserved. All three ESM entry points support Node.js 20 or later and browser bundlers.
 

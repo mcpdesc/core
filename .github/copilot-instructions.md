@@ -15,6 +15,10 @@
   repository before importing a new validator snapshot.
 - For validator behavior, use exact immutable selectors and add sibling
   snapshots; never modify a published selector.
+- A maintainer-approved additive tooling-metadata correction may modify a
+  published snapshot implementation only when schemas, conformance behavior,
+  diagnostics, and fixtures remain unchanged and the integrity exception is
+  recorded explicitly.
 - For core validation, import `@mcpdesc/validator/standalone` or `/browser`
   where strict CSP is required.
 - For releases, use `v<version>` for core and `validator-v<version>` for
