@@ -4,10 +4,16 @@ Releases are maintainer-controlled. Creating or pushing a tag and publishing to
 npm each require an explicit decision; validation alone does not authorize a
 release.
 
+Use the `release-assessment` repository skill to determine package scope before
+selecting versions. After explicit approval, use the `package-release` skill and
+the guarded `release:check` and `release:tag` scripts below.
+
 ## Prerequisites
 
 - Use Node.js 24 and npm 11.5.1 or later. Trusted publishing requires Node.js
   22.14.0 or later and npm 11.5.1 or later.
+- Authenticate GitHub CLI (`gh`) for the `mcpdesc/core` repository so readiness
+  checks can verify required CI jobs.
 - Start from a clean `main` checkout whose required `Validate` check has passed.
 - Confirm that `origin` points to `https://github.com/mcpdesc/core` or an
   equivalent SSH URL for that repository.
@@ -25,6 +31,14 @@ npm ci
 npm run check
 npm pack --workspace @mcpdesc/core --dry-run
 npm pack --workspace @mcpdesc/validator --dry-run
+```
+
+The guarded readiness command combines repository, npm, changelog, validation,
+and tarball checks for an approved package version:
+
+```bash
+npm run release:check -- --package validator --version <version> --run-validation
+npm run release:check -- --package core --version <version> --run-validation
 ```
 
 Review the package metadata, dependency versions, packed files, package size,
@@ -59,18 +73,17 @@ versions through `0.6.0` were published from the specification repository;
 After an explicit maintainer decision to tag and publish:
 
 ```bash
-git tag -s v<version> -m "Release @mcpdesc/core <version>"
-git push origin v<version>
-
-git tag -s validator-v<version> -m "Release @mcpdesc/validator <version>"
-git push origin validator-v<version>
+npm run release:tag -- --package validator --version <version> --confirm-publish-via-tag
+npm run release:tag -- --package core --version <version> --confirm-publish-via-tag
 ```
 
 Each tag starts only its package workflow. The workflow verifies that the tag
 and package version agree and that the tagged commit is the current
 `origin/main` tip. Core publication runs the full repository check; validator
 publication runs the complete validator package suite. Both publish publicly
-with provenance. Never reuse or move a release tag after publication.
+with provenance. When both packages release, verify validator publication before
+rerunning the core readiness check and creating the core tag. Never reuse or
+move a release tag after publication.
 
 ## Verify
 

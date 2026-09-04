@@ -14,6 +14,9 @@
     "check": "npm run format:check && npm run typecheck && npm test && npm run build && npm run test:browser --workspace @mcpdesc/core && npm run check:package --workspaces --if-present && npm run check:consumer --workspace @mcpdesc/core",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "release:assess": "node scripts/assess-release.mjs",
+    "release:check": "node scripts/release.mjs check",
+    "release:tag": "node scripts/release.mjs tag",
     "test": "vitest run packages/core/test && npm test --workspace @mcpdesc/validator",
     "typecheck": "tsc --build --pretty false"
   },
