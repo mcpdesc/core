@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import test from 'node:test';
 
 import {
+  mcpExtensionCatalogue,
+  mcpExtensionMaturity,
   resolveMcpDescriptionComponentReferences,
   resolveMcpDescriptionSpecification,
   specificationProvenance,
@@ -16,7 +18,8 @@ const fixtureRoots = {
   '0.8.0-draft.2': new URL('./snapshots/0.8.0-draft.2/fixtures/', import.meta.url),
   '0.8.0-draft.3': new URL('./snapshots/0.8.0-draft.3/fixtures/', import.meta.url),
   '0.8.0-draft.4': new URL('./snapshots/0.8.0-draft.4/fixtures/', import.meta.url),
-  '0.8.0-rc.1': new URL('./snapshots/0.8.0-rc.1/fixtures/', import.meta.url)
+  '0.8.0-rc.1': new URL('./snapshots/0.8.0-rc.1/fixtures/', import.meta.url),
+  '0.8.0-rc.2': new URL('./snapshots/0.8.0-rc.2/fixtures/', import.meta.url)
 };
 
 function fixture(group, name, specification = '0.8.0-draft.1') {
@@ -30,7 +33,7 @@ function validate(document, specification = '0.8.0-draft.1') {
 test('exports the cumulative validator API', () => {
   assert.equal(typeof validateMcpDescription, 'function');
   assert.equal(typeof resolveMcpDescriptionComponentReferences, 'function');
-  assert.deepEqual(supportedSpecifications, ['0.8.0-draft.1', '0.8.0-draft.2', '0.8.0-draft.3', '0.8.0-draft.4', '0.8.0-rc.1']);
+  assert.deepEqual(supportedSpecifications, ['0.8.0-draft.1', '0.8.0-draft.2', '0.8.0-draft.3', '0.8.0-draft.4', '0.8.0-rc.1', '0.8.0-rc.2']);
   assert.deepEqual(supportedProtocolVersions, [
     '2024-11-05',
     '2025-03-26',
@@ -63,8 +66,70 @@ test('exports the cumulative validator API', () => {
       snapshotTag: 'v0.8.0-rc.1',
       schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.1.json',
       schemaSha256: '936a0f24ade501fcabf3d6498c0440c445daa672a575573a35954cee49430ac4'
+    },
+    '0.8.0-rc.2': {
+      snapshotTag: 'v0.8.0-rc.2',
+      schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.2.json',
+      schemaSha256: '40f6775dde052224114e91d6aa484d826eecf56b77f7ac87b4cf707ffbcb6ce8'
     }
   });
+});
+
+test('exports the pinned RC.2 extension catalogue and maturity classification', () => {
+  assert.deepEqual(mcpExtensionCatalogue, {
+    effectiveDate: '2026-09-04',
+    source: 'https://modelcontextprotocol.io/extensions/overview',
+    officialIdentifiers: [
+      'io.modelcontextprotocol/enterprise-managed-authorization',
+      'io.modelcontextprotocol/oauth-client-credentials',
+      'io.modelcontextprotocol/tasks',
+      'io.modelcontextprotocol/ui'
+    ],
+    experimentalIdentifiers: []
+  });
+  assert.equal(mcpExtensionMaturity('io.modelcontextprotocol/ui'), 'official');
+  assert.equal(mcpExtensionMaturity('io.modelcontextprotocol/future-capability'), 'uncatalogued');
+  assert.ok(Object.isFrozen(mcpExtensionCatalogue));
+  assert.ok(Object.isFrozen(mcpExtensionCatalogue.officialIdentifiers));
+  assert.ok(Object.isFrozen(mcpExtensionCatalogue.experimentalIdentifiers));
+});
+
+test('keeps RC.2 protocol applicability and extension authority diagnostics independent', () => {
+  const official = fixture('expected-warning', 'pre-standard-extension-capabilities.json', '0.8.0-rc.2');
+  assert.deepEqual(
+    validate(official, '0.8.0-rc.2').diagnostics.map(({ code, severity }) => ({ code, severity })),
+    [{ code: 'extensions-not-supported-by-version', severity: 'warning' }]
+  );
+
+  official.capabilities[0].extensions = { 'io.modelcontextprotocol/future-capability': {} };
+  assert.deepEqual(
+    validate(official, '0.8.0-rc.2').diagnostics.map(({ code, severity }) => ({ code, severity })),
+    [
+      { code: 'extensions-not-supported-by-version', severity: 'warning' },
+      { code: 'unknown-reserved-extension-identifier', severity: 'warning' }
+    ]
+  );
+});
+
+test('keeps pre-standard client requirements strict and malformed extension maps invalid', () => {
+  const document = fixture('expected-warning', 'pre-standard-extension-capabilities.json', '0.8.0-rc.2');
+  delete document.capabilities;
+  document.tools = [{
+    name: 'requires_apps',
+    inputSchema: { type: 'object', additionalProperties: false },
+    clientRequirements: { extensions: { 'io.modelcontextprotocol/ui': {} } }
+  }];
+  const requirement = validate(document, '0.8.0-rc.2');
+  assert.equal(requirement.valid, false);
+  assert.ok(requirement.diagnostics.some(({ code, severity }) => (
+    code === 'client-requirement-version-mismatch' && severity === 'error'
+  )));
+
+  for (const extensions of [{}, { 'missing-prefix': {} }, { 'com.example/invalid': true }]) {
+    const malformed = fixture('expected-warning', 'pre-standard-extension-capabilities.json', '0.8.0-rc.2');
+    malformed.capabilities[0].extensions = extensions;
+    assert.equal(validate(malformed, '0.8.0-rc.2').valid, false);
+  }
 });
 
 test('resolves RC.1 component references with terminal provenance', () => {
@@ -212,6 +277,7 @@ test('exports immutable support and provenance data', () => {
   assert.ok(Object.isFrozen(specificationProvenance['0.8.0-draft.3']));
   assert.ok(Object.isFrozen(specificationProvenance['0.8.0-draft.4']));
   assert.ok(Object.isFrozen(specificationProvenance['0.8.0-rc.1']));
+  assert.ok(Object.isFrozen(specificationProvenance['0.8.0-rc.2']));
   assert.throws(() => supportedSpecifications.push('0.8.0'));
   assert.throws(() => supportedProtocolVersions.pop());
   assert.throws(() => {

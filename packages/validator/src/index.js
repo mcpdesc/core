@@ -3,14 +3,22 @@ import * as draft2 from './snapshots/0.8.0-draft.2/index.js';
 import * as draft3 from './snapshots/0.8.0-draft.3/index.js';
 import * as draft4 from './snapshots/0.8.0-draft.4/index.js';
 import * as rc1 from './snapshots/0.8.0-rc.1/index.js';
+import * as rc2 from './snapshots/0.8.0-rc.2/index.js';
 import { resolveComponentReferences as resolveRc1ComponentReferences } from './snapshots/0.8.0-rc.1/semantic.js';
+import {
+  mcpExtensionCatalogue,
+  mcpExtensionMaturity
+} from './snapshots/0.8.0-rc.2/semantic.js';
+
+export { mcpExtensionCatalogue, mcpExtensionMaturity };
 
 const snapshots = Object.freeze({
   [draft1.specification]: draft1,
   [draft2.specification]: draft2,
   [draft3.specification]: draft3,
   [draft4.specification]: draft4,
-  [rc1.specification]: rc1
+  [rc1.specification]: rc1,
+  [rc2.specification]: rc2
 });
 
 const schemaUris = Object.freeze({
@@ -18,7 +26,8 @@ const schemaUris = Object.freeze({
   '0.8.0-draft.2': 'https://mcpdesc.org/schema/0.8.0.json',
   '0.8.0-draft.3': 'https://mcpdesc.org/schema/0.8.0.json',
   '0.8.0-draft.4': 'https://mcpdesc.org/schema/mcp-description/0.8.0-draft.4.json',
-  '0.8.0-rc.1': 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.1.json'
+  '0.8.0-rc.1': 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.1.json',
+  '0.8.0-rc.2': 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.2.json'
 });
 
 export const supportedSpecifications = Object.freeze(Object.keys(snapshots));

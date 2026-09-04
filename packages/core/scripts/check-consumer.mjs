@@ -59,6 +59,7 @@ try {
       import assert from 'node:assert/strict';
       import {
         RC_1_SCHEMA_URI,
+        RC_2_SCHEMA_URI,
         migrateMcpDescription07ToRc1,
         projectEffectiveProtocolView,
         rc1Snapshot,
@@ -156,6 +157,24 @@ try {
       }).valid, true);
       assert.equal(rc1Snapshot.specification, '0.8.0-rc.1');
 
+      const preStandardApps = {
+        $schema: RC_2_SCHEMA_URI,
+        mcpdesc: '0.8.0',
+        info: { name: 'pre-standard-apps', version: '1.0.0' },
+        protocolVersions: ['2025-11-25'],
+        capabilities: [{
+          extensions: { 'io.modelcontextprotocol/ui': {} },
+        }],
+      };
+      const appsValidation = validateMcpDescription(preStandardApps, {
+        specification: '0.8.0-rc.2',
+      });
+      assert.equal(appsValidation.valid, true);
+      assert.deepEqual(
+        appsValidation.diagnostics.map(({ code, severity }) => ({ code, severity })),
+        [{ code: 'extensions-not-supported-by-version', severity: 'warning' }],
+      );
+
       const reusable = {
         ...source,
         components: { schemas: { Input: { type: 'object' } } },
@@ -244,9 +263,9 @@ try {
       'utf8',
     ),
   );
-  if (installed.version !== '0.7.0') {
+  if (installed.version !== '0.8.0') {
     throw new Error(
-      `Expected installed core 0.7.0, found ${installed.version}`,
+      `Expected installed core 0.8.0, found ${installed.version}`,
     );
   }
   const installedValidator = JSON.parse(
@@ -255,9 +274,9 @@ try {
       'utf8',
     ),
   );
-  if (installedValidator.version !== '0.8.0') {
+  if (installedValidator.version !== '0.9.0') {
     throw new Error(
-      `Expected installed validator 0.8.0, found ${installedValidator.version}`,
+      `Expected installed validator 0.9.0, found ${installedValidator.version}`,
     );
   }
 

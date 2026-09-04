@@ -9,6 +9,7 @@ remains pre-1.0.
 ```ts
 import {
   migrateMcpDescription07ToRc1,
+  mergeEffectiveProtocolViews,
   projectEffectiveProtocolView,
   serializeMcpDescriptionMigrationReport,
 } from '@mcpdesc/core';
@@ -25,7 +26,7 @@ if (!parsed.ok) {
 }
 
 const result = projectEffectiveProtocolView(document, {
-  specification: '0.8.0-rc.1',
+  specification: '0.8.0-rc.2',
   protocolVersion: '2026-07-28',
 });
 
@@ -34,6 +35,10 @@ if (result.ok) {
 } else {
   console.error(result.diagnostics);
 }
+
+const merged = mergeEffectiveProtocolViews(protocolViews, {
+  specification: '0.8.0-rc.2',
+});
 
 const subset = selectMcpDescriptionDeclarations(document, {
   specification: '0.8.0-rc.1',
@@ -60,13 +65,18 @@ if (resolved.ok) {
 console.log(serializeMcpDescriptionMigrationReport(migrated.report));
 ```
 
-Semantic operations require an exact immutable selector and support both
-`0.8.0-draft.4` and `0.8.0-rc.1`. They validate their source and result with
-`@mcpdesc/validator`. Declaration selection uses MCP Description identities:
-tool and prompt `name`, resource `uri`, and resource template `uriTemplate`. It
-preserves all selected protocol-scoped variants and omits empty declaration
-collections. Draft 4 constants and operations remain available without being
-silently retargeted to RC.1.
+Semantic operations require an exact immutable selector and support
+`0.8.0-draft.4`, `0.8.0-rc.1`, and `0.8.0-rc.2`. They validate their source and
+result with `@mcpdesc/validator`. Declaration selection uses MCP Description
+identities: tool and prompt `name`, resource `uri`, and resource template
+`uriTemplate`. It preserves all selected protocol-scoped variants and omits
+empty declaration collections. Draft 4 constants and operations remain available
+without being silently retargeted to RC.1.
+
+RC.2 projection preserves pre-standard server extension maps in every applicable
+Effective Protocol View. `mergeEffectiveProtocolViews` combines compatible
+views, retains semantically equivalent declarations across scopes, and rejects
+conflicting views or unscoped metadata without mutating inputs.
 
 Component reference resolution is RC.1-only. It validates before resolving,
 returns a deep-cloned document with root component registries retained, and

@@ -1,4 +1,4 @@
-export type McpDescriptionSpecification = '0.8.0-draft.1' | '0.8.0-draft.2' | '0.8.0-draft.3' | '0.8.0-draft.4' | '0.8.0-rc.1';
+export type McpDescriptionSpecification = '0.8.0-draft.1' | '0.8.0-draft.2' | '0.8.0-draft.3' | '0.8.0-draft.4' | '0.8.0-rc.1' | '0.8.0-rc.2';
 
 export type SupportedProtocolVersion =
   | '2024-11-05'
@@ -41,6 +41,20 @@ export interface ResolveMcpDescriptionComponentReferencesOptions {
   readonly specification: '0.8.0-rc.1';
 }
 
+export type McpExtensionMaturity = 'official' | 'experimental' | 'uncatalogued';
+
+export interface McpExtensionCatalogue {
+  readonly effectiveDate: '2026-09-04';
+  readonly source: 'https://modelcontextprotocol.io/extensions/overview';
+  readonly officialIdentifiers: readonly [
+    'io.modelcontextprotocol/enterprise-managed-authorization',
+    'io.modelcontextprotocol/oauth-client-credentials',
+    'io.modelcontextprotocol/tasks',
+    'io.modelcontextprotocol/ui'
+  ];
+  readonly experimentalIdentifiers: readonly [];
+}
+
 export interface SpecificationProvenance {
   readonly '0.8.0-draft.1': {
     readonly snapshotTag: 'v0.8.0-draft.1';
@@ -67,6 +81,11 @@ export interface SpecificationProvenance {
     readonly schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.1.json';
     readonly schemaSha256: '936a0f24ade501fcabf3d6498c0440c445daa672a575573a35954cee49430ac4';
   };
+  readonly '0.8.0-rc.2': {
+    readonly snapshotTag: 'v0.8.0-rc.2';
+    readonly schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.2.json';
+    readonly schemaSha256: '40f6775dde052224114e91d6aa484d826eecf56b77f7ac87b4cf707ffbcb6ce8';
+  };
 }
 
 export interface ResolveMcpDescriptionSpecificationOptions {
@@ -90,7 +109,7 @@ export type McpDescriptionSpecificationResolution =
   | ResolvedMcpDescriptionSpecification
   | UnresolvedMcpDescriptionSpecification;
 
-export declare const supportedSpecifications: readonly ['0.8.0-draft.1', '0.8.0-draft.2', '0.8.0-draft.3', '0.8.0-draft.4', '0.8.0-rc.1'];
+export declare const supportedSpecifications: readonly ['0.8.0-draft.1', '0.8.0-draft.2', '0.8.0-draft.3', '0.8.0-draft.4', '0.8.0-rc.1', '0.8.0-rc.2'];
 
 export declare const supportedProtocolVersions: readonly [
   '2024-11-05',
@@ -101,6 +120,8 @@ export declare const supportedProtocolVersions: readonly [
 ];
 
 export declare const specificationProvenance: Readonly<SpecificationProvenance>;
+export declare const mcpExtensionCatalogue: Readonly<McpExtensionCatalogue>;
+export declare function mcpExtensionMaturity(identifier: string): McpExtensionMaturity;
 
 export declare function resolveMcpDescriptionSpecification(
   document: unknown,

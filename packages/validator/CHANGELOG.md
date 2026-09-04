@@ -8,6 +8,23 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-09-04
+
+### Added
+
+- Added the immutable `0.8.0-rc.2` selector from specification tag
+	`v0.8.0-rc.2`, including its manifest-verified runtime, schema, and frozen
+	fixture corpus.
+- Exported the RC.2 MCP extension catalogue metadata and maturity classifier.
+
+### Changed
+
+- RC.2 preserves structurally valid pre-standard server extension maps and
+	reports `extensions-not-supported-by-version` as a warning while retaining
+	strict client extension requirements and independent reserved-identifier
+	diagnostics. This is a compatible validator relaxation; RC.1 and earlier
+	selectors are unchanged.
+
 ## [0.8.0] - 2026-09-03
 
 ### Added
@@ -94,7 +111,8 @@ Dates for published releases are the UTC publication dates recorded by npm.
 - Added synchronous structural and semantic validation for parsed JavaScript values with deterministic diagnostics and exact selector dispatch.
 - Added ESM browser support, TypeScript declarations, embedded schema provenance, frozen fixtures, and package-content checks.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/validator-v0.8.0...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/validator-v0.9.0...HEAD
+[0.9.0]: https://github.com/mcpdesc/core/compare/validator-v0.8.0...validator-v0.9.0
 [0.8.0]: https://github.com/mcpdesc/core/compare/validator-v0.7.1...validator-v0.8.0
 [0.7.1]: https://github.com/mcpdesc/core/compare/validator-v0.7.0...validator-v0.7.1
 [0.7.0]: https://github.com/mcpdesc/core/releases/tag/validator-v0.7.0

@@ -60,7 +60,11 @@ const expected = [
   'src/snapshots/0.8.0-rc.1/base.js',
   'src/snapshots/0.8.0-rc.1/index.js',
   'src/snapshots/0.8.0-rc.1/schema.json',
-  'src/snapshots/0.8.0-rc.1/semantic.js'
+  'src/snapshots/0.8.0-rc.1/semantic.js',
+  'src/snapshots/0.8.0-rc.2/base.js',
+  'src/snapshots/0.8.0-rc.2/index.js',
+  'src/snapshots/0.8.0-rc.2/schema.json',
+  'src/snapshots/0.8.0-rc.2/semantic.js'
 ].sort();
 
 if (JSON.stringify(actual) !== JSON.stringify(expected)) {

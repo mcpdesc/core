@@ -34,9 +34,8 @@ repository.
       conversion reports without adding a built-in default.
 - [x] Move `@mcpdesc/validator` maintenance and publication from the
       specification repository while preserving immutable snapshot behavior.
-- Define and implement deterministic document merge behavior only after its
-  contract is grounded in the active specification snapshot and conformance
-  fixtures.
+- [x] Define and implement deterministic Effective Protocol View merge behavior
+      grounded in the RC.2 specification snapshot and conformance fixtures.
 - [x] Expose reusable-component resolution as a separate RC.1-only pure
       operation with deterministic terminal-target provenance and existing
       unresolved-reference diagnostics.
