@@ -12,7 +12,7 @@ const output = path.join(packageRoot, 'standalone.js');
 const draft7Adapter = path.join(packageRoot, 'src/standalone/ajv-adapter.js');
 const draft2020Adapter = path.join(packageRoot, 'src/standalone/ajv-2020-adapter.js');
 const formatsAdapter = path.join(packageRoot, 'src/standalone/ajv-formats-adapter.js');
-const selectors = ['0.8.0-draft.1', '0.8.0-draft.2', '0.8.0-draft.3', '0.8.0-draft.4', '0.8.0-rc.1'];
+const selectors = ['0.8.0-draft.1', '0.8.0-draft.2', '0.8.0-draft.3', '0.8.0-draft.4', '0.8.0-rc.1', '0.8.0-rc.2'];
 const schemas = selectors.map((selector) => JSON.parse(fs.readFileSync(
   path.join(packageRoot, 'src/snapshots', selector, 'schema.json'),
   'utf8'

@@ -48,6 +48,11 @@ export {
   type ProjectEffectiveProtocolViewOptions,
 } from './projection.js';
 export {
+  areMcpDescriptionDocumentsSemanticallyEquivalent,
+  mergeEffectiveProtocolViews,
+  type MergeEffectiveProtocolViewsOptions,
+} from './merge.js';
+export {
   selectMcpDescriptionDeclarations,
   type DeclarationSelections,
   type SelectMcpDescriptionDeclarationsOptions,
@@ -57,7 +62,10 @@ export {
   DRAFT_4_SPECIFICATION,
   RC_1_SCHEMA_URI,
   RC_1_SPECIFICATION,
+  RC_2_SCHEMA_URI,
+  RC_2_SPECIFICATION,
   draft4Snapshot,
   rc1Snapshot,
+  rc2Snapshot,
   type SupportedCoreSpecification,
 } from './snapshot.js';

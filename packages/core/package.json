@@ -1,6 +1,6 @@
 {
   "name": "@mcpdesc/core",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Pure semantic operations for MCP Description documents",
   "type": "module",
   "license": "Apache-2.0",
@@ -50,7 +50,7 @@
     "typecheck": "tsc --build --pretty false"
   },
   "dependencies": {
-    "@mcpdesc/validator": "0.8.0",
+    "@mcpdesc/validator": "0.9.0",
     "jsonc-parser": "3.3.1",
     "yaml": "2.9.0"
   }

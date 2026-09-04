@@ -1,4 +1,6 @@
 import {
+  mcpExtensionCatalogue,
+  mcpExtensionMaturity,
   resolveMcpDescriptionComponentReferences,
   resolveMcpDescriptionSpecification,
   specificationProvenance,
@@ -24,6 +26,7 @@ validateMcpDescription(document, { specification: '0.8.0-draft.2' });
 validateMcpDescription(document, { specification: '0.8.0-draft.3' });
 validateMcpDescription(document, { specification: '0.8.0-draft.4' });
 validateMcpDescription(document, { specification: '0.8.0-rc.1' });
+validateMcpDescription(document, { specification: '0.8.0-rc.2' });
 const standaloneResult: McpDescriptionValidationResult = validateStandalone(document, {
   specification: '0.8.0-rc.1'
 });
@@ -37,6 +40,9 @@ const draft2: '0.8.0-draft.2' = supportedSpecifications[1];
 const draft3: '0.8.0-draft.3' = supportedSpecifications[2];
 const draft4: '0.8.0-draft.4' = supportedSpecifications[3];
 const rc1: '0.8.0-rc.1' = supportedSpecifications[4];
+const rc2: '0.8.0-rc.2' = supportedSpecifications[5];
+const catalogueDate: '2026-09-04' = mcpExtensionCatalogue.effectiveDate;
+const extensionMaturity: 'official' | 'experimental' | 'uncatalogued' = mcpExtensionMaturity('io.modelcontextprotocol/ui');
 const protocolVersion: string = supportedProtocolVersions[0];
 const draft1Tag: 'v0.8.0-draft.1' = specificationProvenance[draft1].snapshotTag;
 const draft2Tag: 'v0.8.0-draft.2' = specificationProvenance[draft2].snapshotTag;
@@ -60,6 +66,9 @@ void draft3Tag;
 void draft4Tag;
 void draft4SchemaUri;
 void rc1SchemaUri;
+void rc2;
+void catalogueDate;
+void extensionMaturity;
 void browserResult;
 void standaloneResult;
 void referencePath;

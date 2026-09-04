@@ -3,9 +3,11 @@ import { describe, expect, it } from 'vitest';
 import {
   DRAFT_4_SCHEMA_URI,
   RC_1_SCHEMA_URI,
+  RC_2_SCHEMA_URI,
   draft4Snapshot,
   projectEffectiveProtocolView,
   rc1Snapshot,
+  rc2Snapshot,
 } from '../src/index.js';
 
 const source = {
@@ -158,6 +160,40 @@ describe('projectEffectiveProtocolView', () => {
         '936a0f24ade501fcabf3d6498c0440c445daa672a575573a35954cee49430ac4',
     });
     expect(Object.isFrozen(rc1Snapshot)).toBe(true);
+  });
+
+  it('preserves pre-standard extension maps in RC.2 protocol views', () => {
+    const extensions = {
+      'io.modelcontextprotocol/ui': {
+        mimeTypes: ['text/html;profile=mcp-app'],
+      },
+    };
+    const document = {
+      $schema: RC_2_SCHEMA_URI,
+      mcpdesc: '0.8.0',
+      info: { name: 'pre-standard-extensions', version: '1.0.0' },
+      protocolVersions: ['2025-11-25', '2026-07-28'],
+      capabilities: [{ extensions }],
+    };
+
+    for (const protocolVersion of document.protocolVersions) {
+      const result = projectEffectiveProtocolView(document, {
+        specification: '0.8.0-rc.2',
+        protocolVersion,
+      });
+      expect(result.ok).toBe(true);
+      if (!result.ok) continue;
+      expect(result.value.capabilities).toEqual([{ extensions }]);
+    }
+
+    expect(rc2Snapshot).toMatchObject({
+      specification: '0.8.0-rc.2',
+      schemaUri: RC_2_SCHEMA_URI,
+      snapshotTag: 'v0.8.0-rc.2',
+      schemaSha256:
+        '40f6775dde052224114e91d6aa484d826eecf56b77f7ac87b4cf707ffbcb6ce8',
+    });
+    expect(Object.isFrozen(rc2Snapshot)).toBe(true);
   });
 
   it('projects every scoped root collection and preserves unscoped semantics', () => {
