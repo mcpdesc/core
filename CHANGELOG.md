@@ -4,6 +4,12 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+### Fixed
+
+- npm publishing workflows use OIDC trusted publishing without token-oriented
+  registry configuration, and validator tags no longer trigger the core publish
+  workflow.
+
 ## [0.8.0] - 2026-09-04
 
 ### Added
