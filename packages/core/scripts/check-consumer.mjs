@@ -61,8 +61,10 @@ try {
         RC_1_SCHEMA_URI,
         RC_2_SCHEMA_URI,
         migrateMcpDescription07ToRc1,
+        migrateMcpDescription07ToRc2,
         projectEffectiveProtocolView,
         rc1Snapshot,
+        rc2Snapshot,
         resolveMcpDescriptionComponentReferences,
         serializeMcpDescriptionMigrationReport,
       } from '@mcpdesc/core';
@@ -157,6 +159,26 @@ try {
       }).valid, true);
       assert.equal(rc1Snapshot.specification, '0.8.0-rc.1');
 
+      const rc2Migration = migrateMcpDescription07ToRc2({
+        mcpdesc: '0.7.0',
+        info: {
+          name: 'legacy-rc2-consumer-smoke',
+          version: '1.0.0',
+          protocolVersion: '2025-11-25',
+        },
+        transports: [{ type: 'stdio', command: 'server' }],
+      }, {
+        specification: '0.8.0-rc.2',
+        sourceValidated: true,
+      });
+      assert.equal(rc2Migration.ok, true);
+      assert.equal(rc2Migration.value.$schema, RC_2_SCHEMA_URI);
+      assert.equal(rc2Migration.report.targetSpecification, '0.8.0-rc.2');
+      assert.equal(validateMcpDescription(rc2Migration.value, {
+        specification: '0.8.0-rc.2',
+      }).valid, true);
+      assert.equal(rc2Snapshot.specification, '0.8.0-rc.2');
+
       const preStandardApps = {
         $schema: RC_2_SCHEMA_URI,
         mcpdesc: '0.8.0',
@@ -207,8 +229,10 @@ try {
       } from '@mcpdesc/core/components';
       import {
         migrateMcpDescription07ToRc1,
+        migrateMcpDescription07ToRc2,
         serializeMcpDescriptionMigrationReport,
         type MigrateMcpDescription07ToRc1Options,
+        type MigrateMcpDescription07ToRc2Options,
       } from '@mcpdesc/core';
 
       const parsed = parseMcpDescriptionSource('{"mcpdesc":"0.8.0"}');
@@ -229,6 +253,21 @@ try {
         migrationOptions,
       );
       serializeMcpDescriptionMigrationReport(migration.report);
+      const rc2MigrationOptions: MigrateMcpDescription07ToRc2Options = {
+        specification: '0.8.0-rc.2',
+        sourceValidated: true,
+      };
+      migrateMcpDescription07ToRc2(
+        {
+          mcpdesc: '0.7.0',
+          info: {
+            name: 'typed-rc2',
+            version: '1.0.0',
+            protocolVersion: '2025-11-25',
+          },
+        },
+        rc2MigrationOptions,
+      );
       const reference: McpDescComponentReference = {
         $componentRef: '#/components/schemas/Input',
       };
@@ -263,9 +302,9 @@ try {
       'utf8',
     ),
   );
-  if (installed.version !== '0.8.0') {
+  if (installed.version !== '0.8.1') {
     throw new Error(
-      `Expected installed core 0.8.0, found ${installed.version}`,
+      `Expected installed core 0.8.1, found ${installed.version}`,
     );
   }
   const installedValidator = JSON.parse(

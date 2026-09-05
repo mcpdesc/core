@@ -33,6 +33,9 @@
 - Keep published operations deterministic, browser-safe, offline, and free of
   file or network access.
 - Preserve validator Node.js 20 compatibility and strict-CSP entry points.
+- Treat core snapshot support as operation-specific. Adding a selector requires
+  an explicit disposition for every selector-sensitive public operation and an
+  updated exhaustive support-contract test.
 
 ## Documentation Delineation
 

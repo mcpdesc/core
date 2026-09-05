@@ -10,9 +10,9 @@ The repository contains two independently versioned packages:
   MCP Description snapshots, including strict-CSP browser entry points.
 
 The package parses and serializes JSON or YAML source text, migrates validated
-MCP Description 0.7.0 values to exact Draft 4 or RC.1 snapshots with stable
-conversion reports, projects and merges Effective Protocol Views through RC.2,
-and selects declaration subsets by normative identity. Validator snapshots
+MCP Description 0.7.0 values to exact Draft 4, RC.1, or RC.2 snapshots with
+stable conversion reports, projects and merges Effective Protocol Views through
+RC.2, and selects declaration subsets by normative identity. Validator snapshots
 provide the conformance authority for those operations. Published package
 operations perform no network or file access and support browser bundlers.
 

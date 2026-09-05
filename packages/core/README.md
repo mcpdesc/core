@@ -8,7 +8,7 @@ remains pre-1.0.
 
 ```ts
 import {
-  migrateMcpDescription07ToRc1,
+  migrateMcpDescription07ToRc2,
   mergeEffectiveProtocolViews,
   projectEffectiveProtocolView,
   serializeMcpDescriptionMigrationReport,
@@ -48,8 +48,8 @@ const subset = selectMcpDescriptionDeclarations(document, {
   },
 });
 
-const migrated = migrateMcpDescription07ToRc1(validatedLegacyDocument, {
-  specification: '0.8.0-rc.1',
+const migrated = migrateMcpDescription07ToRc2(validatedLegacyDocument, {
+  specification: '0.8.0-rc.2',
   defaultProtocolVersion: '2026-07-28',
   sourceValidated: true,
 });
@@ -73,6 +73,14 @@ identities: tool and prompt `name`, resource `uri`, and resource template
 empty declaration collections. Draft 4 constants and operations remain available
 without being silently retargeted to RC.1.
 
+| Operation                          | Draft 4       | RC.1      | RC.2                                   |
+| ---------------------------------- | ------------- | --------- | -------------------------------------- |
+| Effective Protocol View projection | Supported     | Supported | Supported                              |
+| Effective Protocol View merge      | Supported     | Supported | Supported                              |
+| Declaration selection              | Supported     | Supported | Supported                              |
+| Migration from 0.7.0               | Supported     | Supported | Supported                              |
+| Component reference resolution     | Not supported | Supported | Pending provenance-compatible contract |
+
 RC.2 projection preserves pre-standard server extension maps in every applicable
 Effective Protocol View. `mergeEffectiveProtocolViews` combines compatible
 views, retains semantically equivalent declarations across scopes, and rejects
@@ -91,13 +99,14 @@ the result against the exact target snapshot. It moves the protocol revision to
 root scope, wraps server capabilities, omits optional empty arrays, and converts
 inline legacy security schemes to deterministic named definitions and
 requirements. Generated names and deduplication are reported as warnings for
-author review. RC.1 callers may opt into `defaultProtocolVersion` when the
-source omits `info.protocolVersion`; the source value always takes precedence,
-and no built-in default is applied. Every migration result includes a stable,
-JSON-compatible report that distinguishes success, success with warnings, and
-failure and records diagnostics, applied defaults, and proven conversion
-changes. The package does not ship or duplicate the frozen 0.7.0 schema, so
-callers must validate that source before setting `sourceValidated: true`.
+author review. RC.1 and RC.2 callers may opt into `defaultProtocolVersion` when
+the source omits `info.protocolVersion`; the source value always takes
+precedence, and no built-in default is applied. Every migration result includes
+a stable, JSON-compatible report that distinguishes success, success with
+warnings, and failure and records diagnostics, applied defaults, and proven
+conversion changes. The package does not ship or duplicate the frozen 0.7.0
+schema, so callers must validate that source before setting
+`sourceValidated: true`.
 
 Source parsing accepts text and returns a JSON-compatible value or structured
 source diagnostics; serialization emits deterministic JSON or YAML. These

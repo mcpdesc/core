@@ -48,6 +48,25 @@ validation without creating a second source of normative specification text.
 - Keep npm versions, format versions, snapshot selectors, schema identities, and
   MCP protocol revisions separate.
 
+## New snapshot adoption
+
+- Treat adding a validator selector or extending `SupportedCoreSpecification` as
+  an impact review across every selector-sensitive public core operation:
+  projection, merge, declaration selection, migration, and component reference
+  resolution.
+- Update the operation-by-selector matrix in `packages/core/README.md` and the
+  exhaustive contract in `packages/core/test/specification-support.test.ts`.
+  Every operation must be marked supported or intentionally unsupported with a
+  concrete reason; do not leave an implicit gap.
+- For each supported operation, add an exact-selector behavior test and cover
+  its exports and types in the browser and isolated-consumer checks where
+  applicable. For each unsupported operation, assert its deterministic failure.
+- Review root and package documentation, changelogs, roadmap status, package
+  contents, and public declarations before describing core as supporting the new
+  snapshot.
+- When a core operation depends on snapshot-owned validator behavior, resolve
+  any result-contract differences explicitly before widening its selector type.
+
 ## Validation
 
 Run:

@@ -3,8 +3,10 @@ import { describe, expect, it } from 'vitest';
 import {
   DRAFT_4_SCHEMA_URI,
   RC_1_SCHEMA_URI,
+  RC_2_SCHEMA_URI,
   migrateMcpDescription07ToDraft4,
   migrateMcpDescription07ToRc1,
+  migrateMcpDescription07ToRc2,
   serializeMcpDescriptionMigrationReport,
   type MigrateMcpDescription07ToRc1Options,
 } from '../src/index.js';
@@ -319,5 +321,44 @@ describe('migrateMcpDescription07ToRc1', () => {
     );
     expect(serialized.endsWith('\n')).toBe(true);
     expect(JSON.parse(serialized)).toEqual(first.report);
+  });
+});
+
+describe('migrateMcpDescription07ToRc2', () => {
+  it('uses a source protocol version and validates the exact RC.2 snapshot', () => {
+    const result = migrateMcpDescription07ToRc2(source, {
+      specification: '0.8.0-rc.2',
+      sourceValidated: true,
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.$schema).toBe(RC_2_SCHEMA_URI);
+    expect(result.value.mcpdesc).toBe('0.8.0');
+    expect(result.value.protocolVersions).toEqual(['2025-11-25']);
+    expect(result.report.targetSpecification).toBe('0.8.0-rc.2');
+  });
+
+  it('supports caller-provided protocol defaults', () => {
+    const { protocolVersion: _, ...info } = source.info;
+    const result = migrateMcpDescription07ToRc2(
+      { ...source, info },
+      {
+        specification: '0.8.0-rc.2',
+        defaultProtocolVersion: '2026-07-28',
+        sourceValidated: true,
+      },
+    );
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.protocolVersions).toEqual(['2026-07-28']);
+    expect(result.report.defaultsApplied).toEqual([
+      {
+        code: 'migration-default-protocol-version',
+        path: ['info', 'protocolVersion'],
+        protocolVersion: '2026-07-28',
+      },
+    ]);
   });
 });
