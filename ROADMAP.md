@@ -36,6 +36,8 @@ repository.
       specification repository while preserving immutable snapshot behavior.
 - [x] Define and implement deterministic Effective Protocol View merge behavior
       grounded in the RC.2 specification snapshot and conformance fixtures.
+- [x] Add exact MCP Description RC.2 migration support from validated 0.7.0
+      documents.
 - [x] Expose reusable-component resolution as a separate RC.1-only pure
       operation with deterministic terminal-target provenance and existing
       unresolved-reference diagnostics.
@@ -51,8 +53,9 @@ normative schema applies.
 - Adopt shared operations in the editor and Inspector where they replace
   duplicated semantic logic.
 - Add support for later immutable MCP Description snapshots without silently
-  changing behavior for existing selectors; Draft 4 and RC.1 establish this
-  additive pattern.
+  changing behavior for existing selectors. Record every selector-sensitive
+  operation as supported or intentionally unsupported and keep the exhaustive
+  support-contract test synchronized with that decision.
 - Revisit package boundaries as concrete parser, serialization, or capture
   requirements emerge; keep file and network access out of `@mcpdesc/core`.
 

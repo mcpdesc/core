@@ -42,7 +42,11 @@ or `fixtures/` and its lowercase SHA-256 digest.
 
 4. Update the runtime registry, declarations, validator README and changelog,
    package-content expectations, browser selector lists, and package version.
-5. Regenerate the integrity baseline only after confirming all existing snapshot
+5. If `@mcpdesc/core` will consume or advertise the selector, perform the root
+   `AGENTS.md` new-snapshot adoption review. Update every selector-sensitive
+   operation's support disposition, tests, public types, package checks, and
+   documentation; snapshot intake alone does not establish core support.
+6. Regenerate the integrity baseline only after confirming all existing snapshot
    entries still pass unchanged:
 
    ```bash
@@ -50,7 +54,7 @@ or `fixtures/` and its lowercase SHA-256 digest.
    node packages/validator/scripts/check-snapshot-integrity.mjs --write
    ```
 
-6. Run `npm run check`, inspect both package tarballs, and review that prior
+7. Run `npm run check`, inspect both package tarballs, and review that prior
    runtime and fixture snapshots have no diff.
 
 ## Boundaries

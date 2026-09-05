@@ -8,6 +8,7 @@ const entries = [
     allowsValidator: true,
     requiredExports: [
       'migrateMcpDescription07ToRc1',
+      'migrateMcpDescription07ToRc2',
       'serializeMcpDescriptionMigrationReport',
     ],
   },

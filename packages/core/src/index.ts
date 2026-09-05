@@ -25,6 +25,7 @@ export {
 export {
   migrateMcpDescription07ToDraft4,
   migrateMcpDescription07ToRc1,
+  migrateMcpDescription07ToRc2,
   serializeMcpDescriptionMigrationReport,
   type McpDescriptionMigrationChange,
   type McpDescriptionMigrationDefault,
@@ -32,6 +33,7 @@ export {
   type McpDescriptionMigrationResult,
   type MigrateMcpDescription07Options,
   type MigrateMcpDescription07ToRc1Options,
+  type MigrateMcpDescription07ToRc2Options,
 } from './migration.js';
 export {
   parseMcpDescriptionSource,

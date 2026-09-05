@@ -4,6 +4,14 @@ All notable changes to this repository are documented here.
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-09-05
+
+### Added
+
+- `migrateMcpDescription07ToRc2`, an exact-target migration from
+  caller-validated MCP Description 0.7.0 documents with RC.2 result validation
+  and conversion reports.
+
 ### Fixed
 
 - npm publishing workflows use OIDC trusted publishing without token-oriented
@@ -155,7 +163,8 @@ tarball verification. The corresponding Git tag has not yet been created.
 - Apache-2.0 licensing, provenance, contribution guidance, and repository
   instructions for coding assistants.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/v0.8.1...HEAD
+[0.8.1]: https://github.com/mcpdesc/core/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/mcpdesc/core/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/mcpdesc/core/compare/v0.6.1...v0.7.0
 [0.6.1]: https://github.com/mcpdesc/core/compare/v0.6.0...v0.6.1
