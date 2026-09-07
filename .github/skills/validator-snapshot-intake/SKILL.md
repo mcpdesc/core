@@ -61,6 +61,9 @@ informational.
 ## Boundaries
 
 - Snapshot approval does not authorize npm publication.
+- Treat the source bundle and its `manifest.json` as disposable intake inputs.
+  Do not copy or retain them under `packages/validator/`; imported runtime and
+  fixture bytes are protected by `snapshot-integrity.json`.
 - Do not require a sibling specification checkout in routine tests or CI.
 - Do not overwrite, alias, or silently retarget an existing selector.
 - Record AI assistance in the pull request.

@@ -29,6 +29,10 @@ schemas remain in `mcpdesc/mcpdesc-specification`.
 - Add later snapshots as siblings and update the registry, declarations,
   package README, changelog, package-content check, and browser build selector
   list together.
+- Retire a selector only through an explicit support decision. Remove it from
+  current registries, declarations, bundles, and package contents while keeping
+  its immutable source and fixtures in Git; direct consumers to the older
+  package release that contains it.
 - Do not infer an exact selector from an unqualified format version.
 
 ## Validation

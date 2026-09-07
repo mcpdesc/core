@@ -11,7 +11,8 @@ license: Apache-2.0
 
 ## Workflow
 
-1. Read `AGENTS.md`, `CHANGELOG.md`, `ROADMAP.md`, and `RELEASING.md`.
+1. Read `AGENTS.md`, `CHANGELOG.md`, both package changelogs, `ROADMAP.md`, and
+   `RELEASING.md`.
 2. Fetch tags and the current main branch without changing the worktree:
 
    ```bash

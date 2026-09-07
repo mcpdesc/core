@@ -10,6 +10,7 @@ const packageDefinitions = {
       'packages/core/src/',
       'packages/core/package.json',
       'packages/core/README.md',
+      'packages/core/CHANGELOG.md',
       'packages/core/LICENSE',
       'packages/core/NOTICE',
       'packages/core/ORIGIN.md',
@@ -34,11 +35,7 @@ const packageDefinitions = {
       'packages/validator/ORIGIN.md',
       'packages/validator/MODIFICATIONS.md',
     ],
-    supportPaths: [
-      'packages/validator/scripts/',
-      'packages/validator/test/',
-      'packages/validator/snapshot-imports/',
-    ],
+    supportPaths: ['packages/validator/scripts/', 'packages/validator/test/'],
   },
 };
 

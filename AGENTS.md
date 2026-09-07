@@ -8,14 +8,15 @@ validation without creating a second source of normative specification text.
 ## Starting a work session
 
 - Work from this repository, not from a consumer or specification repository.
-- Read `README.md`, `CHANGELOG.md`, and `ROADMAP.md` before selecting work.
+- Read `README.md`, `CHANGELOG.md`, the relevant package changelog, and
+  `ROADMAP.md` before selecting work.
 - Inspect the current branch and worktree before editing; do not assume roadmap
   items have been approved or started.
 - Confirm the next milestone with the maintainer when it requires publication, a
   new public operation, a cross-repository integration, or a package-boundary
   decision.
-- Keep `CHANGELOG.md` and `ROADMAP.md` synchronized with delivered behavior and
-  approved sequencing.
+- Keep the relevant package changelog and `ROADMAP.md` synchronized with
+  delivered behavior and approved sequencing.
 
 ## Ownership boundaries
 
@@ -42,6 +43,10 @@ validation without creating a second source of normative specification text.
   never require a sibling specification checkout in routine CI.
 - Existing directories under `packages/validator/src/snapshots/` and
   `packages/validator/test/snapshots/` are immutable. Add sibling selectors.
+- Runtime and package support is an explicit lifecycle decision. Retiring a
+  selector removes it from registries, declarations, generated bundles, and
+  package contents without deleting or modifying its historical source and
+  fixtures; consumers can pin the older immutable package release.
 - A maintainer may approve an additive tooling-metadata correction to a
   published snapshot implementation only when its schema, conformance results,
   diagnostics, and frozen fixtures remain unchanged. Record each exception in

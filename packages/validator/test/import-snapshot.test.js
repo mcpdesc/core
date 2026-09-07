@@ -10,6 +10,9 @@ import { fileURLToPath } from 'node:url';
 const script = fileURLToPath(
   new URL('../scripts/import-snapshot.mjs', import.meta.url),
 );
+const retainedImportRoot = fileURLToPath(
+  new URL('../snapshot-imports/', import.meta.url),
+);
 
 function sha256(value) {
   return createHash('sha256').update(value).digest('hex');
@@ -48,6 +51,13 @@ function createBundle() {
   );
   return root;
 }
+
+test('does not retain snapshot intake bundles in the package workspace', () => {
+  const retainedImports = fs.existsSync(retainedImportRoot)
+    ? fs.readdirSync(retainedImportRoot)
+    : [];
+  assert.deepEqual(retainedImports, []);
+});
 
 test('validates a complete snapshot bundle without writing it', () => {
   const root = createBundle();

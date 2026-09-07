@@ -1,14 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  DRAFT_4_SCHEMA_URI,
-  RC_1_SCHEMA_URI,
   RC_2_SCHEMA_URI,
   selectMcpDescriptionDeclarations,
 } from '../src/index.js';
 
 const source = {
-  $schema: DRAFT_4_SCHEMA_URI,
+  $schema: RC_2_SCHEMA_URI,
   mcpdesc: '0.8.0',
   info: { name: 'selection-test', version: '1.0.0' },
   protocolVersions: ['2025-11-25', '2026-07-28'],
@@ -45,7 +43,7 @@ describe('selectMcpDescriptionDeclarations', () => {
   it('selects by normative identity and preserves every scoped variant', () => {
     const original = structuredClone(source);
     const result = selectMcpDescriptionDeclarations(source, {
-      specification: '0.8.0-draft.4',
+      specification: '0.8.0-rc.2',
       selections: {
         tools: ['shared'],
         resources: ['test://selected'],
@@ -73,7 +71,7 @@ describe('selectMcpDescriptionDeclarations', () => {
 
   it('omits unselected and empty declaration collections', () => {
     const result = selectMcpDescriptionDeclarations(source, {
-      specification: '0.8.0-draft.4',
+      specification: '0.8.0-rc.2',
       selections: { tools: [] },
     });
 
@@ -89,7 +87,7 @@ describe('selectMcpDescriptionDeclarations', () => {
     const result = selectMcpDescriptionDeclarations(
       { ...source, tools: [{ name: 'invalid' }] },
       {
-        specification: '0.8.0-draft.4',
+        specification: '0.8.0-rc.2',
         selections: { tools: ['invalid'] },
       },
     );
@@ -103,11 +101,11 @@ describe('selectMcpDescriptionDeclarations', () => {
     );
   });
 
-  it('selects declarations from an RC.1 document', () => {
+  it('selects declarations from an RC.2 document', () => {
     const result = selectMcpDescriptionDeclarations(
-      { ...source, $schema: RC_1_SCHEMA_URI },
+      { ...source, $schema: RC_2_SCHEMA_URI },
       {
-        specification: '0.8.0-rc.1',
+        specification: '0.8.0-rc.2',
         selections: { tools: ['other'] },
       },
     );

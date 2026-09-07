@@ -39,6 +39,9 @@
 - Treat core snapshot support as operation-specific. Adding a selector requires
   an explicit disposition for every selector-sensitive public operation and an
   updated exhaustive support-contract test.
+- Treat active snapshot retention as an explicit lifecycle decision. Retired
+  selectors leave current registries, declarations, bundles, and tarballs while
+  their immutable source and fixtures remain in Git and older package releases.
 
 ## Documentation Delineation
 

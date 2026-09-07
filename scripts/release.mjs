@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 const targets = {
   core: {
     manifest: 'packages/core/package.json',
-    changelog: 'CHANGELOG.md',
+    changelog: 'packages/core/CHANGELOG.md',
     tagPrefix: 'v',
     validation: ['npm', ['run', 'check']],
   },

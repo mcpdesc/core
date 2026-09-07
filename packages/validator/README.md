@@ -44,20 +44,17 @@ a later draft is published.
 
 ## Supported snapshots
 
-The current workspace supports these immutable selectors, newest first:
+The package supports these immutable selectors, newest first:
 
 | Selector | First validator release | Embedded schema SHA-256 |
 |---|---|---|
 | `0.8.0-rc.3` | `0.10.0` | `a9c3ff77ba37c72362909f538f6e957d055e6fdb372f8b3d529e3651af3fecf4` |
-| `0.8.0-rc.2` | `0.9.0` | `40f6775dde052224114e91d6aa484d826eecf56b77f7ac87b4cf707ffbcb6ce8` |
-| `0.8.0-rc.1` | `0.5.0` | `936a0f24ade501fcabf3d6498c0440c445daa672a575573a35954cee49430ac4` |
-| `0.8.0-draft.4` | `0.4.0` | `93ed03f74059b5b3ce7509a96b59161bdab2c3cf7734397a9bec5a7588d0b03b` |
-| `0.8.0-draft.3` | `0.3.0` | `8823c1f1946360b2a44d00920e2092e5e4acd139a1964befad4eb0bf3ce96002` |
-| `0.8.0-draft.2` | `0.2.0` | `ab692c1a5a0f7e5f29be1940aa8c64a56d4620be0a19d00cf0a64680b7e517fa` |
-| `0.8.0-draft.1` | `0.1.0` | `4ceb6042c3fd31703199cd3db869ec5c35c17d2fe9ab7b2f5b96a2a3af0cebe4` |
+| `0.8.0-rc.2` (deprecated) | `0.9.0` | `40f6775dde052224114e91d6aa484d826eecf56b77f7ac87b4cf707ffbcb6ce8` |
 
 The validator package embeds the schema and executable behavior for each
-selector. npm integrity and trusted-publishing provenance identify released
+selector. RC.2 remains available for migration compatibility; new integrations
+should select RC.3. Earlier selectors remain available by pinning an older
+immutable validator release. npm integrity and trusted-publishing provenance identify released
 package bytes; specification repository tags and commits are informational.
 
 ## Usage
@@ -100,17 +97,10 @@ if (resolution.status === 'resolved') {
 
 Resolution is pure and performs no network retrieval. It does not validate the
 document and never infers a draft snapshot from `mcpdesc: "0.8.0"` alone.
-Draft 4's format-qualified schema URI resolves uniquely. Drafts 1 through 3
-share the legacy `https://mcpdesc.org/schema/0.8.0.json` URI, so that URI is
-ambiguous unless the caller supplies a consistent exact selector:
+Retired schema identities are reported as unknown by current releases. Pin an
+older package release to resolve or validate a retired selector.
 
-```js
-const resolution = resolveMcpDescriptionSpecification(parsedDocument, {
-  specification: '0.8.0-draft.3'
-});
-```
-
-Unresolved results distinguish missing, invalid, unknown, ambiguous, and
+Unresolved results distinguish missing, invalid, unknown, and
 contradictory identity, as well as unsupported caller selectors. A supplied
 selector can resolve a document with no `$schema`; when `$schema` is present it
 must match the selected snapshot's recorded schema URI.
@@ -137,7 +127,7 @@ Structural paths start with AJV's instance path. A `required` error appends its 
 
 ## Support metadata
 
-The package exports frozen `supportedSpecifications`, `supportedProtocolVersions`, and `specificationProvenance` values. Provenance records include the snapshot tag, recorded schema URI, and embedded schema SHA-256 digest. Public validation dispatches through a registry keyed by exact specification selectors. The current repository selector set is `0.8.0-draft.1`, `0.8.0-draft.2`, `0.8.0-draft.3`, `0.8.0-draft.4`, `0.8.0-rc.1`, `0.8.0-rc.2`, and `0.8.0-rc.3`; the protocol-version export is the deduplicated union supported by those snapshots.
+The package exports frozen `supportedSpecifications`, `deprecatedSpecifications`, `supportedProtocolVersions`, and `specificationProvenance` values. Provenance records include the snapshot tag, recorded schema URI, and embedded schema SHA-256 digest. Public validation dispatches through a registry keyed by exact specification selectors. The active selector set is `0.8.0-rc.2` and `0.8.0-rc.3`; `deprecatedSpecifications` contains RC.2. The protocol-version export is the deduplicated union supported by active snapshots.
 
 RC.2 and RC.3 also export the frozen `mcpExtensionCatalogue` and
 `mcpExtensionMaturity` classifier. The catalogue pins its authoritative source,
@@ -147,7 +137,7 @@ extension-specific settings.
 
 npm package SemVer tracks implementation releases independently from specification snapshot identity. Adding a later snapshot is additive: it must use a sibling implementation and selector rather than changing an existing snapshot's schema, semantics, metadata, fixtures, or results.
 
-The RC.1, RC.2, and RC.3 component resolvers report authored and terminal target
+The RC.2 and RC.3 component resolvers report authored and terminal target
 paths for successful substitutions. The additive tooling corrections do not
 change snapshot schemas, validation results, diagnostics, or fixtures and are
 recorded in the integrity manifest.
@@ -164,7 +154,7 @@ exact specification repository tag or commit and then:
 3. Add the exact selector to the runtime registry and update support metadata, TypeScript declarations, tests, the package changelog, and expected package contents. Unqualified versions, aliases, ranges, and not-yet-published selectors remain unsupported.
 4. Run the package and repository validation suites. The schema digest, immutable metadata, fixture behavior, browser bundle, declarations, and tarball contents must all pass.
 
-The test snapshots are repository-only development assets and are excluded from the npm tarball. Runtime snapshot implementations and embedded schemas do ship so installed packages remain self-contained.
+The test snapshots are repository-only development assets and are excluded from the npm tarball. Historical runtime sources remain in Git for integrity history. Only active runtime snapshot implementations and embedded schemas ship, so installed packages remain self-contained without accumulating retired selectors.
 
 Specification approval and imported supporting code do not authorize package
 publication. During release review, a maintainer explicitly decides the
@@ -187,4 +177,4 @@ npm run test:browser --workspace @mcpdesc/validator
 npm run test:package --workspace @mcpdesc/validator
 ```
 
-The package test runs each immutable snapshot against its own frozen valid, invalid, and warning fixture corpus. YAML source fixtures are decoded by the test harness before validation; the public API continues to accept parsed JavaScript values only. The other checks compile the declarations, bundle the public browser entry with esbuild and Vite, reject runtime AJV compiler inputs and dynamic code generation in those bundles, and inspect `npm pack --dry-run --json` against the intended tarball contents and declared export targets.
+The package test runs each active snapshot against its own frozen valid, invalid, and warning fixture corpus and verifies historical artifact integrity separately. YAML source fixtures are decoded by the test harness before validation; the public API continues to accept parsed JavaScript values only. The other checks compile the declarations, bundle the public browser entry with esbuild and Vite, reject runtime AJV compiler inputs and dynamic code generation in those bundles, and inspect `npm pack --dry-run --json` against the intended tarball contents and declared export targets.
