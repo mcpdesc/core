@@ -11,16 +11,10 @@ import type {
   McpDescriptionDocument,
 } from './model.js';
 import {
-  DRAFT_4_SCHEMA_URI,
-  DRAFT_4_SPECIFICATION,
-  RC_1_SCHEMA_URI,
-  RC_1_SPECIFICATION,
   RC_2_SCHEMA_URI,
   RC_2_SPECIFICATION,
   RC_3_SCHEMA_URI,
   RC_3_SPECIFICATION,
-  draft4Snapshot,
-  rc1Snapshot,
   rc2Snapshot,
   rc3Snapshot,
   type SupportedCoreSpecification,
@@ -42,19 +36,6 @@ const declarationCollections = [
   'prompts',
 ] as const;
 
-export interface MigrateMcpDescription07Options {
-  readonly specification: typeof DRAFT_4_SPECIFICATION;
-  readonly protocolVersion?: SupportedProtocolVersion;
-  readonly sourceValidated: true;
-}
-
-export interface MigrateMcpDescription07ToRc1Options {
-  readonly specification: typeof RC_1_SPECIFICATION;
-  readonly defaultProtocolVersion?: SupportedProtocolVersion;
-  readonly protocolVersion?: SupportedProtocolVersion;
-  readonly sourceValidated: true;
-}
-
 export interface MigrateMcpDescription07ToRc2Options {
   readonly specification: typeof RC_2_SPECIFICATION;
   readonly defaultProtocolVersion?: SupportedProtocolVersion;
@@ -70,10 +51,7 @@ export interface MigrateMcpDescription07ToRc3Options {
 }
 
 type SupportedMigrationOptions =
-  | MigrateMcpDescription07Options
-  | MigrateMcpDescription07ToRc1Options
-  | MigrateMcpDescription07ToRc2Options
-  | MigrateMcpDescription07ToRc3Options;
+  MigrateMcpDescription07ToRc2Options | MigrateMcpDescription07ToRc3Options;
 
 export interface McpDescriptionMigrationDefault {
   readonly code: 'migration-default-protocol-version';
@@ -344,11 +322,7 @@ function migrateMcpDescription07(
   source: unknown,
   options: SupportedMigrationOptions,
   targetSpecification: SupportedCoreSpecification,
-  targetSchemaUri:
-    | typeof DRAFT_4_SCHEMA_URI
-    | typeof RC_1_SCHEMA_URI
-    | typeof RC_2_SCHEMA_URI
-    | typeof RC_3_SCHEMA_URI,
+  targetSchemaUri: typeof RC_2_SCHEMA_URI | typeof RC_3_SCHEMA_URI,
   targetProtocolVersions: readonly SupportedProtocolVersion[],
 ): McpDescriptionMigrationResult {
   if (options.specification !== targetSpecification) {
@@ -398,13 +372,7 @@ function migrateMcpDescription07(
       ),
     ]);
   }
-  const defaultProtocolVersion =
-    (targetSpecification === RC_1_SPECIFICATION ||
-      targetSpecification === RC_2_SPECIFICATION ||
-      targetSpecification === RC_3_SPECIFICATION) &&
-    'defaultProtocolVersion' in options
-      ? options.defaultProtocolVersion
-      : undefined;
+  const defaultProtocolVersion = options.defaultProtocolVersion;
   const selectedDefault =
     options.protocolVersion === undefined &&
     declaredVersion === undefined &&
@@ -525,32 +493,6 @@ export function serializeMcpDescriptionMigrationReport(
   report: McpDescriptionMigrationReport,
 ): string {
   return `${JSON.stringify(report, null, 2)}\n`;
-}
-
-export function migrateMcpDescription07ToDraft4(
-  source: unknown,
-  options: MigrateMcpDescription07Options,
-): McpDescriptionMigrationResult {
-  return migrateMcpDescription07(
-    source,
-    options,
-    DRAFT_4_SPECIFICATION,
-    DRAFT_4_SCHEMA_URI,
-    draft4Snapshot.protocolVersions,
-  );
-}
-
-export function migrateMcpDescription07ToRc1(
-  source: unknown,
-  options: MigrateMcpDescription07ToRc1Options,
-): McpDescriptionMigrationResult {
-  return migrateMcpDescription07(
-    source,
-    options,
-    RC_1_SPECIFICATION,
-    RC_1_SCHEMA_URI,
-    rc1Snapshot.protocolVersions,
-  );
 }
 
 export function migrateMcpDescription07ToRc2(

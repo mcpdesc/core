@@ -19,8 +19,9 @@ the guarded `release:check` and `release:tag` scripts below.
   equivalent SSH URL for that repository.
 - Confirm that the package version is unused on npm and matches its intended Git
   tag: `v<version>` for core or `validator-v<version>` for validator.
-- Record user-visible changes in `CHANGELOG.md` and keep `ROADMAP.md` aligned
-  with the work actually delivered.
+- Record user-visible changes in `packages/core/CHANGELOG.md` or
+  `packages/validator/CHANGELOG.md` and keep `ROADMAP.md` aligned with the work
+  actually delivered.
 
 ## Prepare and inspect
 
@@ -100,6 +101,6 @@ npm audit signatures
 ```
 
 Confirm the npm provenance links to the expected GitHub repository, workflow,
-tag, and commit. Create the corresponding GitHub release from the changelog,
-then update `CHANGELOG.md` and `ROADMAP.md` if the published outcome differs
-from the release preparation.
+tag, and commit. Create the corresponding GitHub release from the package
+changelog, then update that changelog and `ROADMAP.md` if the published outcome
+differs from the release preparation.

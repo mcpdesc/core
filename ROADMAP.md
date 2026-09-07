@@ -43,6 +43,8 @@ repository.
 - [x] Expose reusable-component resolution as a separate RC.1, RC.2, and RC.3
       pure operation with deterministic terminal-target provenance and existing
       unresolved-reference diagnostics.
+- [x] Narrow current runtime and package support to RC.2 and RC.3, deprecate
+      RC.2, and retain retired snapshot artifacts as repository history.
 - Add normalization or comparison operations only where multiple consumers
   demonstrate the same requirement.
 
@@ -54,10 +56,10 @@ normative schema applies.
 
 - Adopt shared operations in the editor and Inspector where they replace
   duplicated semantic logic.
-- Add support for later immutable MCP Description snapshots without silently
-  changing behavior for existing selectors. Record every selector-sensitive
-  operation as supported or intentionally unsupported and keep the exhaustive
-  support-contract test synchronized with that decision.
+- Add later immutable MCP Description snapshots through an explicit active
+  support decision. Record every selector-sensitive operation as supported or
+  intentionally unsupported, retire selectors from current packages when their
+  transition window closes, and keep the exhaustive support contract current.
 - Revisit package boundaries as concrete parser, serialization, or capture
   requirements emerge; keep file and network access out of `@mcpdesc/core`.
 

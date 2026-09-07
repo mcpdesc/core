@@ -7,8 +7,8 @@ const entries = [
     path: '../src/index.ts',
     allowsValidator: true,
     requiredExports: [
-      'migrateMcpDescription07ToRc1',
       'migrateMcpDescription07ToRc2',
+      'migrateMcpDescription07ToRc3',
       'serializeMcpDescriptionMigrationReport',
     ],
   },
@@ -111,7 +111,7 @@ try {
   const fixture = JSON.parse(
     readFileSync(
       new URL(
-        '../../validator/test/snapshots/0.8.0-rc.1/fixtures/expected-valid/reusable-components.json',
+        '../../validator/test/snapshots/0.8.0-rc.2/fixtures/expected-valid/reusable-components.json',
         import.meta.url,
       ),
       'utf8',
@@ -121,7 +121,7 @@ try {
     root.resolveMcpDescriptionComponentReferences,
     components.resolveMcpDescriptionComponentReferences,
   ]) {
-    const result = operation(fixture, { specification: '0.8.0-rc.1' });
+    const result = operation(fixture, { specification: '0.8.0-rc.2' });
     if (!result.ok || result.provenance.length === 0) {
       throw new Error('Component resolution failed under strict CSP');
     }

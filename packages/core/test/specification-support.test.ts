@@ -1,13 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  DRAFT_4_SCHEMA_URI,
-  RC_1_SCHEMA_URI,
   RC_2_SCHEMA_URI,
   RC_3_SCHEMA_URI,
+  deprecatedCoreSpecifications,
   mergeEffectiveProtocolViews,
-  migrateMcpDescription07ToDraft4,
-  migrateMcpDescription07ToRc1,
   migrateMcpDescription07ToRc2,
   migrateMcpDescription07ToRc3,
   projectEffectiveProtocolView,
@@ -23,23 +20,9 @@ type SelectorSensitiveOperation =
   | 'migrationFrom07'
   | 'projection'
   | 'selection';
-type SupportDisposition = 'supported' | 'unsupported-pending-contract';
+type SupportDisposition = 'supported';
 
 const supportBySpecification = {
-  '0.8.0-draft.4': {
-    componentResolution: 'unsupported-pending-contract',
-    merge: 'supported',
-    migrationFrom07: 'supported',
-    projection: 'supported',
-    selection: 'supported',
-  },
-  '0.8.0-rc.1': {
-    componentResolution: 'supported',
-    merge: 'supported',
-    migrationFrom07: 'supported',
-    projection: 'supported',
-    selection: 'supported',
-  },
   '0.8.0-rc.2': {
     componentResolution: 'supported',
     merge: 'supported',
@@ -60,23 +43,11 @@ const supportBySpecification = {
 >;
 
 const schemaBySpecification = {
-  '0.8.0-draft.4': DRAFT_4_SCHEMA_URI,
-  '0.8.0-rc.1': RC_1_SCHEMA_URI,
   '0.8.0-rc.2': RC_2_SCHEMA_URI,
   '0.8.0-rc.3': RC_3_SCHEMA_URI,
 } as const satisfies Record<SupportedCoreSpecification, string>;
 
 const migrateBySpecification = {
-  '0.8.0-draft.4': (source: unknown) =>
-    migrateMcpDescription07ToDraft4(source, {
-      specification: '0.8.0-draft.4',
-      sourceValidated: true,
-    }),
-  '0.8.0-rc.1': (source: unknown) =>
-    migrateMcpDescription07ToRc1(source, {
-      specification: '0.8.0-rc.1',
-      sourceValidated: true,
-    }),
   '0.8.0-rc.2': (source: unknown) =>
     migrateMcpDescription07ToRc2(source, {
       specification: '0.8.0-rc.2',
@@ -104,6 +75,11 @@ const legacyDocument = {
 };
 
 describe('selector-sensitive operation support', () => {
+  it('marks RC.2 as deprecated while keeping it operational', () => {
+    expect(deprecatedCoreSpecifications).toEqual(['0.8.0-rc.2']);
+    expect(Object.isFrozen(deprecatedCoreSpecifications)).toBe(true);
+  });
+
   for (const specification of Object.keys(
     supportBySpecification,
   ) as SupportedCoreSpecification[]) {
@@ -139,22 +115,7 @@ describe('selector-sensitive operation support', () => {
       const resolution = resolveMcpDescriptionComponentReferences(document, {
         specification,
       } as ResolveMcpDescriptionComponentReferencesOptions);
-      if (
-        supportBySpecification[specification].componentResolution ===
-        'supported'
-      ) {
-        expect(resolution.ok).toBe(true);
-      } else {
-        expect(resolution).toEqual({
-          ok: false,
-          diagnostics: [
-            expect.objectContaining({
-              code: 'unsupported-specification',
-              phase: 'operation',
-            }),
-          ],
-        });
-      }
+      expect(resolution.ok).toBe(true);
     });
   }
 });

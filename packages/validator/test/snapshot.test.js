@@ -11,11 +11,6 @@ test('preserves the immutable Draft 1 schema digest and metadata', () => {
   const digest = createHash('sha256').update(embedded).digest('hex');
 
   assert.equal(digest, draft1SchemaSha256);
-  assert.deepEqual(specificationProvenance['0.8.0-draft.1'], {
-    snapshotTag: 'v0.8.0-draft.1',
-    schemaUri: 'https://mcpdesc.org/schema/0.8.0.json',
-    schemaSha256: draft1SchemaSha256
-  });
 });
 
 test('preserves the immutable Draft 2 schema digest and metadata', () => {
@@ -24,11 +19,6 @@ test('preserves the immutable Draft 2 schema digest and metadata', () => {
   const digest = createHash('sha256').update(embedded).digest('hex');
 
   assert.equal(digest, draft2SchemaSha256);
-  assert.deepEqual(specificationProvenance['0.8.0-draft.2'], {
-    snapshotTag: 'v0.8.0-draft.2',
-    schemaUri: 'https://mcpdesc.org/schema/0.8.0.json',
-    schemaSha256: draft2SchemaSha256
-  });
 });
 
 test('preserves the immutable Draft 3 schema digest and metadata', () => {
@@ -37,11 +27,6 @@ test('preserves the immutable Draft 3 schema digest and metadata', () => {
   const digest = createHash('sha256').update(embedded).digest('hex');
 
   assert.equal(digest, draft3SchemaSha256);
-  assert.deepEqual(specificationProvenance['0.8.0-draft.3'], {
-    snapshotTag: 'v0.8.0-draft.3',
-    schemaUri: 'https://mcpdesc.org/schema/0.8.0.json',
-    schemaSha256: draft3SchemaSha256
-  });
 });
 
 test('preserves the immutable Draft 4 schema digest and metadata', () => {
@@ -50,11 +35,6 @@ test('preserves the immutable Draft 4 schema digest and metadata', () => {
   const digest = createHash('sha256').update(embedded).digest('hex');
 
   assert.equal(digest, draft4SchemaSha256);
-  assert.deepEqual(specificationProvenance['0.8.0-draft.4'], {
-    snapshotTag: 'v0.8.0-draft.4',
-    schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-draft.4.json',
-    schemaSha256: draft4SchemaSha256
-  });
 });
 
 test('preserves the immutable Release Candidate 1 schema digest and metadata', () => {
@@ -63,11 +43,6 @@ test('preserves the immutable Release Candidate 1 schema digest and metadata', (
   const digest = createHash('sha256').update(embedded).digest('hex');
 
   assert.equal(digest, rc1SchemaSha256);
-  assert.deepEqual(specificationProvenance['0.8.0-rc.1'], {
-    snapshotTag: 'v0.8.0-rc.1',
-    schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.1.json',
-    schemaSha256: rc1SchemaSha256
-  });
 });
 
 test('preserves the immutable Release Candidate 2 schema digest and metadata', () => {

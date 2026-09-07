@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import test from 'node:test';
 
 import {
+  deprecatedSpecifications,
   mcpExtensionCatalogue,
   mcpExtensionMaturity,
   resolveMcpDescriptionComponentReferences,
@@ -14,27 +15,23 @@ import {
 } from '../src/index.js';
 
 const fixtureRoots = {
-  '0.8.0-draft.1': new URL('./snapshots/0.8.0-draft.1/fixtures/', import.meta.url),
-  '0.8.0-draft.2': new URL('./snapshots/0.8.0-draft.2/fixtures/', import.meta.url),
-  '0.8.0-draft.3': new URL('./snapshots/0.8.0-draft.3/fixtures/', import.meta.url),
-  '0.8.0-draft.4': new URL('./snapshots/0.8.0-draft.4/fixtures/', import.meta.url),
-  '0.8.0-rc.1': new URL('./snapshots/0.8.0-rc.1/fixtures/', import.meta.url),
   '0.8.0-rc.2': new URL('./snapshots/0.8.0-rc.2/fixtures/', import.meta.url),
   '0.8.0-rc.3': new URL('./snapshots/0.8.0-rc.3/fixtures/', import.meta.url)
 };
 
-function fixture(group, name, specification = '0.8.0-draft.1') {
+function fixture(group, name, specification = '0.8.0-rc.3') {
   return JSON.parse(fs.readFileSync(new URL(`${group}/${name}`, fixtureRoots[specification]), 'utf8'));
 }
 
-function validate(document, specification = '0.8.0-draft.1') {
+function validate(document, specification = '0.8.0-rc.3') {
   return validateMcpDescription(document, { specification });
 }
 
-test('exports the cumulative validator API', () => {
+test('exports the active validator API', () => {
   assert.equal(typeof validateMcpDescription, 'function');
   assert.equal(typeof resolveMcpDescriptionComponentReferences, 'function');
-  assert.deepEqual(supportedSpecifications, ['0.8.0-draft.1', '0.8.0-draft.2', '0.8.0-draft.3', '0.8.0-draft.4', '0.8.0-rc.1', '0.8.0-rc.2', '0.8.0-rc.3']);
+  assert.deepEqual(supportedSpecifications, ['0.8.0-rc.2', '0.8.0-rc.3']);
+  assert.deepEqual(deprecatedSpecifications, ['0.8.0-rc.2']);
   assert.deepEqual(supportedProtocolVersions, [
     '2024-11-05',
     '2025-03-26',
@@ -43,31 +40,6 @@ test('exports the cumulative validator API', () => {
     '2026-07-28'
   ]);
   assert.deepEqual(specificationProvenance, {
-    '0.8.0-draft.1': {
-      snapshotTag: 'v0.8.0-draft.1',
-      schemaUri: 'https://mcpdesc.org/schema/0.8.0.json',
-      schemaSha256: '4ceb6042c3fd31703199cd3db869ec5c35c17d2fe9ab7b2f5b96a2a3af0cebe4'
-    },
-    '0.8.0-draft.2': {
-      snapshotTag: 'v0.8.0-draft.2',
-      schemaUri: 'https://mcpdesc.org/schema/0.8.0.json',
-      schemaSha256: 'ab692c1a5a0f7e5f29be1940aa8c64a56d4620be0a19d00cf0a64680b7e517fa'
-    },
-    '0.8.0-draft.3': {
-      snapshotTag: 'v0.8.0-draft.3',
-      schemaUri: 'https://mcpdesc.org/schema/0.8.0.json',
-      schemaSha256: '8823c1f1946360b2a44d00920e2092e5e4acd139a1964befad4eb0bf3ce96002'
-    },
-    '0.8.0-draft.4': {
-      snapshotTag: 'v0.8.0-draft.4',
-      schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-draft.4.json',
-      schemaSha256: '93ed03f74059b5b3ce7509a96b59161bdab2c3cf7734397a9bec5a7588d0b03b'
-    },
-    '0.8.0-rc.1': {
-      snapshotTag: 'v0.8.0-rc.1',
-      schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.1.json',
-      schemaSha256: '936a0f24ade501fcabf3d6498c0440c445daa672a575573a35954cee49430ac4'
-    },
     '0.8.0-rc.2': {
       snapshotTag: 'v0.8.0-rc.2',
       schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.2.json',
@@ -138,7 +110,7 @@ test('keeps pre-standard client requirements strict and malformed extension maps
   }
 });
 
-for (const specification of ['0.8.0-rc.1', '0.8.0-rc.2', '0.8.0-rc.3']) {
+for (const specification of ['0.8.0-rc.2', '0.8.0-rc.3']) {
   test(`resolves ${specification} component references with terminal provenance`, () => {
     const document = fixture('expected-valid', 'reusable-components.json', specification);
     const original = structuredClone(document);
@@ -157,7 +129,7 @@ for (const specification of ['0.8.0-rc.1', '0.8.0-rc.2', '0.8.0-rc.3']) {
 }
 
 test('rejects component resolution for unsupported selectors', () => {
-  const document = fixture('expected-valid', 'reusable-components.json', '0.8.0-draft.4');
+  const document = fixture('expected-valid', 'reusable-components.json', '0.8.0-rc.3');
   assert.throws(
     () => resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-draft.4' }),
     /does not support specification: 0\.8\.0-draft\.4/
@@ -185,13 +157,13 @@ test('resolves exact snapshot identity offline', () => {
   };
   try {
     assert.deepEqual(resolveMcpDescriptionSpecification({
-      $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.1.json',
+      $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.3.json',
       mcpdesc: '0.8.0'
     }), {
       status: 'resolved',
-      specification: '0.8.0-rc.1',
-      schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.1.json',
-      provenance: specificationProvenance['0.8.0-rc.1'],
+      specification: '0.8.0-rc.3',
+      schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.3.json',
+      provenance: specificationProvenance['0.8.0-rc.3'],
       diagnostics: []
     });
   } finally {
@@ -199,29 +171,29 @@ test('resolves exact snapshot identity offline', () => {
   }
 });
 
-test('requires exact identity instead of inferring from mcpdesc', () => {
+test('requires exact recognized identity instead of inferring from mcpdesc', () => {
   const missing = resolveMcpDescriptionSpecification({ mcpdesc: '0.8.0' });
   assert.equal(missing.status, 'unresolved');
   assert.equal(missing.diagnostics[0].code, 'missing-snapshot-identity');
 
-  const ambiguous = resolveMcpDescriptionSpecification({
+  const retired = resolveMcpDescriptionSpecification({
     $schema: 'https://mcpdesc.org/schema/0.8.0.json',
     mcpdesc: '0.8.0'
   });
-  assert.equal(ambiguous.status, 'unresolved');
-  assert.equal(ambiguous.diagnostics[0].code, 'ambiguous-schema-identity');
+  assert.equal(retired.status, 'unresolved');
+  assert.equal(retired.diagnostics[0].code, 'unknown-schema-identity');
 });
 
 test('checks explicit selector consistency with declared schema identity', () => {
   const selected = resolveMcpDescriptionSpecification({ mcpdesc: '0.8.0' }, {
-    specification: '0.8.0-draft.4'
+    specification: '0.8.0-rc.3'
   });
   assert.equal(selected.status, 'resolved');
-  assert.equal(selected.specification, '0.8.0-draft.4');
+  assert.equal(selected.specification, '0.8.0-rc.3');
 
   const contradiction = resolveMcpDescriptionSpecification({
-    $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0-draft.4.json'
-  }, { specification: '0.8.0-draft.3' });
+    $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.3.json'
+  }, { specification: '0.8.0-rc.2' });
   assert.equal(contradiction.status, 'unresolved');
   assert.equal(contradiction.diagnostics[0].code, 'contradictory-snapshot-identity');
 });
@@ -232,10 +204,10 @@ test('distinguishes invalid, unknown, and unsupported identity inputs', () => {
   assert.equal(resolveMcpDescriptionSpecification({}, { specification: '0.8.0-draft.99' }).diagnostics[0].code, 'unsupported-specification');
 });
 
-test('dispatches only to the exact selected snapshot', () => {
-  const document = fixture('expected-valid', 'reusable-components.json', '0.8.0-draft.2');
-  assert.equal(validate(document, '0.8.0-draft.2').valid, true);
-  assert.equal(validate(document, '0.8.0-draft.1').valid, false);
+test('dispatches both active exact selectors', () => {
+  const document = fixture('expected-valid', 'reusable-components.json', '0.8.0-rc.3');
+  assert.equal(validate(document, '0.8.0-rc.3').valid, true);
+  assert.equal(validate(document, '0.8.0-rc.2').valid, true);
 });
 
 test('accepts an unknown JavaScript value and returns individual structural diagnostics', () => {
@@ -278,31 +250,15 @@ test('is deterministic and does not mutate the input document', () => {
 
 test('exports immutable support and provenance data', () => {
   assert.ok(Object.isFrozen(supportedSpecifications));
+  assert.ok(Object.isFrozen(deprecatedSpecifications));
   assert.ok(Object.isFrozen(supportedProtocolVersions));
   assert.ok(Object.isFrozen(specificationProvenance));
-  assert.ok(Object.isFrozen(specificationProvenance['0.8.0-draft.1']));
-  assert.ok(Object.isFrozen(specificationProvenance['0.8.0-draft.2']));
-  assert.ok(Object.isFrozen(specificationProvenance['0.8.0-draft.3']));
-  assert.ok(Object.isFrozen(specificationProvenance['0.8.0-draft.4']));
-  assert.ok(Object.isFrozen(specificationProvenance['0.8.0-rc.1']));
   assert.ok(Object.isFrozen(specificationProvenance['0.8.0-rc.2']));
   assert.ok(Object.isFrozen(specificationProvenance['0.8.0-rc.3']));
   assert.throws(() => supportedSpecifications.push('0.8.0'));
   assert.throws(() => supportedProtocolVersions.pop());
   assert.throws(() => {
-    specificationProvenance['0.8.0-draft.1'].snapshotTag = 'changed';
-  });
-  assert.throws(() => {
-    specificationProvenance['0.8.0-draft.2'].snapshotTag = 'changed';
-  });
-  assert.throws(() => {
-    specificationProvenance['0.8.0-draft.3'].snapshotTag = 'changed';
-  });
-  assert.throws(() => {
-    specificationProvenance['0.8.0-draft.4'].snapshotTag = 'changed';
-  });
-  assert.throws(() => {
-    specificationProvenance['0.8.0-rc.1'].snapshotTag = 'changed';
+    specificationProvenance['0.8.0-rc.2'].snapshotTag = 'changed';
   });
 });
 

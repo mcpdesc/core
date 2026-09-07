@@ -1,5 +1,19 @@
 import { execFileSync } from 'node:child_process';
+import fs from 'node:fs';
 import process from 'node:process';
+
+const packageJson = JSON.parse(
+  fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'),
+);
+const changelog = fs.readFileSync(
+  new URL('../CHANGELOG.md', import.meta.url),
+  'utf8',
+);
+if (!changelog.includes(`## [${packageJson.version}] - `)) {
+  throw new Error(
+    `CHANGELOG.md has no dated ${packageJson.version} release section`,
+  );
+}
 
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const output = execFileSync(
@@ -14,6 +28,7 @@ const [pack] = JSON.parse(output);
 const actual = pack.files.map((file) => file.path).sort();
 
 const expected = [
+  'CHANGELOG.md',
   'LICENSE',
   'MODIFICATIONS.md',
   'NOTICE',

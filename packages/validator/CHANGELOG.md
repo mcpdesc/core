@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this package follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Dates for published releases are the UTC publication dates recorded by npm.
 
+## [Unreleased]
+
+## [0.10.1] - 2026-09-07
+
+### Changed
+
+- Narrowed active runtime support to RC.2 and RC.3 and marked RC.2 deprecated.
+- Excluded retired runtime snapshots from generated bundles and package
+	contents while retaining their source and frozen fixtures in Git.
+- Removed the retained snapshot-intake manifest; intake bundles are disposable
+	inputs and imported bytes remain protected by the snapshot integrity manifest.
+
 ## [0.10.0] - 2026-09-07
 
 ### Added
@@ -127,7 +139,9 @@ Dates for published releases are the UTC publication dates recorded by npm.
 - Added synchronous structural and semantic validation for parsed JavaScript values with deterministic diagnostics and exact selector dispatch.
 - Added ESM browser support, TypeScript declarations, embedded schema provenance, frozen fixtures, and package-content checks.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/validator-v0.9.0...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/validator-v0.10.1...HEAD
+[0.10.1]: https://github.com/mcpdesc/core/compare/validator-v0.10.0...validator-v0.10.1
+[0.10.0]: https://github.com/mcpdesc/core/compare/validator-v0.9.0...validator-v0.10.0
 [0.9.0]: https://github.com/mcpdesc/core/compare/validator-v0.8.0...validator-v0.9.0
 [0.8.0]: https://github.com/mcpdesc/core/compare/validator-v0.7.1...validator-v0.8.0
 [0.7.1]: https://github.com/mcpdesc/core/compare/validator-v0.7.0...validator-v0.7.1
