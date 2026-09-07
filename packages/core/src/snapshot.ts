@@ -12,15 +12,20 @@ export const RC_1_SCHEMA_URI =
 export const RC_2_SPECIFICATION = '0.8.0-rc.2' as const;
 export const RC_2_SCHEMA_URI =
   'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.2.json' as const;
+export const RC_3_SPECIFICATION = '0.8.0-rc.3' as const;
+export const RC_3_SCHEMA_URI =
+  'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.3.json' as const;
 
 export type SupportedCoreSpecification =
   | typeof DRAFT_4_SPECIFICATION
   | typeof RC_1_SPECIFICATION
-  | typeof RC_2_SPECIFICATION;
+  | typeof RC_2_SPECIFICATION
+  | typeof RC_3_SPECIFICATION;
 
 const draft4Provenance = specificationProvenance[DRAFT_4_SPECIFICATION];
 const rc1Provenance = specificationProvenance[RC_1_SPECIFICATION];
 const rc2Provenance = specificationProvenance[RC_2_SPECIFICATION];
+const rc3Provenance = specificationProvenance[RC_3_SPECIFICATION];
 
 export const draft4Snapshot = Object.freeze({
   specification: DRAFT_4_SPECIFICATION,
@@ -46,12 +51,21 @@ export const rc2Snapshot = Object.freeze({
   protocolVersions: supportedProtocolVersions,
 });
 
+export const rc3Snapshot = Object.freeze({
+  specification: RC_3_SPECIFICATION,
+  schemaUri: RC_3_SCHEMA_URI,
+  snapshotTag: rc3Provenance.snapshotTag,
+  schemaSha256: rc3Provenance.schemaSha256,
+  protocolVersions: supportedProtocolVersions,
+});
+
 export function isSupportedCoreSpecification(
   specification: string,
 ): specification is SupportedCoreSpecification {
   return (
     specification === DRAFT_4_SPECIFICATION ||
     specification === RC_1_SPECIFICATION ||
-    specification === RC_2_SPECIFICATION
+    specification === RC_2_SPECIFICATION ||
+    specification === RC_3_SPECIFICATION
   );
 }

@@ -2,7 +2,21 @@
 
 All notable changes to this repository are documented here.
 
-## [Unreleased]
+## [0.9.0] - 2026-09-07
+
+### Added
+
+- Added MCP Description `0.8.0-rc.3` validator support and core support for
+  projection, merge, declaration selection, component reference resolution, and
+  migration from 0.7.0.
+- Added RC.2 component reference resolution with deterministic terminal-target
+  provenance.
+
+### Changed
+
+- Snapshot integrity now protects package-owned selector bytes without binding
+  validation behavior to immutable specification repository documentation or
+  source commits.
 
 ## [0.8.1] - 2026-09-05
 

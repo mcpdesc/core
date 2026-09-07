@@ -61,6 +61,23 @@ test('validates a complete snapshot bundle without writing it', () => {
   }
 });
 
+test('accepts a complete bundle without source repository metadata', () => {
+  const root = createBundle();
+  try {
+    const manifestPath = path.join(root, 'manifest.json');
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    delete manifest.source;
+    fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+
+    const output = execFileSync(process.execPath, [script, '--check', root], {
+      encoding: 'utf8',
+    });
+    assert.match(output, /Validated 9\.9\.9-draft\.1/);
+  } finally {
+    fs.rmSync(root, { force: true, recursive: true });
+  }
+});
+
 test('rejects a snapshot bundle whose bytes do not match its manifest', () => {
   const root = createBundle();
   try {

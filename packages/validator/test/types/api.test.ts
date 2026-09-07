@@ -21,12 +21,15 @@ const result: McpDescriptionValidationResult = validateMcpDescription(document, 
 const componentResolution = resolveMcpDescriptionComponentReferences(document, {
   specification: '0.8.0-rc.1'
 });
+resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-rc.2' });
+resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-rc.3' });
 const referencePath: readonly (string | number)[] | undefined = componentResolution.provenance[0]?.referencePath;
 validateMcpDescription(document, { specification: '0.8.0-draft.2' });
 validateMcpDescription(document, { specification: '0.8.0-draft.3' });
 validateMcpDescription(document, { specification: '0.8.0-draft.4' });
 validateMcpDescription(document, { specification: '0.8.0-rc.1' });
 validateMcpDescription(document, { specification: '0.8.0-rc.2' });
+validateMcpDescription(document, { specification: '0.8.0-rc.3' });
 const standaloneResult: McpDescriptionValidationResult = validateStandalone(document, {
   specification: '0.8.0-rc.1'
 });
@@ -41,6 +44,7 @@ const draft3: '0.8.0-draft.3' = supportedSpecifications[2];
 const draft4: '0.8.0-draft.4' = supportedSpecifications[3];
 const rc1: '0.8.0-rc.1' = supportedSpecifications[4];
 const rc2: '0.8.0-rc.2' = supportedSpecifications[5];
+const rc3: '0.8.0-rc.3' = supportedSpecifications[6];
 const catalogueDate: '2026-09-04' = mcpExtensionCatalogue.effectiveDate;
 const extensionMaturity: 'official' | 'experimental' | 'uncatalogued' = mcpExtensionMaturity('io.modelcontextprotocol/ui');
 const protocolVersion: string = supportedProtocolVersions[0];
@@ -67,6 +71,7 @@ void draft4Tag;
 void draft4SchemaUri;
 void rc1SchemaUri;
 void rc2;
+void rc3;
 void catalogueDate;
 void extensionMaturity;
 void browserResult;
@@ -83,5 +88,5 @@ validateMcpDescription(document, { specification: '0.8.0-draft.5' });
 supportedSpecifications.push('0.8.0-draft.1');
 // @ts-expect-error Provenance is only available for supported selectors.
 specificationProvenance['0.8.0-draft.5'];
-// @ts-expect-error Component resolution is intentionally RC.1-only.
+// @ts-expect-error Draft 4 component resolution is not supported.
 resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-draft.4' });

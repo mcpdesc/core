@@ -26,6 +26,7 @@ export {
   migrateMcpDescription07ToDraft4,
   migrateMcpDescription07ToRc1,
   migrateMcpDescription07ToRc2,
+  migrateMcpDescription07ToRc3,
   serializeMcpDescriptionMigrationReport,
   type McpDescriptionMigrationChange,
   type McpDescriptionMigrationDefault,
@@ -34,6 +35,7 @@ export {
   type MigrateMcpDescription07Options,
   type MigrateMcpDescription07ToRc1Options,
   type MigrateMcpDescription07ToRc2Options,
+  type MigrateMcpDescription07ToRc3Options,
 } from './migration.js';
 export {
   parseMcpDescriptionSource,
@@ -66,8 +68,11 @@ export {
   RC_1_SPECIFICATION,
   RC_2_SCHEMA_URI,
   RC_2_SPECIFICATION,
+  RC_3_SCHEMA_URI,
+  RC_3_SPECIFICATION,
   draft4Snapshot,
   rc1Snapshot,
   rc2Snapshot,
+  rc3Snapshot,
   type SupportedCoreSpecification,
 } from './snapshot.js';

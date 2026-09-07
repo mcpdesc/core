@@ -23,8 +23,9 @@ schemas remain in `mcpdesc/mcpdesc-specification`.
   published `src/snapshots/` implementation when schema validation, semantic
   conformance, diagnostics, and frozen fixtures remain unchanged. Record the
   exact file and reason in `snapshot-integrity.json` and the package changelog.
-- Import approved specification artifacts with exact source commit, tag, schema
-  digest, semantic implementation, and frozen fixture provenance.
+- Import reviewed specification artifacts with exact selector, schema digest,
+  semantic implementation, and frozen fixtures. Source repository, tag, and
+  commit are informational provenance rather than package integrity inputs.
 - Add later snapshots as siblings and update the registry, declarations,
   package README, changelog, package-content check, and browser build selector
   list together.

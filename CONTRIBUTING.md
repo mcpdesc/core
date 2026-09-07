@@ -20,8 +20,9 @@ dependencies must work in Node.js 22 and browser bundles.
 
 Validator changes must preserve Node.js 20 support, deterministic offline
 validation, and strict-CSP behavior. Never modify an existing published snapshot
-directory. A later approved specification snapshot is added as a sibling with
-exact source, schema digest, semantic, and fixture provenance.
+directory. A later approved specification snapshot is added as a sibling with an
+exact schema digest, reviewed semantic implementation, and frozen fixtures.
+Upstream repository tags and commits are informational provenance.
 
 Pull requests containing AI-assisted content must disclose the tool and extent
 of assistance. Releases follow the maintainer-controlled process in

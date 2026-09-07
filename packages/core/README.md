@@ -66,46 +66,53 @@ console.log(serializeMcpDescriptionMigrationReport(migrated.report));
 ```
 
 Semantic operations require an exact immutable selector and support
-`0.8.0-draft.4`, `0.8.0-rc.1`, and `0.8.0-rc.2`. They validate their source and
-result with `@mcpdesc/validator`. Declaration selection uses MCP Description
-identities: tool and prompt `name`, resource `uri`, and resource template
-`uriTemplate`. It preserves all selected protocol-scoped variants and omits
-empty declaration collections. Draft 4 constants and operations remain available
-without being silently retargeted to RC.1.
+`0.8.0-draft.4`, `0.8.0-rc.1`, `0.8.0-rc.2`, and `0.8.0-rc.3`. They validate
+their source and result with `@mcpdesc/validator`. Declaration selection uses
+MCP Description identities: tool and prompt `name`, resource `uri`, and resource
+template `uriTemplate`. It preserves all selected protocol-scoped variants and
+omits empty declaration collections. Draft 4 constants and operations remain
+available without being silently retargeted to RC.1.
 
-| Operation                          | Draft 4       | RC.1      | RC.2                                   |
-| ---------------------------------- | ------------- | --------- | -------------------------------------- |
-| Effective Protocol View projection | Supported     | Supported | Supported                              |
-| Effective Protocol View merge      | Supported     | Supported | Supported                              |
-| Declaration selection              | Supported     | Supported | Supported                              |
-| Migration from 0.7.0               | Supported     | Supported | Supported                              |
-| Component reference resolution     | Not supported | Supported | Pending provenance-compatible contract |
+| Operation                          | Draft 4       | RC.1      | RC.2      | RC.3      |
+| ---------------------------------- | ------------- | --------- | --------- | --------- |
+| Effective Protocol View projection | Supported     | Supported | Supported | Supported |
+| Effective Protocol View merge      | Supported     | Supported | Supported | Supported |
+| Declaration selection              | Supported     | Supported | Supported | Supported |
+| Migration from 0.7.0               | Supported     | Supported | Supported | Supported |
+| Component reference resolution     | Not supported | Supported | Supported | Supported |
 
-RC.2 projection preserves pre-standard server extension maps in every applicable
-Effective Protocol View. `mergeEffectiveProtocolViews` combines compatible
-views, retains semantically equivalent declarations across scopes, and rejects
-conflicting views or unscoped metadata without mutating inputs.
+| Specification selector | First validator release | First core release |
+| ---------------------- | ----------------------- | ------------------ |
+| `0.8.0-rc.3`           | `0.10.0`                | `0.9.0`            |
+| `0.8.0-rc.2`           | `0.9.0`                 | `0.8.0`            |
+| `0.8.0-rc.1`           | `0.5.0`                 | `0.4.0`            |
+| `0.8.0-draft.4`        | `0.4.0`                 | `0.1.0`            |
 
-Component reference resolution is RC.1-only. It validates before resolving,
-returns a deep-cloned document with root component registries retained, and
-reports deterministic provenance from each authored reference path to its
-terminal component path. Intermediate chain hops are not exposed. The operation
-uses the resolver exported through `@mcpdesc/validator/standalone`; this keeps
-the snapshot-owned traversal authoritative while avoiding the runtime AJV entry
-and a dependency cycle.
+RC.2 and RC.3 projection preserve pre-standard server extension maps in every
+applicable Effective Protocol View. `mergeEffectiveProtocolViews` combines
+compatible views, retains semantically equivalent declarations across scopes,
+and rejects conflicting views or unscoped metadata without mutating inputs.
+
+Component reference resolution supports RC.1, RC.2, and RC.3. It validates
+before resolving, returns a deep-cloned document with root component registries
+retained, and reports deterministic provenance from each authored reference path
+to its terminal component path. Intermediate chain hops are not exposed. The
+operation uses the resolver exported through `@mcpdesc/validator/standalone`;
+this keeps the snapshot-owned traversal authoritative while avoiding the runtime
+AJV entry and a dependency cycle.
 
 Migration accepts a caller-validated MCP Description 0.7.0 value and validates
 the result against the exact target snapshot. It moves the protocol revision to
 root scope, wraps server capabilities, omits optional empty arrays, and converts
 inline legacy security schemes to deterministic named definitions and
 requirements. Generated names and deduplication are reported as warnings for
-author review. RC.1 and RC.2 callers may opt into `defaultProtocolVersion` when
-the source omits `info.protocolVersion`; the source value always takes
-precedence, and no built-in default is applied. Every migration result includes
-a stable, JSON-compatible report that distinguishes success, success with
-warnings, and failure and records diagnostics, applied defaults, and proven
-conversion changes. The package does not ship or duplicate the frozen 0.7.0
-schema, so callers must validate that source before setting
+author review. RC.1, RC.2, and RC.3 callers may opt into
+`defaultProtocolVersion` when the source omits `info.protocolVersion`; the
+source value always takes precedence, and no built-in default is applied. Every
+migration result includes a stable, JSON-compatible report that distinguishes
+success, success with warnings, and failure and records diagnostics, applied
+defaults, and proven conversion changes. The package does not ship or duplicate
+the frozen 0.7.0 schema, so callers must validate that source before setting
 `sourceValidated: true`.
 
 Source parsing accepts text and returns a JSON-compatible value or structured

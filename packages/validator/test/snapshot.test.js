@@ -82,3 +82,16 @@ test('preserves the immutable Release Candidate 2 schema digest and metadata', (
     schemaSha256: rc2SchemaSha256
   });
 });
+
+test('preserves the immutable Release Candidate 3 schema digest and metadata', () => {
+  const embedded = fs.readFileSync(new URL('../src/snapshots/0.8.0-rc.3/schema.json', import.meta.url));
+  const rc3SchemaSha256 = 'a9c3ff77ba37c72362909f538f6e957d055e6fdb372f8b3d529e3651af3fecf4';
+  const digest = createHash('sha256').update(embedded).digest('hex');
+
+  assert.equal(digest, rc3SchemaSha256);
+  assert.deepEqual(specificationProvenance['0.8.0-rc.3'], {
+    snapshotTag: 'v0.8.0-rc.3',
+    schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.3.json',
+    schemaSha256: rc3SchemaSha256
+  });
+});

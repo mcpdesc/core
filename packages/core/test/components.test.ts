@@ -18,6 +18,27 @@ const reusableComponents = JSON.parse(
   ),
 ) as JsonObject;
 
+const laterReusableComponents = {
+  '0.8.0-rc.2': JSON.parse(
+    readFileSync(
+      new URL(
+        '../../validator/test/snapshots/0.8.0-rc.2/fixtures/expected-valid/reusable-components.json',
+        import.meta.url,
+      ),
+      'utf8',
+    ),
+  ) as JsonObject,
+  '0.8.0-rc.3': JSON.parse(
+    readFileSync(
+      new URL(
+        '../../validator/test/snapshots/0.8.0-rc.3/fixtures/expected-valid/reusable-components.json',
+        import.meta.url,
+      ),
+      'utf8',
+    ),
+  ) as JsonObject,
+} as const;
+
 function resolve(document: unknown) {
   return resolveMcpDescriptionComponentReferences(document, {
     specification: '0.8.0-rc.1',
@@ -37,6 +58,26 @@ function expectDiagnostic(
 }
 
 describe('resolveMcpDescriptionComponentReferences', () => {
+  for (const specification of ['0.8.0-rc.2', '0.8.0-rc.3'] as const) {
+    it(`resolves ${specification} references with terminal provenance`, () => {
+      const document = laterReusableComponents[specification];
+      const result = resolveMcpDescriptionComponentReferences(document, {
+        specification,
+      });
+
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+      expect((result.value.tools as JsonObject[])[0].inputSchema).toEqual(
+        (document.components as JsonObject).schemas &&
+          ((document.components as JsonObject).schemas as JsonObject).Input,
+      );
+      expect(result.provenance).toContainEqual({
+        referencePath: ['tools', 0, 'inputSchema'],
+        targetPath: ['components', 'schemas', 'Input'],
+      });
+    });
+  }
+
   it('resolves every namespace, chains, and shared targets with provenance', () => {
     const document = structuredClone(reusableComponents);
     const tools = document.tools as JsonObject[];

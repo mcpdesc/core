@@ -33,16 +33,21 @@ const files = snapshotRoots
   }));
 const generated = {
   formatVersion: 1,
-  baselineSource: {
-    repository: 'https://github.com/mcpdesc/mcpdesc-specification',
-    commit: '6eb1b54330f8b7dc11468c7e31614214c7521cd0',
-    tag: 'validator-v0.6.0',
-  },
   approvedExceptions: [
     {
       path: 'src/snapshots/0.8.0-rc.1/semantic.js',
       reason:
         'Add terminal component-reference provenance without changing the RC.1 schema, conformance results, diagnostics, or fixtures.',
+    },
+    {
+      path: 'src/snapshots/0.8.0-rc.2/semantic.js',
+      reason:
+        'Add terminal component-reference provenance without changing the RC.2 schema, conformance results, diagnostics, or fixtures.',
+    },
+    {
+      path: 'src/snapshots/0.8.0-rc.3/semantic.js',
+      reason:
+        'Add terminal component-reference provenance without changing the RC.3 schema, conformance results, diagnostics, or fixtures.',
     },
   ],
   files,

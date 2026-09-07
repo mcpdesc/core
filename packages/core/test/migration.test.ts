@@ -4,9 +4,11 @@ import {
   DRAFT_4_SCHEMA_URI,
   RC_1_SCHEMA_URI,
   RC_2_SCHEMA_URI,
+  RC_3_SCHEMA_URI,
   migrateMcpDescription07ToDraft4,
   migrateMcpDescription07ToRc1,
   migrateMcpDescription07ToRc2,
+  migrateMcpDescription07ToRc3,
   serializeMcpDescriptionMigrationReport,
   type MigrateMcpDescription07ToRc1Options,
 } from '../src/index.js';
@@ -360,5 +362,21 @@ describe('migrateMcpDescription07ToRc2', () => {
         protocolVersion: '2026-07-28',
       },
     ]);
+  });
+});
+
+describe('migrateMcpDescription07ToRc3', () => {
+  it('uses a source protocol version and validates the exact RC.3 snapshot', () => {
+    const result = migrateMcpDescription07ToRc3(source, {
+      specification: '0.8.0-rc.3',
+      sourceValidated: true,
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.$schema).toBe(RC_3_SCHEMA_URI);
+    expect(result.value.mcpdesc).toBe('0.8.0');
+    expect(result.value.protocolVersions).toEqual(['2025-11-25']);
+    expect(result.report.targetSpecification).toBe('0.8.0-rc.3');
   });
 });

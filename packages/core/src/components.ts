@@ -5,7 +5,11 @@ import {
 } from '@mcpdesc/validator/standalone';
 
 import type { CoreDiagnostic, McpDescriptionDocument } from './model.js';
-import { RC_1_SPECIFICATION } from './snapshot.js';
+import {
+  RC_1_SPECIFICATION,
+  RC_2_SPECIFICATION,
+  RC_3_SPECIFICATION,
+} from './snapshot.js';
 
 export type {
   McpDescComponentNamespace,
@@ -19,8 +23,17 @@ export type {
 } from './model.js';
 
 export interface ResolveMcpDescriptionComponentReferencesOptions {
-  readonly specification: typeof RC_1_SPECIFICATION;
+  readonly specification:
+    | typeof RC_1_SPECIFICATION
+    | typeof RC_2_SPECIFICATION
+    | typeof RC_3_SPECIFICATION;
 }
+
+const componentReferenceSpecifications = new Set<string>([
+  RC_1_SPECIFICATION,
+  RC_2_SPECIFICATION,
+  RC_3_SPECIFICATION,
+]);
 
 export interface McpDescriptionComponentReferenceProvenance {
   readonly referencePath: readonly (number | string)[];
@@ -70,7 +83,7 @@ export function resolveMcpDescriptionComponentReferences(
   document: unknown,
   options: ResolveMcpDescriptionComponentReferencesOptions,
 ): ResolveMcpDescriptionComponentReferencesResult {
-  if (options.specification !== RC_1_SPECIFICATION) {
+  if (!componentReferenceSpecifications.has(options.specification)) {
     return {
       ok: false,
       diagnostics: [

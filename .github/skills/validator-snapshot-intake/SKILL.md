@@ -1,9 +1,9 @@
 ---
 name: validator-snapshot-intake
 description:
-  Import an approved immutable MCP Description validator snapshot from the
-  specification repository. Use when adding a new draft or release-candidate
-  selector to @mcpdesc/validator.
+  Import reviewed MCP Description artifacts as an immutable validator selector.
+  Use when adding a new draft or release-candidate selector to
+  @mcpdesc/validator.
 license: Apache-2.0
 ---
 
@@ -12,7 +12,7 @@ license: Apache-2.0
 ## Prerequisites
 
 - Read the root and `packages/validator/AGENTS.md` files.
-- Require an approved exact specification tag or full commit.
+- Require an approved exact specification selector.
 - Obtain a bundle with `manifest.json`, `runtime/`, and `fixtures/` from
   `mcpdesc/mcpdesc-specification`.
 - Confirm both repositories have clean worktrees before generation or import.
@@ -20,9 +20,10 @@ license: Apache-2.0
 ## Bundle Contract
 
 The manifest uses `formatVersion: 1`, an exact prerelease `selector`, matching
-`snapshotTag`, source repository and full commit, and a complete sorted-capable
-`files` array. Every file entry contains a bundle-relative path under `runtime/`
-or `fixtures/` and its lowercase SHA-256 digest.
+`snapshotTag`, and a complete sorted-capable `files` array. Every file entry
+contains a bundle-relative path under `runtime/` or `fixtures/` and its
+lowercase SHA-256 digest. Source repository and commit metadata are optional and
+informational.
 
 ## Workflow
 
@@ -32,8 +33,8 @@ or `fixtures/` and its lowercase SHA-256 digest.
    npm run import:snapshot --workspace @mcpdesc/validator -- --check <bundle-directory>
    ```
 
-2. Review the manifest, source commit, schema digest, semantic implementation,
-   and fixture corpus against the approved specification snapshot.
+2. Review the manifest, schema digest, semantic implementation, and fixture
+   corpus against the approved specification artifacts.
 3. Import only after approval:
 
    ```bash

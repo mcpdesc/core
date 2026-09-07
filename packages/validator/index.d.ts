@@ -1,4 +1,4 @@
-export type McpDescriptionSpecification = '0.8.0-draft.1' | '0.8.0-draft.2' | '0.8.0-draft.3' | '0.8.0-draft.4' | '0.8.0-rc.1' | '0.8.0-rc.2';
+export type McpDescriptionSpecification = '0.8.0-draft.1' | '0.8.0-draft.2' | '0.8.0-draft.3' | '0.8.0-draft.4' | '0.8.0-rc.1' | '0.8.0-rc.2' | '0.8.0-rc.3';
 
 export type SupportedProtocolVersion =
   | '2024-11-05'
@@ -38,7 +38,7 @@ export interface McpDescriptionComponentResolutionResult {
 }
 
 export interface ResolveMcpDescriptionComponentReferencesOptions {
-  readonly specification: '0.8.0-rc.1';
+  readonly specification: '0.8.0-rc.1' | '0.8.0-rc.2' | '0.8.0-rc.3';
 }
 
 export type McpExtensionMaturity = 'official' | 'experimental' | 'uncatalogued';
@@ -86,6 +86,11 @@ export interface SpecificationProvenance {
     readonly schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.2.json';
     readonly schemaSha256: '40f6775dde052224114e91d6aa484d826eecf56b77f7ac87b4cf707ffbcb6ce8';
   };
+  readonly '0.8.0-rc.3': {
+    readonly snapshotTag: 'v0.8.0-rc.3';
+    readonly schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.3.json';
+    readonly schemaSha256: 'a9c3ff77ba37c72362909f538f6e957d055e6fdb372f8b3d529e3651af3fecf4';
+  };
 }
 
 export interface ResolveMcpDescriptionSpecificationOptions {
@@ -109,7 +114,7 @@ export type McpDescriptionSpecificationResolution =
   | ResolvedMcpDescriptionSpecification
   | UnresolvedMcpDescriptionSpecification;
 
-export declare const supportedSpecifications: readonly ['0.8.0-draft.1', '0.8.0-draft.2', '0.8.0-draft.3', '0.8.0-draft.4', '0.8.0-rc.1', '0.8.0-rc.2'];
+export declare const supportedSpecifications: readonly ['0.8.0-draft.1', '0.8.0-draft.2', '0.8.0-draft.3', '0.8.0-draft.4', '0.8.0-rc.1', '0.8.0-rc.2', '0.8.0-rc.3'];
 
 export declare const supportedProtocolVersions: readonly [
   '2024-11-05',
