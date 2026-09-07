@@ -4,10 +4,12 @@ import {
   DRAFT_4_SCHEMA_URI,
   RC_1_SCHEMA_URI,
   RC_2_SCHEMA_URI,
+  RC_3_SCHEMA_URI,
   mergeEffectiveProtocolViews,
   migrateMcpDescription07ToDraft4,
   migrateMcpDescription07ToRc1,
   migrateMcpDescription07ToRc2,
+  migrateMcpDescription07ToRc3,
   projectEffectiveProtocolView,
   resolveMcpDescriptionComponentReferences,
   selectMcpDescriptionDeclarations,
@@ -39,7 +41,14 @@ const supportBySpecification = {
     selection: 'supported',
   },
   '0.8.0-rc.2': {
-    componentResolution: 'unsupported-pending-contract',
+    componentResolution: 'supported',
+    merge: 'supported',
+    migrationFrom07: 'supported',
+    projection: 'supported',
+    selection: 'supported',
+  },
+  '0.8.0-rc.3': {
+    componentResolution: 'supported',
     merge: 'supported',
     migrationFrom07: 'supported',
     projection: 'supported',
@@ -54,6 +63,7 @@ const schemaBySpecification = {
   '0.8.0-draft.4': DRAFT_4_SCHEMA_URI,
   '0.8.0-rc.1': RC_1_SCHEMA_URI,
   '0.8.0-rc.2': RC_2_SCHEMA_URI,
+  '0.8.0-rc.3': RC_3_SCHEMA_URI,
 } as const satisfies Record<SupportedCoreSpecification, string>;
 
 const migrateBySpecification = {
@@ -70,6 +80,11 @@ const migrateBySpecification = {
   '0.8.0-rc.2': (source: unknown) =>
     migrateMcpDescription07ToRc2(source, {
       specification: '0.8.0-rc.2',
+      sourceValidated: true,
+    }),
+  '0.8.0-rc.3': (source: unknown) =>
+    migrateMcpDescription07ToRc3(source, {
+      specification: '0.8.0-rc.3',
       sourceValidated: true,
     }),
 } satisfies Record<

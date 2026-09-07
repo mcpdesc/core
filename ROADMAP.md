@@ -38,8 +38,10 @@ repository.
       grounded in the RC.2 specification snapshot and conformance fixtures.
 - [x] Add exact MCP Description RC.2 migration support from validated 0.7.0
       documents.
-- [x] Expose reusable-component resolution as a separate RC.1-only pure
-      operation with deterministic terminal-target provenance and existing
+- [x] Adopt RC.3 with package-owned selector integrity and decouple
+      non-normative specification documentation from validator releases.
+- [x] Expose reusable-component resolution as a separate RC.1, RC.2, and RC.3
+      pure operation with deterministic terminal-target provenance and existing
       unresolved-reference diagnostics.
 - Add normalization or comparison operations only where multiple consumers
   demonstrate the same requirement.

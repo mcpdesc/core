@@ -6,7 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this package follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Dates for published releases are the UTC publication dates recorded by npm.
 
-## [Unreleased]
+## [0.10.0] - 2026-09-07
+
+### Added
+
+- Added the immutable `0.8.0-rc.3` selector with behavior equivalent to RC.2,
+	its RC.3 schema identity, and frozen fixtures.
+- Added component reference resolution for RC.2 and RC.3 with deterministic
+	terminal-target provenance.
+
+### Changed
+
+- Validator integrity now relies on package-owned schema, runtime, fixture, and
+	package bytes. Specification repository tags and commits are retained only as
+	informational provenance.
+- Recorded maintainer-approved additive provenance corrections to the RC.2 and
+	RC.3 snapshot implementations. Their schemas, conformance results,
+	diagnostics, and frozen fixtures remain unchanged.
 
 ## [0.9.0] - 2026-09-04
 

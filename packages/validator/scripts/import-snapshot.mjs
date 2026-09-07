@@ -37,11 +37,13 @@ if (!/^\d+\.\d+\.\d+-(?:draft|rc)\.\d+$/.test(manifest.selector ?? '')) {
 if (manifest.snapshotTag !== `v${manifest.selector}`) {
   fail('snapshotTag must equal v<selector>');
 }
-if (!/^[a-f0-9]{40}$/.test(manifest.source?.commit ?? '')) {
-  fail('source.commit must be a full lowercase Git commit');
-}
-if (manifest.source?.repository !== 'https://github.com/mcpdesc/mcpdesc-specification') {
-  fail('source.repository must identify mcpdesc/mcpdesc-specification');
+if (manifest.source !== undefined) {
+  if (!/^[a-f0-9]{40}$/.test(manifest.source?.commit ?? '')) {
+    fail('source.commit must be a full lowercase Git commit when provided');
+  }
+  if (manifest.source?.repository !== 'https://github.com/mcpdesc/mcpdesc-specification') {
+    fail('source.repository must identify mcpdesc/mcpdesc-specification');
+  }
 }
 if (!Array.isArray(manifest.files) || manifest.files.length === 0) {
   fail('files must be a non-empty array');
@@ -116,7 +118,7 @@ const fixtureTarget = path.join(
   'snapshots',
   manifest.selector,
 );
-if (fs.existsSync(runtimeTarget) || fs.existsSync(fixtureTarget)) {
+if (!checkOnly && (fs.existsSync(runtimeTarget) || fs.existsSync(fixtureTarget))) {
   fail(`${manifest.selector} already exists; snapshots are immutable`);
 }
 
@@ -132,17 +134,12 @@ if (!checkOnly) {
   });
   fs.writeFileSync(
     path.join(fixtureTarget, 'README.md'),
-    `# Validator fixture snapshot: ${manifest.selector}\n\nThe \`fixtures/\` tree was imported from ${manifest.source.repository} commit \`${manifest.source.commit}\` for the immutable \`${manifest.snapshotTag}\` specification snapshot.\n`,
-  );
-  fs.mkdirSync(path.join(packageRoot, 'snapshot-imports'), { recursive: true });
-  fs.copyFileSync(
-    manifestPath,
-    path.join(packageRoot, 'snapshot-imports', `${manifest.selector}.json`),
+    `# Validator fixture snapshot: ${manifest.selector}\n\nThe \`fixtures/\` tree is frozen for the immutable \`${manifest.selector}\` validator selector.\n`,
   );
 }
 
 console.log(
-  `${checkOnly ? 'Validated' : 'Imported'} ${manifest.selector} from ${manifest.source.commit} (${manifest.files.length} files).`,
+  `${checkOnly ? 'Validated' : 'Imported'} ${manifest.selector} (${manifest.files.length} files).`,
 );
 if (!checkOnly) {
   console.log(

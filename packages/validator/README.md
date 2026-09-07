@@ -44,16 +44,21 @@ a later draft is published.
 
 ## Supported snapshots
 
-Version `0.8.0` supports these immutable snapshots, newest first:
+The current workspace supports these immutable selectors, newest first:
 
-| Selector | Tag | Embedded schema SHA-256 |
+| Selector | First validator release | Embedded schema SHA-256 |
 |---|---|---|
-| `0.8.0-rc.2` | `v0.8.0-rc.2` | `40f6775dde052224114e91d6aa484d826eecf56b77f7ac87b4cf707ffbcb6ce8` |
-| `0.8.0-rc.1` | `v0.8.0-rc.1` | `936a0f24ade501fcabf3d6498c0440c445daa672a575573a35954cee49430ac4` |
-| `0.8.0-draft.4` | `v0.8.0-draft.4` | `93ed03f74059b5b3ce7509a96b59161bdab2c3cf7734397a9bec5a7588d0b03b` |
-| `0.8.0-draft.3` | `v0.8.0-draft.3` | `8823c1f1946360b2a44d00920e2092e5e4acd139a1964befad4eb0bf3ce96002` |
-| `0.8.0-draft.2` | `v0.8.0-draft.2` | `ab692c1a5a0f7e5f29be1940aa8c64a56d4620be0a19d00cf0a64680b7e517fa` |
-| `0.8.0-draft.1` | `v0.8.0-draft.1` | `4ceb6042c3fd31703199cd3db869ec5c35c17d2fe9ab7b2f5b96a2a3af0cebe4` |
+| `0.8.0-rc.3` | `0.10.0` | `a9c3ff77ba37c72362909f538f6e957d055e6fdb372f8b3d529e3651af3fecf4` |
+| `0.8.0-rc.2` | `0.9.0` | `40f6775dde052224114e91d6aa484d826eecf56b77f7ac87b4cf707ffbcb6ce8` |
+| `0.8.0-rc.1` | `0.5.0` | `936a0f24ade501fcabf3d6498c0440c445daa672a575573a35954cee49430ac4` |
+| `0.8.0-draft.4` | `0.4.0` | `93ed03f74059b5b3ce7509a96b59161bdab2c3cf7734397a9bec5a7588d0b03b` |
+| `0.8.0-draft.3` | `0.3.0` | `8823c1f1946360b2a44d00920e2092e5e4acd139a1964befad4eb0bf3ce96002` |
+| `0.8.0-draft.2` | `0.2.0` | `ab692c1a5a0f7e5f29be1940aa8c64a56d4620be0a19d00cf0a64680b7e517fa` |
+| `0.8.0-draft.1` | `0.1.0` | `4ceb6042c3fd31703199cd3db869ec5c35c17d2fe9ab7b2f5b96a2a3af0cebe4` |
+
+The validator package embeds the schema and executable behavior for each
+selector. npm integrity and trusted-publishing provenance identify released
+package bytes; specification repository tags and commits are informational.
 
 ## Usage
 
@@ -132,9 +137,9 @@ Structural paths start with AJV's instance path. A `required` error appends its 
 
 ## Support metadata
 
-The package exports frozen `supportedSpecifications`, `supportedProtocolVersions`, and `specificationProvenance` values. Provenance records include the snapshot tag, recorded schema URI, and embedded schema SHA-256 digest. Public validation dispatches through a registry keyed by exact specification selectors. The current repository selector set is `0.8.0-draft.1`, `0.8.0-draft.2`, `0.8.0-draft.3`, `0.8.0-draft.4`, `0.8.0-rc.1`, and `0.8.0-rc.2`; the protocol-version export is the deduplicated union supported by those snapshots.
+The package exports frozen `supportedSpecifications`, `supportedProtocolVersions`, and `specificationProvenance` values. Provenance records include the snapshot tag, recorded schema URI, and embedded schema SHA-256 digest. Public validation dispatches through a registry keyed by exact specification selectors. The current repository selector set is `0.8.0-draft.1`, `0.8.0-draft.2`, `0.8.0-draft.3`, `0.8.0-draft.4`, `0.8.0-rc.1`, `0.8.0-rc.2`, and `0.8.0-rc.3`; the protocol-version export is the deduplicated union supported by those snapshots.
 
-RC.2 also exports the frozen `mcpExtensionCatalogue` and
+RC.2 and RC.3 also export the frozen `mcpExtensionCatalogue` and
 `mcpExtensionMaturity` classifier. The catalogue pins its authoritative source,
 effective date, and official or experimental identifier assignments. Catalogue
 recognition establishes authority and maturity only; it does not validate
@@ -142,10 +147,10 @@ extension-specific settings.
 
 npm package SemVer tracks implementation releases independently from specification snapshot identity. Adding a later snapshot is additive: it must use a sibling implementation and selector rather than changing an existing snapshot's schema, semantics, metadata, fixtures, or results.
 
-The RC.1 component resolver has one maintainer-approved additive tooling
-correction: successful substitutions also report authored and terminal target
-paths. The correction does not change the RC.1 schema, validation results,
-diagnostics, or fixtures and is recorded in the integrity manifest.
+The RC.1, RC.2, and RC.3 component resolvers report authored and terminal target
+paths for successful substitutions. The additive tooling corrections do not
+change snapshot schemas, validation results, diagnostics, or fixtures and are
+recorded in the integrity manifest.
 
 The runtime bundles its schema, performs no network fetches for external schema references, and imports no Node.js built-ins. Unresolved external Tool-schema references produce incomplete-validation warnings and are preserved. All three ESM entry points support Node.js 20 or later and browser bundlers.
 

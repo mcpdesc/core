@@ -12,9 +12,12 @@
 ## Decision Rules
 
 - For normative behavior changes, update and approve the specification
-  repository before importing a new validator snapshot.
+  repository before importing a new validator selector.
 - For validator behavior, use exact immutable selectors and add sibling
   snapshots; never modify a published selector.
+- Treat upstream specification tags and commits as informational provenance.
+  Validator package integrity is defined by its embedded schema, runtime, frozen
+  fixtures, package integrity, and immutable package release.
 - A maintainer-approved additive tooling-metadata correction may modify a
   published snapshot implementation only when schemas, conformance behavior,
   diagnostics, and fixtures remain unchanged and the integrity exception is

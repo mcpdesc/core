@@ -36,9 +36,10 @@ validation without creating a second source of normative specification text.
 - Require exact immutable snapshot selectors.
 - Do not infer a draft selector from `mcpdesc: "0.8.0"` alone.
 - Do not change behavior captured for a published selector silently.
-- Import a new snapshot only from an explicitly approved specification tag or
-  commit, with exact schema, semantic implementation, fixture, and digest
-  provenance. Never require a sibling specification checkout in routine CI.
+- Import a new selector only from approved specification artifacts. Review and
+  freeze the exact schema, semantic implementation, and fixtures owned by the
+  validator package. Upstream tags and commits are informational provenance;
+  never require a sibling specification checkout in routine CI.
 - Existing directories under `packages/validator/src/snapshots/` and
   `packages/validator/test/snapshots/` are immutable. Add sibling selectors.
 - A maintainer may approve an additive tooling-metadata correction to a
@@ -47,6 +48,9 @@ validation without creating a second source of normative specification text.
   `snapshot-integrity.json` and the validator changelog.
 - Keep npm versions, format versions, snapshot selectors, schema identities, and
   MCP protocol revisions separate.
+- Non-normative specification changelogs, FAQs, guides, governance, and release
+  prose may evolve without a validator or core release when package-owned
+  schema, behavior, and fixtures remain unchanged.
 
 ## New snapshot adoption
 

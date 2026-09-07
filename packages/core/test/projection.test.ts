@@ -4,10 +4,12 @@ import {
   DRAFT_4_SCHEMA_URI,
   RC_1_SCHEMA_URI,
   RC_2_SCHEMA_URI,
+  RC_3_SCHEMA_URI,
   draft4Snapshot,
   projectEffectiveProtocolView,
   rc1Snapshot,
   rc2Snapshot,
+  rc3Snapshot,
 } from '../src/index.js';
 
 const source = {
@@ -194,6 +196,17 @@ describe('projectEffectiveProtocolView', () => {
         '40f6775dde052224114e91d6aa484d826eecf56b77f7ac87b4cf707ffbcb6ce8',
     });
     expect(Object.isFrozen(rc2Snapshot)).toBe(true);
+  });
+
+  it('publishes RC.3 snapshot metadata', () => {
+    expect(rc3Snapshot).toMatchObject({
+      specification: '0.8.0-rc.3',
+      schemaUri: RC_3_SCHEMA_URI,
+      snapshotTag: 'v0.8.0-rc.3',
+      schemaSha256:
+        'a9c3ff77ba37c72362909f538f6e957d055e6fdb372f8b3d529e3651af3fecf4',
+    });
+    expect(Object.isFrozen(rc3Snapshot)).toBe(true);
   });
 
   it('projects every scoped root collection and preserves unscoped semantics', () => {

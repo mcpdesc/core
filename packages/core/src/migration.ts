@@ -17,9 +17,12 @@ import {
   RC_1_SPECIFICATION,
   RC_2_SCHEMA_URI,
   RC_2_SPECIFICATION,
+  RC_3_SCHEMA_URI,
+  RC_3_SPECIFICATION,
   draft4Snapshot,
   rc1Snapshot,
   rc2Snapshot,
+  rc3Snapshot,
   type SupportedCoreSpecification,
 } from './snapshot.js';
 
@@ -59,10 +62,18 @@ export interface MigrateMcpDescription07ToRc2Options {
   readonly sourceValidated: true;
 }
 
+export interface MigrateMcpDescription07ToRc3Options {
+  readonly specification: typeof RC_3_SPECIFICATION;
+  readonly defaultProtocolVersion?: SupportedProtocolVersion;
+  readonly protocolVersion?: SupportedProtocolVersion;
+  readonly sourceValidated: true;
+}
+
 type SupportedMigrationOptions =
   | MigrateMcpDescription07Options
   | MigrateMcpDescription07ToRc1Options
-  | MigrateMcpDescription07ToRc2Options;
+  | MigrateMcpDescription07ToRc2Options
+  | MigrateMcpDescription07ToRc3Options;
 
 export interface McpDescriptionMigrationDefault {
   readonly code: 'migration-default-protocol-version';
@@ -334,7 +345,10 @@ function migrateMcpDescription07(
   options: SupportedMigrationOptions,
   targetSpecification: SupportedCoreSpecification,
   targetSchemaUri:
-    typeof DRAFT_4_SCHEMA_URI | typeof RC_1_SCHEMA_URI | typeof RC_2_SCHEMA_URI,
+    | typeof DRAFT_4_SCHEMA_URI
+    | typeof RC_1_SCHEMA_URI
+    | typeof RC_2_SCHEMA_URI
+    | typeof RC_3_SCHEMA_URI,
   targetProtocolVersions: readonly SupportedProtocolVersion[],
 ): McpDescriptionMigrationResult {
   if (options.specification !== targetSpecification) {
@@ -386,7 +400,8 @@ function migrateMcpDescription07(
   }
   const defaultProtocolVersion =
     (targetSpecification === RC_1_SPECIFICATION ||
-      targetSpecification === RC_2_SPECIFICATION) &&
+      targetSpecification === RC_2_SPECIFICATION ||
+      targetSpecification === RC_3_SPECIFICATION) &&
     'defaultProtocolVersion' in options
       ? options.defaultProtocolVersion
       : undefined;
@@ -548,5 +563,18 @@ export function migrateMcpDescription07ToRc2(
     RC_2_SPECIFICATION,
     RC_2_SCHEMA_URI,
     rc2Snapshot.protocolVersions,
+  );
+}
+
+export function migrateMcpDescription07ToRc3(
+  source: unknown,
+  options: MigrateMcpDescription07ToRc3Options,
+): McpDescriptionMigrationResult {
+  return migrateMcpDescription07(
+    source,
+    options,
+    RC_3_SPECIFICATION,
+    RC_3_SCHEMA_URI,
+    rc3Snapshot.protocolVersions,
   );
 }

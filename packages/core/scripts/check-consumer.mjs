@@ -60,11 +60,14 @@ try {
       import {
         RC_1_SCHEMA_URI,
         RC_2_SCHEMA_URI,
+        RC_3_SCHEMA_URI,
         migrateMcpDescription07ToRc1,
         migrateMcpDescription07ToRc2,
+        migrateMcpDescription07ToRc3,
         projectEffectiveProtocolView,
         rc1Snapshot,
         rc2Snapshot,
+        rc3Snapshot,
         resolveMcpDescriptionComponentReferences,
         serializeMcpDescriptionMigrationReport,
       } from '@mcpdesc/core';
@@ -179,6 +182,26 @@ try {
       }).valid, true);
       assert.equal(rc2Snapshot.specification, '0.8.0-rc.2');
 
+      const rc3Migration = migrateMcpDescription07ToRc3({
+        mcpdesc: '0.7.0',
+        info: {
+          name: 'legacy-rc3-consumer-smoke',
+          version: '1.0.0',
+          protocolVersion: '2025-11-25',
+        },
+        transports: [{ type: 'stdio', command: 'server' }],
+      }, {
+        specification: '0.8.0-rc.3',
+        sourceValidated: true,
+      });
+      assert.equal(rc3Migration.ok, true);
+      assert.equal(rc3Migration.value.$schema, RC_3_SCHEMA_URI);
+      assert.equal(rc3Migration.report.targetSpecification, '0.8.0-rc.3');
+      assert.equal(validateMcpDescription(rc3Migration.value, {
+        specification: '0.8.0-rc.3',
+      }).valid, true);
+      assert.equal(rc3Snapshot.specification, '0.8.0-rc.3');
+
       const preStandardApps = {
         $schema: RC_2_SCHEMA_URI,
         mcpdesc: '0.8.0',
@@ -197,21 +220,36 @@ try {
         [{ code: 'extensions-not-supported-by-version', severity: 'warning' }],
       );
 
-      const reusable = {
-        ...source,
-        components: { schemas: { Input: { type: 'object' } } },
-        tools: [{
-          name: 'referenced',
-          inputSchema: { $componentRef: '#/components/schemas/Input' },
-        }],
-      };
-      for (const operation of [resolveMcpDescriptionComponentReferences, resolveComponentsSubpath]) {
-        const resolution = operation(reusable, { specification: '0.8.0-rc.1' });
-        assert.equal(resolution.ok, true);
-        assert.deepEqual(resolution.provenance, [{
-          referencePath: ['tools', 0, 'inputSchema'],
-          targetPath: ['components', 'schemas', 'Input'],
-        }]);
+      for (const [specification, schemaUri] of [
+        ['0.8.0-rc.1', RC_1_SCHEMA_URI],
+        ['0.8.0-rc.2', RC_2_SCHEMA_URI],
+        ['0.8.0-rc.3', RC_3_SCHEMA_URI],
+      ]) {
+        const reusable = {
+          ...source,
+          $schema: schemaUri,
+          components: {
+            schemas: {
+              Input: { type: 'object', additionalProperties: false },
+            },
+          },
+          tools: [{
+            name: 'referenced',
+            inputSchema: { $componentRef: '#/components/schemas/Input' },
+          }],
+        };
+        for (const operation of [resolveMcpDescriptionComponentReferences, resolveComponentsSubpath]) {
+          const resolution = operation(reusable, { specification });
+          assert.equal(
+            resolution.ok,
+            true,
+            JSON.stringify(resolution.diagnostics),
+          );
+          assert.deepEqual(resolution.provenance, [{
+            referencePath: ['tools', 0, 'inputSchema'],
+            targetPath: ['components', 'schemas', 'Input'],
+          }]);
+        }
       }
     `,
   );
@@ -230,9 +268,11 @@ try {
       import {
         migrateMcpDescription07ToRc1,
         migrateMcpDescription07ToRc2,
+        migrateMcpDescription07ToRc3,
         serializeMcpDescriptionMigrationReport,
         type MigrateMcpDescription07ToRc1Options,
         type MigrateMcpDescription07ToRc2Options,
+        type MigrateMcpDescription07ToRc3Options,
       } from '@mcpdesc/core';
 
       const parsed = parseMcpDescriptionSource('{"mcpdesc":"0.8.0"}');
@@ -268,6 +308,21 @@ try {
         },
         rc2MigrationOptions,
       );
+      const rc3MigrationOptions: MigrateMcpDescription07ToRc3Options = {
+        specification: '0.8.0-rc.3',
+        sourceValidated: true,
+      };
+      migrateMcpDescription07ToRc3(
+        {
+          mcpdesc: '0.7.0',
+          info: {
+            name: 'typed-rc3',
+            version: '1.0.0',
+            protocolVersion: '2025-11-25',
+          },
+        },
+        rc3MigrationOptions,
+      );
       const reference: McpDescComponentReference = {
         $componentRef: '#/components/schemas/Input',
       };
@@ -277,6 +332,14 @@ try {
       resolveMcpDescriptionComponentReferences(
         { mcpdesc: '0.8.0', info: {}, protocolVersions: [], components },
         { specification: '0.8.0-rc.1' },
+      );
+      resolveMcpDescriptionComponentReferences(
+        { mcpdesc: '0.8.0', info: {}, protocolVersions: [], components },
+        { specification: '0.8.0-rc.2' },
+      );
+      resolveMcpDescriptionComponentReferences(
+        { mcpdesc: '0.8.0', info: {}, protocolVersions: [], components },
+        { specification: '0.8.0-rc.3' },
       );
     `,
   );
@@ -302,9 +365,9 @@ try {
       'utf8',
     ),
   );
-  if (installed.version !== '0.8.1') {
+  if (installed.version !== pack.version) {
     throw new Error(
-      `Expected installed core 0.8.1, found ${installed.version}`,
+      `Expected installed core ${pack.version}, found ${installed.version}`,
     );
   }
   const installedValidator = JSON.parse(
@@ -313,9 +376,9 @@ try {
       'utf8',
     ),
   );
-  if (installedValidator.version !== '0.9.0') {
+  if (installedValidator.version !== validatorPack.version) {
     throw new Error(
-      `Expected installed validator 0.9.0, found ${installedValidator.version}`,
+      `Expected installed validator ${validatorPack.version}, found ${installedValidator.version}`,
     );
   }
 

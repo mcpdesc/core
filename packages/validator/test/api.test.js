@@ -19,7 +19,8 @@ const fixtureRoots = {
   '0.8.0-draft.3': new URL('./snapshots/0.8.0-draft.3/fixtures/', import.meta.url),
   '0.8.0-draft.4': new URL('./snapshots/0.8.0-draft.4/fixtures/', import.meta.url),
   '0.8.0-rc.1': new URL('./snapshots/0.8.0-rc.1/fixtures/', import.meta.url),
-  '0.8.0-rc.2': new URL('./snapshots/0.8.0-rc.2/fixtures/', import.meta.url)
+  '0.8.0-rc.2': new URL('./snapshots/0.8.0-rc.2/fixtures/', import.meta.url),
+  '0.8.0-rc.3': new URL('./snapshots/0.8.0-rc.3/fixtures/', import.meta.url)
 };
 
 function fixture(group, name, specification = '0.8.0-draft.1') {
@@ -33,7 +34,7 @@ function validate(document, specification = '0.8.0-draft.1') {
 test('exports the cumulative validator API', () => {
   assert.equal(typeof validateMcpDescription, 'function');
   assert.equal(typeof resolveMcpDescriptionComponentReferences, 'function');
-  assert.deepEqual(supportedSpecifications, ['0.8.0-draft.1', '0.8.0-draft.2', '0.8.0-draft.3', '0.8.0-draft.4', '0.8.0-rc.1', '0.8.0-rc.2']);
+  assert.deepEqual(supportedSpecifications, ['0.8.0-draft.1', '0.8.0-draft.2', '0.8.0-draft.3', '0.8.0-draft.4', '0.8.0-rc.1', '0.8.0-rc.2', '0.8.0-rc.3']);
   assert.deepEqual(supportedProtocolVersions, [
     '2024-11-05',
     '2025-03-26',
@@ -71,6 +72,11 @@ test('exports the cumulative validator API', () => {
       snapshotTag: 'v0.8.0-rc.2',
       schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.2.json',
       schemaSha256: '40f6775dde052224114e91d6aa484d826eecf56b77f7ac87b4cf707ffbcb6ce8'
+    },
+    '0.8.0-rc.3': {
+      snapshotTag: 'v0.8.0-rc.3',
+      schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.3.json',
+      schemaSha256: 'a9c3ff77ba37c72362909f538f6e957d055e6fdb372f8b3d529e3651af3fecf4'
     }
   });
 });
@@ -132,23 +138,25 @@ test('keeps pre-standard client requirements strict and malformed extension maps
   }
 });
 
-test('resolves RC.1 component references with terminal provenance', () => {
-  const document = fixture('expected-valid', 'reusable-components.json', '0.8.0-rc.1');
-  const original = structuredClone(document);
-  const first = resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-rc.1' });
-  const second = resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-rc.1' });
+for (const specification of ['0.8.0-rc.1', '0.8.0-rc.2', '0.8.0-rc.3']) {
+  test(`resolves ${specification} component references with terminal provenance`, () => {
+    const document = fixture('expected-valid', 'reusable-components.json', specification);
+    const original = structuredClone(document);
+    const first = resolveMcpDescriptionComponentReferences(document, { specification });
+    const second = resolveMcpDescriptionComponentReferences(document, { specification });
 
-  assert.deepEqual(first, second);
-  assert.deepEqual(first.document.tools[0].inputSchema, document.components.schemas.Input);
-  assert.deepEqual(first.provenance.find((record) => record.referencePath.join('.') === 'tools.0.inputSchema'), {
-    referencePath: ['tools', 0, 'inputSchema'],
-    targetPath: ['components', 'schemas', 'Input']
+    assert.deepEqual(first, second);
+    assert.deepEqual(first.document.tools[0].inputSchema, document.components.schemas.Input);
+    assert.deepEqual(first.provenance.find((record) => record.referencePath.join('.') === 'tools.0.inputSchema'), {
+      referencePath: ['tools', 0, 'inputSchema'],
+      targetPath: ['components', 'schemas', 'Input']
+    });
+    assert.ok(first.substitutions > first.provenance.length);
+    assert.deepEqual(document, original);
   });
-  assert.ok(first.substitutions > first.provenance.length);
-  assert.deepEqual(document, original);
-});
+}
 
-test('restricts public component resolution to RC.1', () => {
+test('rejects component resolution for unsupported selectors', () => {
   const document = fixture('expected-valid', 'reusable-components.json', '0.8.0-draft.4');
   assert.throws(
     () => resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-draft.4' }),
@@ -278,6 +286,7 @@ test('exports immutable support and provenance data', () => {
   assert.ok(Object.isFrozen(specificationProvenance['0.8.0-draft.4']));
   assert.ok(Object.isFrozen(specificationProvenance['0.8.0-rc.1']));
   assert.ok(Object.isFrozen(specificationProvenance['0.8.0-rc.2']));
+  assert.ok(Object.isFrozen(specificationProvenance['0.8.0-rc.3']));
   assert.throws(() => supportedSpecifications.push('0.8.0'));
   assert.throws(() => supportedProtocolVersions.pop());
   assert.throws(() => {
