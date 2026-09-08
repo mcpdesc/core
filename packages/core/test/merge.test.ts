@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  RC_2_SCHEMA_URI,
+  RC_4_SCHEMA_URI,
   areMcpDescriptionDocumentsSemanticallyEquivalent,
   mergeEffectiveProtocolViews,
   projectEffectiveProtocolView,
@@ -11,7 +11,7 @@ const extensions = {
   'io.modelcontextprotocol/ui': { mimeTypes: ['text/html;profile=mcp-app'] },
 };
 const source = {
-  $schema: RC_2_SCHEMA_URI,
+  $schema: RC_4_SCHEMA_URI,
   mcpdesc: '0.8.0',
   info: { name: 'extension-round-trip', version: '1.0.0' },
   protocolVersions: ['2025-11-25', '2026-07-28'],
@@ -23,7 +23,7 @@ describe('mergeEffectiveProtocolViews', () => {
     const original = structuredClone(source);
     const views = source.protocolVersions.map((protocolVersion) => {
       const result = projectEffectiveProtocolView(source, {
-        specification: '0.8.0-rc.2',
+        specification: '0.8.0-rc.4',
         protocolVersion,
       });
       expect(result.ok).toBe(true);
@@ -32,7 +32,7 @@ describe('mergeEffectiveProtocolViews', () => {
     });
 
     const merged = mergeEffectiveProtocolViews(views, {
-      specification: '0.8.0-rc.2',
+      specification: '0.8.0-rc.4',
     });
     expect(merged.ok).toBe(true);
     if (!merged.ok) return;
@@ -40,7 +40,7 @@ describe('mergeEffectiveProtocolViews', () => {
 
     for (const [index, protocolVersion] of source.protocolVersions.entries()) {
       const roundTrip = projectEffectiveProtocolView(merged.value, {
-        specification: '0.8.0-rc.2',
+        specification: '0.8.0-rc.4',
         protocolVersion,
       });
       expect(roundTrip.ok).toBe(true);
@@ -61,7 +61,7 @@ describe('mergeEffectiveProtocolViews', () => {
       mimeTypes: ['text/plain'],
     };
     const result = mergeEffectiveProtocolViews([source, changed], {
-      specification: '0.8.0-rc.2',
+      specification: '0.8.0-rc.4',
     });
     expect(result.ok).toBe(false);
     expect(result.diagnostics).toContainEqual(

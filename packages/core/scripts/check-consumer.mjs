@@ -58,12 +58,12 @@ try {
     `
       import assert from 'node:assert/strict';
       import {
-        RC_2_SCHEMA_URI,
+        RC_4_SCHEMA_URI,
         RC_3_SCHEMA_URI,
-        migrateMcpDescription07ToRc2,
+        migrateMcpDescription07ToRc4,
         migrateMcpDescription07ToRc3,
         projectEffectiveProtocolView,
-        rc2Snapshot,
+        rc4Snapshot,
         rc3Snapshot,
         resolveMcpDescriptionComponentReferences,
         serializeMcpDescriptionMigrationReport,
@@ -77,7 +77,7 @@ try {
       import { validateMcpDescription } from '@mcpdesc/validator/browser';
 
       const source = {
-        $schema: RC_2_SCHEMA_URI,
+        $schema: RC_4_SCHEMA_URI,
         mcpdesc: '0.8.0',
         info: { name: 'consumer-smoke', version: '1.0.0' },
         protocolVersions: ['2025-11-25', '2026-07-28'],
@@ -101,7 +101,7 @@ try {
       assert.deepEqual(parsed.value, source);
 
       const result = projectEffectiveProtocolView(source, {
-        specification: '0.8.0-rc.2',
+        specification: '0.8.0-rc.4',
         protocolVersion: '2026-07-28',
       });
 
@@ -110,13 +110,13 @@ try {
       assert.deepEqual(result.value.tools.map((tool) => tool.name), ['current']);
 
       const selection = selectMcpDescriptionDeclarations(source, {
-        specification: '0.8.0-rc.2',
+        specification: '0.8.0-rc.4',
         selections: { tools: ['legacy'] },
       });
       assert.equal(selection.ok, true);
       assert.deepEqual(selection.value.tools.map((tool) => tool.name), ['legacy']);
 
-      const migration = migrateMcpDescription07ToRc2({
+      const migration = migrateMcpDescription07ToRc4({
         mcpdesc: '0.7.0',
         info: {
           name: 'legacy-consumer-smoke',
@@ -126,19 +126,19 @@ try {
         transports: [{ type: 'stdio', command: 'server' }],
         tools: [{ name: 'legacy', inputSchema: { type: 'object' } }],
       }, {
-        specification: '0.8.0-rc.2',
+        specification: '0.8.0-rc.4',
         sourceValidated: true,
       });
       assert.equal(migration.ok, true);
       assert.deepEqual(migration.value.protocolVersions, ['2025-11-25']);
       assert.equal(migration.report.status, 'success');
 
-      const defaultedMigration = migrateMcpDescription07ToRc2({
+      const defaultedMigration = migrateMcpDescription07ToRc4({
         mcpdesc: '0.7.0',
         info: { name: 'defaulted-consumer-smoke', version: '1.0.0' },
         transports: [{ type: 'stdio', command: 'server' }],
       }, {
-        specification: '0.8.0-rc.2',
+        specification: '0.8.0-rc.4',
         defaultProtocolVersion: '2026-07-28',
         sourceValidated: true,
       });
@@ -155,29 +155,29 @@ try {
         defaultedMigration.report,
       );
       assert.equal(validateMcpDescription(defaultedMigration.value, {
-        specification: '0.8.0-rc.2',
+        specification: '0.8.0-rc.4',
       }).valid, true);
-      assert.equal(rc2Snapshot.specification, '0.8.0-rc.2');
+      assert.equal(rc4Snapshot.specification, '0.8.0-rc.4');
 
-      const rc2Migration = migrateMcpDescription07ToRc2({
+      const rc4Migration = migrateMcpDescription07ToRc4({
         mcpdesc: '0.7.0',
         info: {
-          name: 'legacy-rc2-consumer-smoke',
+          name: 'legacy-rc4-consumer-smoke',
           version: '1.0.0',
           protocolVersion: '2025-11-25',
         },
         transports: [{ type: 'stdio', command: 'server' }],
       }, {
-        specification: '0.8.0-rc.2',
+        specification: '0.8.0-rc.4',
         sourceValidated: true,
       });
-      assert.equal(rc2Migration.ok, true);
-      assert.equal(rc2Migration.value.$schema, RC_2_SCHEMA_URI);
-      assert.equal(rc2Migration.report.targetSpecification, '0.8.0-rc.2');
-      assert.equal(validateMcpDescription(rc2Migration.value, {
-        specification: '0.8.0-rc.2',
+      assert.equal(rc4Migration.ok, true);
+      assert.equal(rc4Migration.value.$schema, RC_4_SCHEMA_URI);
+      assert.equal(rc4Migration.report.targetSpecification, '0.8.0-rc.4');
+      assert.equal(validateMcpDescription(rc4Migration.value, {
+        specification: '0.8.0-rc.4',
       }).valid, true);
-      assert.equal(rc2Snapshot.specification, '0.8.0-rc.2');
+      assert.equal(rc4Snapshot.specification, '0.8.0-rc.4');
 
       const rc3Migration = migrateMcpDescription07ToRc3({
         mcpdesc: '0.7.0',
@@ -200,7 +200,7 @@ try {
       assert.equal(rc3Snapshot.specification, '0.8.0-rc.3');
 
       const preStandardApps = {
-        $schema: RC_2_SCHEMA_URI,
+        $schema: RC_4_SCHEMA_URI,
         mcpdesc: '0.8.0',
         info: { name: 'pre-standard-apps', version: '1.0.0' },
         protocolVersions: ['2025-11-25'],
@@ -209,7 +209,7 @@ try {
         }],
       };
       const appsValidation = validateMcpDescription(preStandardApps, {
-        specification: '0.8.0-rc.2',
+        specification: '0.8.0-rc.4',
       });
       assert.equal(appsValidation.valid, true);
       assert.deepEqual(
@@ -218,7 +218,6 @@ try {
       );
 
       for (const [specification, schemaUri] of [
-        ['0.8.0-rc.2', RC_2_SCHEMA_URI],
         ['0.8.0-rc.3', RC_3_SCHEMA_URI],
       ]) {
         const reusable = {
@@ -262,45 +261,45 @@ try {
         type McpDescComponentRegistries,
       } from '@mcpdesc/core/components';
       import {
-        migrateMcpDescription07ToRc2,
         migrateMcpDescription07ToRc3,
+        migrateMcpDescription07ToRc4,
         serializeMcpDescriptionMigrationReport,
-        type MigrateMcpDescription07ToRc2Options,
         type MigrateMcpDescription07ToRc3Options,
+        type MigrateMcpDescription07ToRc4Options,
       } from '@mcpdesc/core';
 
       const parsed = parseMcpDescriptionSource('{"mcpdesc":"0.8.0"}');
       if (parsed.ok) {
         selectMcpDescriptionDeclarations(parsed.value, {
-          specification: '0.8.0-rc.2',
+          specification: '0.8.0-rc.4',
           selections: { tools: ['search'] },
         });
       }
 
-      const migrationOptions: MigrateMcpDescription07ToRc2Options = {
-        specification: '0.8.0-rc.2',
+      const migrationOptions: MigrateMcpDescription07ToRc4Options = {
+        specification: '0.8.0-rc.4',
         defaultProtocolVersion: '2026-07-28',
         sourceValidated: true,
       };
-      const migration = migrateMcpDescription07ToRc2(
+      const migration = migrateMcpDescription07ToRc4(
         { mcpdesc: '0.7.0', info: { name: 'typed', version: '1.0.0' } },
         migrationOptions,
       );
       serializeMcpDescriptionMigrationReport(migration.report);
-      const rc2MigrationOptions: MigrateMcpDescription07ToRc2Options = {
-        specification: '0.8.0-rc.2',
+      const rc4MigrationOptions: MigrateMcpDescription07ToRc4Options = {
+        specification: '0.8.0-rc.4',
         sourceValidated: true,
       };
-      migrateMcpDescription07ToRc2(
+      migrateMcpDescription07ToRc4(
         {
           mcpdesc: '0.7.0',
           info: {
-            name: 'typed-rc2',
+            name: 'typed-rc4',
             version: '1.0.0',
             protocolVersion: '2025-11-25',
           },
         },
-        rc2MigrationOptions,
+        rc4MigrationOptions,
       );
       const rc3MigrationOptions: MigrateMcpDescription07ToRc3Options = {
         specification: '0.8.0-rc.3',
@@ -323,14 +322,6 @@ try {
       const components: McpDescComponentRegistries = {
         schemas: { Input: { type: 'object' }, Alias: reference },
       };
-      resolveMcpDescriptionComponentReferences(
-        { mcpdesc: '0.8.0', info: {}, protocolVersions: [], components },
-        { specification: '0.8.0-rc.2' },
-      );
-      resolveMcpDescriptionComponentReferences(
-        { mcpdesc: '0.8.0', info: {}, protocolVersions: [], components },
-        { specification: '0.8.0-rc.2' },
-      );
       resolveMcpDescriptionComponentReferences(
         { mcpdesc: '0.8.0', info: {}, protocolVersions: [], components },
         { specification: '0.8.0-rc.3' },

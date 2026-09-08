@@ -51,11 +51,6 @@ test('preserves the immutable Release Candidate 2 schema digest and metadata', (
   const digest = createHash('sha256').update(embedded).digest('hex');
 
   assert.equal(digest, rc2SchemaSha256);
-  assert.deepEqual(specificationProvenance['0.8.0-rc.2'], {
-    snapshotTag: 'v0.8.0-rc.2',
-    schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.2.json',
-    schemaSha256: rc2SchemaSha256
-  });
 });
 
 test('preserves the immutable Release Candidate 3 schema digest and metadata', () => {
@@ -68,5 +63,18 @@ test('preserves the immutable Release Candidate 3 schema digest and metadata', (
     snapshotTag: 'v0.8.0-rc.3',
     schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.3.json',
     schemaSha256: rc3SchemaSha256
+  });
+});
+
+test('preserves the immutable Release Candidate 4 schema digest and metadata', () => {
+  const embedded = fs.readFileSync(new URL('../src/snapshots/0.8.0-rc.4/schema.json', import.meta.url));
+  const rc4SchemaSha256 = 'd38e54db859813b63be2a5c91dde91250035f18bcb5910208cf71fa6875d6eef';
+  const digest = createHash('sha256').update(embedded).digest('hex');
+
+  assert.equal(digest, rc4SchemaSha256);
+  assert.deepEqual(specificationProvenance['0.8.0-rc.4'], {
+    snapshotTag: 'v0.8.0-rc.4',
+    schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.4.json',
+    schemaSha256: rc4SchemaSha256
   });
 });

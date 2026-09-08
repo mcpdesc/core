@@ -8,6 +8,22 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-09-08
+
+### Added
+
+- Added the immutable `0.8.0-rc.4` selector, including protocol-independent
+	root info metadata behavior and its frozen conformance fixture corpus.
+
+### Changed
+
+- Narrowed active runtime support to RC.3 and RC.4, deprecated RC.3, and removed
+	RC.2 from current registries, declarations, generated bundles, and package
+	contents while retaining its immutable source and fixtures in Git.
+- Kept component reference resolution on RC.3 because RC.4's snapshot resolver
+	does not expose the terminal-target provenance required by the public result
+	contract.
+
 ## [0.10.1] - 2026-09-07
 
 ### Changed
@@ -139,7 +155,8 @@ Dates for published releases are the UTC publication dates recorded by npm.
 - Added synchronous structural and semantic validation for parsed JavaScript values with deterministic diagnostics and exact selector dispatch.
 - Added ESM browser support, TypeScript declarations, embedded schema provenance, frozen fixtures, and package-content checks.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/validator-v0.10.1...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/validator-v0.11.0...HEAD
+[0.11.0]: https://github.com/mcpdesc/core/compare/validator-v0.10.1...validator-v0.11.0
 [0.10.1]: https://github.com/mcpdesc/core/compare/validator-v0.10.0...validator-v0.10.1
 [0.10.0]: https://github.com/mcpdesc/core/compare/validator-v0.9.0...validator-v0.10.0
 [0.9.0]: https://github.com/mcpdesc/core/compare/validator-v0.8.0...validator-v0.9.0

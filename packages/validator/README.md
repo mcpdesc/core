@@ -25,7 +25,7 @@ npm install @mcpdesc/validator
 import { validateMcpDescription } from '@mcpdesc/validator';
 
 const result = validateMcpDescription(parsedDocument, {
-  specification: '0.8.0-rc.2',
+  specification: '0.8.0-rc.4',
 });
 
 for (const diagnostic of result.diagnostics) {
@@ -48,14 +48,18 @@ The package supports these immutable selectors, newest first:
 
 | Selector | First validator release | Embedded schema SHA-256 |
 |---|---|---|
-| `0.8.0-rc.3` | `0.10.0` | `a9c3ff77ba37c72362909f538f6e957d055e6fdb372f8b3d529e3651af3fecf4` |
-| `0.8.0-rc.2` (deprecated) | `0.9.0` | `40f6775dde052224114e91d6aa484d826eecf56b77f7ac87b4cf707ffbcb6ce8` |
+| `0.8.0-rc.4` | `0.11.0` | `d38e54db859813b63be2a5c91dde91250035f18bcb5910208cf71fa6875d6eef` |
+| `0.8.0-rc.3` (deprecated) | `0.10.0` | `a9c3ff77ba37c72362909f538f6e957d055e6fdb372f8b3d529e3651af3fecf4` |
 
 The validator package embeds the schema and executable behavior for each
-selector. RC.2 remains available for migration compatibility; new integrations
-should select RC.3. Earlier selectors remain available by pinning an older
+selector. RC.3 remains available for migration compatibility; new integrations
+should select RC.4. Earlier selectors remain available by pinning an older
 immutable validator release. npm integrity and trusted-publishing provenance identify released
 package bytes; specification repository tags and commits are informational.
+
+Component reference resolution remains available for RC.3. RC.4 validation is
+supported, but its snapshot resolver does not expose the terminal-target
+provenance required by the package's public resolution result contract.
 
 ## Usage
 
@@ -127,20 +131,19 @@ Structural paths start with AJV's instance path. A `required` error appends its 
 
 ## Support metadata
 
-The package exports frozen `supportedSpecifications`, `deprecatedSpecifications`, `supportedProtocolVersions`, and `specificationProvenance` values. Provenance records include the snapshot tag, recorded schema URI, and embedded schema SHA-256 digest. Public validation dispatches through a registry keyed by exact specification selectors. The active selector set is `0.8.0-rc.2` and `0.8.0-rc.3`; `deprecatedSpecifications` contains RC.2. The protocol-version export is the deduplicated union supported by active snapshots.
+The package exports frozen `supportedSpecifications`, `deprecatedSpecifications`, `supportedProtocolVersions`, and `specificationProvenance` values. Provenance records include the snapshot tag, recorded schema URI, and embedded schema SHA-256 digest. Public validation dispatches through a registry keyed by exact specification selectors. The active selector set is `0.8.0-rc.3` and `0.8.0-rc.4`; `deprecatedSpecifications` contains RC.3. The protocol-version export is the deduplicated union supported by active snapshots.
 
-RC.2 and RC.3 also export the frozen `mcpExtensionCatalogue` and
-`mcpExtensionMaturity` classifier. The catalogue pins its authoritative source,
-effective date, and official or experimental identifier assignments. Catalogue
-recognition establishes authority and maturity only; it does not validate
-extension-specific settings.
+The package also exports the frozen `mcpExtensionCatalogue` and
+`mcpExtensionMaturity` classifier pinned by the RC.3 snapshot. The catalogue
+records its authoritative source, effective date, and official or experimental
+identifier assignments. Catalogue recognition establishes authority and
+maturity only; it does not validate extension-specific settings.
 
 npm package SemVer tracks implementation releases independently from specification snapshot identity. Adding a later snapshot is additive: it must use a sibling implementation and selector rather than changing an existing snapshot's schema, semantics, metadata, fixtures, or results.
 
-The RC.2 and RC.3 component resolvers report authored and terminal target
-paths for successful substitutions. The additive tooling corrections do not
-change snapshot schemas, validation results, diagnostics, or fixtures and are
-recorded in the integrity manifest.
+The RC.3 component resolver reports authored and terminal target paths for
+successful substitutions. RC.4 component resolution is unavailable because its
+snapshot resolver does not expose that provenance result.
 
 The runtime bundles its schema, performs no network fetches for external schema references, and imports no Node.js built-ins. Unresolved external Tool-schema references produce incomplete-validation warnings and are preserved. All three ESM entry points support Node.js 20 or later and browser bundlers.
 

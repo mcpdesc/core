@@ -23,14 +23,14 @@ export {
   type ResolveMcpDescriptionComponentReferencesResult,
 } from './components.js';
 export {
-  migrateMcpDescription07ToRc2,
+  migrateMcpDescription07ToRc4,
   migrateMcpDescription07ToRc3,
   serializeMcpDescriptionMigrationReport,
   type McpDescriptionMigrationChange,
   type McpDescriptionMigrationDefault,
   type McpDescriptionMigrationReport,
   type McpDescriptionMigrationResult,
-  type MigrateMcpDescription07ToRc2Options,
+  type MigrateMcpDescription07ToRc4Options,
   type MigrateMcpDescription07ToRc3Options,
 } from './migration.js';
 export {
@@ -58,12 +58,12 @@ export {
   type SelectMcpDescriptionDeclarationsOptions,
 } from './selection.js';
 export {
-  RC_2_SCHEMA_URI,
-  RC_2_SPECIFICATION,
+  RC_4_SCHEMA_URI,
+  RC_4_SPECIFICATION,
   RC_3_SCHEMA_URI,
   RC_3_SPECIFICATION,
   deprecatedCoreSpecifications,
-  rc2Snapshot,
+  rc4Snapshot,
   rc3Snapshot,
   type SupportedCoreSpecification,
 } from './snapshot.js';

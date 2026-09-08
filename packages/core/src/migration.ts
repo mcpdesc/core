@@ -11,11 +11,11 @@ import type {
   McpDescriptionDocument,
 } from './model.js';
 import {
-  RC_2_SCHEMA_URI,
-  RC_2_SPECIFICATION,
+  RC_4_SCHEMA_URI,
+  RC_4_SPECIFICATION,
   RC_3_SCHEMA_URI,
   RC_3_SPECIFICATION,
-  rc2Snapshot,
+  rc4Snapshot,
   rc3Snapshot,
   type SupportedCoreSpecification,
 } from './snapshot.js';
@@ -36,8 +36,8 @@ const declarationCollections = [
   'prompts',
 ] as const;
 
-export interface MigrateMcpDescription07ToRc2Options {
-  readonly specification: typeof RC_2_SPECIFICATION;
+export interface MigrateMcpDescription07ToRc4Options {
+  readonly specification: typeof RC_4_SPECIFICATION;
   readonly defaultProtocolVersion?: SupportedProtocolVersion;
   readonly protocolVersion?: SupportedProtocolVersion;
   readonly sourceValidated: true;
@@ -51,7 +51,7 @@ export interface MigrateMcpDescription07ToRc3Options {
 }
 
 type SupportedMigrationOptions =
-  MigrateMcpDescription07ToRc2Options | MigrateMcpDescription07ToRc3Options;
+  MigrateMcpDescription07ToRc4Options | MigrateMcpDescription07ToRc3Options;
 
 export interface McpDescriptionMigrationDefault {
   readonly code: 'migration-default-protocol-version';
@@ -322,7 +322,7 @@ function migrateMcpDescription07(
   source: unknown,
   options: SupportedMigrationOptions,
   targetSpecification: SupportedCoreSpecification,
-  targetSchemaUri: typeof RC_2_SCHEMA_URI | typeof RC_3_SCHEMA_URI,
+  targetSchemaUri: typeof RC_3_SCHEMA_URI | typeof RC_4_SCHEMA_URI,
   targetProtocolVersions: readonly SupportedProtocolVersion[],
 ): McpDescriptionMigrationResult {
   if (options.specification !== targetSpecification) {
@@ -495,16 +495,16 @@ export function serializeMcpDescriptionMigrationReport(
   return `${JSON.stringify(report, null, 2)}\n`;
 }
 
-export function migrateMcpDescription07ToRc2(
+export function migrateMcpDescription07ToRc4(
   source: unknown,
-  options: MigrateMcpDescription07ToRc2Options,
+  options: MigrateMcpDescription07ToRc4Options,
 ): McpDescriptionMigrationResult {
   return migrateMcpDescription07(
     source,
     options,
-    RC_2_SPECIFICATION,
-    RC_2_SCHEMA_URI,
-    rc2Snapshot.protocolVersions,
+    RC_4_SPECIFICATION,
+    RC_4_SCHEMA_URI,
+    rc4Snapshot.protocolVersions,
   );
 }
 
