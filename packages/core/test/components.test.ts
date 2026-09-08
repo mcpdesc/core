@@ -11,7 +11,7 @@ import {
 const reusableComponents = JSON.parse(
   readFileSync(
     new URL(
-      '../../validator/test/snapshots/0.8.0-rc.2/fixtures/expected-valid/reusable-components.json',
+      '../../validator/test/snapshots/0.8.0-rc.3/fixtures/expected-valid/reusable-components.json',
       import.meta.url,
     ),
     'utf8',
@@ -19,15 +19,6 @@ const reusableComponents = JSON.parse(
 ) as JsonObject;
 
 const laterReusableComponents = {
-  '0.8.0-rc.2': JSON.parse(
-    readFileSync(
-      new URL(
-        '../../validator/test/snapshots/0.8.0-rc.2/fixtures/expected-valid/reusable-components.json',
-        import.meta.url,
-      ),
-      'utf8',
-    ),
-  ) as JsonObject,
   '0.8.0-rc.3': JSON.parse(
     readFileSync(
       new URL(
@@ -41,7 +32,7 @@ const laterReusableComponents = {
 
 function resolve(document: unknown) {
   return resolveMcpDescriptionComponentReferences(document, {
-    specification: '0.8.0-rc.2',
+    specification: '0.8.0-rc.3',
   });
 }
 
@@ -58,7 +49,7 @@ function expectDiagnostic(
 }
 
 describe('resolveMcpDescriptionComponentReferences', () => {
-  for (const specification of ['0.8.0-rc.2', '0.8.0-rc.3'] as const) {
+  for (const specification of ['0.8.0-rc.3'] as const) {
     it(`resolves ${specification} references with terminal provenance`, () => {
       const document = laterReusableComponents[specification];
       const result = resolveMcpDescriptionComponentReferences(document, {
@@ -150,7 +141,7 @@ describe('resolveMcpDescriptionComponentReferences', () => {
 
   it('is a cloning no-op without components', () => {
     const document = {
-      $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.2.json',
+      $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.3.json',
       mcpdesc: '0.8.0',
       info: { name: 'no-components', version: '1.0.0' },
       protocolVersions: ['2026-07-28'],
@@ -167,7 +158,7 @@ describe('resolveMcpDescriptionComponentReferences', () => {
 
   it('composes with Effective Protocol View projection in either order', () => {
     const document = {
-      $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.2.json',
+      $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.3.json',
       mcpdesc: '0.8.0',
       info: { name: 'composition', version: '1.0.0' },
       protocolVersions: ['2025-11-25', '2026-07-28'],
@@ -194,12 +185,12 @@ describe('resolveMcpDescriptionComponentReferences', () => {
     );
     if (!resolvedFirst.ok) return;
     const thenProjected = projectEffectiveProtocolView(resolvedFirst.value, {
-      specification: '0.8.0-rc.2',
+      specification: '0.8.0-rc.3',
       protocolVersion: '2026-07-28',
     });
 
     const projectedFirst = projectEffectiveProtocolView(document, {
-      specification: '0.8.0-rc.2',
+      specification: '0.8.0-rc.3',
       protocolVersion: '2026-07-28',
     });
     expect(projectedFirst.ok).toBe(true);
@@ -328,15 +319,29 @@ describe('resolveMcpDescriptionComponentReferences', () => {
     ]);
   });
 
-  it('does not silently dispatch Draft 4 to the RC.1 resolver', () => {
+  it('rejects selectors without the required provenance-aware resolver', () => {
     const result = resolveMcpDescriptionComponentReferences(
       reusableComponents,
       {
         specification: '0.8.0-draft.4',
-      } as unknown as { specification: '0.8.0-rc.2' },
+      } as unknown as { specification: '0.8.0-rc.3' },
     );
 
     expect(result).toEqual({
+      ok: false,
+      diagnostics: [
+        expect.objectContaining({
+          code: 'unsupported-specification',
+          phase: 'operation',
+          path: [],
+        }),
+      ],
+    });
+
+    const rc4 = resolveMcpDescriptionComponentReferences(reusableComponents, {
+      specification: '0.8.0-rc.4',
+    } as unknown as { specification: '0.8.0-rc.3' });
+    expect(rc4).toEqual({
       ok: false,
       diagnostics: [
         expect.objectContaining({

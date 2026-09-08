@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  RC_2_SCHEMA_URI,
+  RC_4_SCHEMA_URI,
   RC_3_SCHEMA_URI,
   projectEffectiveProtocolView,
-  rc2Snapshot,
+  rc4Snapshot,
   rc3Snapshot,
 } from '../src/index.js';
 
 const source = {
-  $schema: RC_2_SCHEMA_URI,
+  $schema: RC_4_SCHEMA_URI,
   mcpdesc: '0.8.0',
   info: { name: 'projection-test', version: '1.0.0' },
   protocolVersions: ['2025-11-25', '2026-07-28'],
@@ -63,7 +63,7 @@ describe('projectEffectiveProtocolView', () => {
   it('projects scoped declarations without mutating the source', () => {
     const original = structuredClone(source);
     const result = projectEffectiveProtocolView(source, {
-      specification: '0.8.0-rc.2',
+      specification: '0.8.0-rc.4',
       protocolVersion: '2026-07-28',
     });
 
@@ -97,7 +97,7 @@ describe('projectEffectiveProtocolView', () => {
 
   it('rejects a target absent from the root protocol scope', () => {
     const result = projectEffectiveProtocolView(source, {
-      specification: '0.8.0-rc.2',
+      specification: '0.8.0-rc.4',
       protocolVersion: '2025-06-18',
     });
 
@@ -115,7 +115,7 @@ describe('projectEffectiveProtocolView', () => {
     const result = projectEffectiveProtocolView(
       { ...source, tools: [{ name: 'invalid' }] },
       {
-        specification: '0.8.0-rc.2',
+        specification: '0.8.0-rc.4',
         protocolVersion: '2026-07-28',
       },
     );
@@ -129,14 +129,14 @@ describe('projectEffectiveProtocolView', () => {
     );
   });
 
-  it('preserves pre-standard extension maps in RC.2 protocol views', () => {
+  it('preserves pre-standard extension maps in RC.4 protocol views', () => {
     const extensions = {
       'io.modelcontextprotocol/ui': {
         mimeTypes: ['text/html;profile=mcp-app'],
       },
     };
     const document = {
-      $schema: RC_2_SCHEMA_URI,
+      $schema: RC_4_SCHEMA_URI,
       mcpdesc: '0.8.0',
       info: { name: 'pre-standard-extensions', version: '1.0.0' },
       protocolVersions: ['2025-11-25', '2026-07-28'],
@@ -145,7 +145,7 @@ describe('projectEffectiveProtocolView', () => {
 
     for (const protocolVersion of document.protocolVersions) {
       const result = projectEffectiveProtocolView(document, {
-        specification: '0.8.0-rc.2',
+        specification: '0.8.0-rc.4',
         protocolVersion,
       });
       expect(result.ok).toBe(true);
@@ -153,14 +153,14 @@ describe('projectEffectiveProtocolView', () => {
       expect(result.value.capabilities).toEqual([{ extensions }]);
     }
 
-    expect(rc2Snapshot).toMatchObject({
-      specification: '0.8.0-rc.2',
-      schemaUri: RC_2_SCHEMA_URI,
-      snapshotTag: 'v0.8.0-rc.2',
+    expect(rc4Snapshot).toMatchObject({
+      specification: '0.8.0-rc.4',
+      schemaUri: RC_4_SCHEMA_URI,
+      snapshotTag: 'v0.8.0-rc.4',
       schemaSha256:
-        '40f6775dde052224114e91d6aa484d826eecf56b77f7ac87b4cf707ffbcb6ce8',
+        'd38e54db859813b63be2a5c91dde91250035f18bcb5910208cf71fa6875d6eef',
     });
-    expect(Object.isFrozen(rc2Snapshot)).toBe(true);
+    expect(Object.isFrozen(rc4Snapshot)).toBe(true);
   });
 
   it('publishes RC.3 snapshot metadata', () => {
@@ -174,9 +174,36 @@ describe('projectEffectiveProtocolView', () => {
     expect(Object.isFrozen(rc3Snapshot)).toBe(true);
   });
 
+  it('preserves protocol-independent RC.4 info metadata in older protocol views', () => {
+    const info = {
+      name: 'metadata-server',
+      title: 'Metadata Server',
+      version: '1.0.0',
+      description: 'Document-wide metadata',
+      icons: [{ src: 'https://example.com/icon.png' }],
+      websiteUrl: 'https://example.com/server',
+    };
+    const result = projectEffectiveProtocolView(
+      {
+        $schema: RC_4_SCHEMA_URI,
+        mcpdesc: '0.8.0',
+        info,
+        protocolVersions: ['2024-11-05'],
+      },
+      {
+        specification: '0.8.0-rc.4',
+        protocolVersion: '2024-11-05',
+      },
+    );
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.info).toEqual(info);
+  });
+
   it('projects every scoped root collection and preserves unscoped semantics', () => {
     const comprehensive = {
-      $schema: RC_2_SCHEMA_URI,
+      $schema: RC_4_SCHEMA_URI,
       mcpdesc: '0.8.0',
       info: { name: 'comprehensive', version: '1.0.0' },
       protocolVersions: ['2025-11-25', '2026-07-28'],
@@ -242,7 +269,7 @@ describe('projectEffectiveProtocolView', () => {
     };
 
     const result = projectEffectiveProtocolView(comprehensive, {
-      specification: '0.8.0-rc.2',
+      specification: '0.8.0-rc.4',
       protocolVersion: '2026-07-28',
     });
 
@@ -274,14 +301,14 @@ describe('projectEffectiveProtocolView', () => {
 
   it('is idempotent for an already projected view', () => {
     const first = projectEffectiveProtocolView(source, {
-      specification: '0.8.0-rc.2',
+      specification: '0.8.0-rc.4',
       protocolVersion: '2026-07-28',
     });
     expect(first.ok).toBe(true);
     if (!first.ok) return;
 
     const second = projectEffectiveProtocolView(first.value, {
-      specification: '0.8.0-rc.2',
+      specification: '0.8.0-rc.4',
       protocolVersion: '2026-07-28',
     });
     expect(second).toEqual(first);
@@ -289,14 +316,14 @@ describe('projectEffectiveProtocolView', () => {
 
   it('does not duplicate a warning emitted for both source and result', () => {
     const warningSource = {
-      $schema: RC_2_SCHEMA_URI,
+      $schema: RC_4_SCHEMA_URI,
       mcpdesc: '0.8.0',
       info: { name: 'warning', version: '1.0.0' },
       protocolVersions: ['2026-07-28'],
       capabilities: [{ logging: {} }],
     };
     const result = projectEffectiveProtocolView(warningSource, {
-      specification: '0.8.0-rc.2',
+      specification: '0.8.0-rc.4',
       protocolVersion: '2026-07-28',
     });
 

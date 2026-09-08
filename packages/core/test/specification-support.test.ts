@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  RC_2_SCHEMA_URI,
+  RC_4_SCHEMA_URI,
   RC_3_SCHEMA_URI,
   deprecatedCoreSpecifications,
   mergeEffectiveProtocolViews,
-  migrateMcpDescription07ToRc2,
+  migrateMcpDescription07ToRc4,
   migrateMcpDescription07ToRc3,
   projectEffectiveProtocolView,
   resolveMcpDescriptionComponentReferences,
@@ -20,18 +20,18 @@ type SelectorSensitiveOperation =
   | 'migrationFrom07'
   | 'projection'
   | 'selection';
-type SupportDisposition = 'supported';
+type SupportDisposition = 'supported' | 'unsupported';
 
 const supportBySpecification = {
-  '0.8.0-rc.2': {
+  '0.8.0-rc.3': {
     componentResolution: 'supported',
     merge: 'supported',
     migrationFrom07: 'supported',
     projection: 'supported',
     selection: 'supported',
   },
-  '0.8.0-rc.3': {
-    componentResolution: 'supported',
+  '0.8.0-rc.4': {
+    componentResolution: 'unsupported',
     merge: 'supported',
     migrationFrom07: 'supported',
     projection: 'supported',
@@ -43,19 +43,19 @@ const supportBySpecification = {
 >;
 
 const schemaBySpecification = {
-  '0.8.0-rc.2': RC_2_SCHEMA_URI,
   '0.8.0-rc.3': RC_3_SCHEMA_URI,
+  '0.8.0-rc.4': RC_4_SCHEMA_URI,
 } as const satisfies Record<SupportedCoreSpecification, string>;
 
 const migrateBySpecification = {
-  '0.8.0-rc.2': (source: unknown) =>
-    migrateMcpDescription07ToRc2(source, {
-      specification: '0.8.0-rc.2',
-      sourceValidated: true,
-    }),
   '0.8.0-rc.3': (source: unknown) =>
     migrateMcpDescription07ToRc3(source, {
       specification: '0.8.0-rc.3',
+      sourceValidated: true,
+    }),
+  '0.8.0-rc.4': (source: unknown) =>
+    migrateMcpDescription07ToRc4(source, {
+      specification: '0.8.0-rc.4',
       sourceValidated: true,
     }),
 } satisfies Record<
@@ -75,8 +75,8 @@ const legacyDocument = {
 };
 
 describe('selector-sensitive operation support', () => {
-  it('marks RC.2 as deprecated while keeping it operational', () => {
-    expect(deprecatedCoreSpecifications).toEqual(['0.8.0-rc.2']);
+  it('marks RC.3 as deprecated while keeping it operational', () => {
+    expect(deprecatedCoreSpecifications).toEqual(['0.8.0-rc.3']);
     expect(Object.isFrozen(deprecatedCoreSpecifications)).toBe(true);
   });
 
@@ -115,7 +115,22 @@ describe('selector-sensitive operation support', () => {
       const resolution = resolveMcpDescriptionComponentReferences(document, {
         specification,
       } as ResolveMcpDescriptionComponentReferencesOptions);
-      expect(resolution.ok).toBe(true);
+      if (
+        supportBySpecification[specification].componentResolution ===
+        'supported'
+      ) {
+        expect(resolution.ok).toBe(true);
+      } else {
+        expect(resolution).toEqual({
+          ok: false,
+          diagnostics: [
+            expect.objectContaining({
+              code: 'unsupported-specification',
+              phase: 'operation',
+            }),
+          ],
+        });
+      }
     });
   }
 });

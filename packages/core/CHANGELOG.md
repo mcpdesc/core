@@ -4,6 +4,22 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-09-08
+
+### Added
+
+- Added MCP Description `0.8.0-rc.4` support for projection, merge, declaration
+  selection, and migration from 0.7.0, including protocol-independent root info
+  metadata behavior.
+
+### Changed
+
+- Narrowed current core support to RC.3 and RC.4, deprecated RC.3, removed RC.2
+  from the current API, and pinned `@mcpdesc/validator` `0.11.0`.
+- Marked RC.4 component reference resolution intentionally unsupported because
+  the snapshot resolver does not expose the terminal-target provenance required
+  by the core operation contract.
+
 ## [0.9.1] - 2026-09-07
 
 ### Changed
@@ -188,7 +204,8 @@ tarball verification. The corresponding Git tag has not yet been created.
 - Apache-2.0 licensing, provenance, contribution guidance, and repository
   instructions for coding assistants.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/v0.9.1...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/mcpdesc/core/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/mcpdesc/core/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/mcpdesc/core/compare/v0.8.1...v0.9.0
 [0.8.1]: https://github.com/mcpdesc/core/compare/v0.8.0...v0.8.1
