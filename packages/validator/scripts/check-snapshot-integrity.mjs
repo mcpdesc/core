@@ -49,6 +49,11 @@ const generated = {
       reason:
         'Add terminal component-reference provenance without changing the RC.3 schema, conformance results, diagnostics, or fixtures.',
     },
+    {
+      path: 'src/snapshots/0.8.0-rc.4/semantic.js',
+      reason:
+        'Add terminal component-reference provenance without changing the RC.4 schema, conformance results, diagnostics, or fixtures.',
+    },
   ],
   files,
 };

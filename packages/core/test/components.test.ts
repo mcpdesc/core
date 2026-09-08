@@ -28,6 +28,15 @@ const laterReusableComponents = {
       'utf8',
     ),
   ) as JsonObject,
+  '0.8.0-rc.4': JSON.parse(
+    readFileSync(
+      new URL(
+        '../../validator/test/snapshots/0.8.0-rc.4/fixtures/expected-valid/reusable-components.json',
+        import.meta.url,
+      ),
+      'utf8',
+    ),
+  ) as JsonObject,
 } as const;
 
 function resolve(document: unknown) {
@@ -49,7 +58,7 @@ function expectDiagnostic(
 }
 
 describe('resolveMcpDescriptionComponentReferences', () => {
-  for (const specification of ['0.8.0-rc.3'] as const) {
+  for (const specification of ['0.8.0-rc.3', '0.8.0-rc.4'] as const) {
     it(`resolves ${specification} references with terminal provenance`, () => {
       const document = laterReusableComponents[specification];
       const result = resolveMcpDescriptionComponentReferences(document, {
@@ -319,7 +328,7 @@ describe('resolveMcpDescriptionComponentReferences', () => {
     ]);
   });
 
-  it('rejects selectors without the required provenance-aware resolver', () => {
+  it('rejects selectors without a provenance-aware resolver', () => {
     const result = resolveMcpDescriptionComponentReferences(
       reusableComponents,
       {
@@ -328,20 +337,6 @@ describe('resolveMcpDescriptionComponentReferences', () => {
     );
 
     expect(result).toEqual({
-      ok: false,
-      diagnostics: [
-        expect.objectContaining({
-          code: 'unsupported-specification',
-          phase: 'operation',
-          path: [],
-        }),
-      ],
-    });
-
-    const rc4 = resolveMcpDescriptionComponentReferences(reusableComponents, {
-      specification: '0.8.0-rc.4',
-    } as unknown as { specification: '0.8.0-rc.3' });
-    expect(rc4).toEqual({
       ok: false,
       diagnostics: [
         expect.objectContaining({

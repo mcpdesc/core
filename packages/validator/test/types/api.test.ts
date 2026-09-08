@@ -23,6 +23,7 @@ const componentResolution = resolveMcpDescriptionComponentReferences(document, {
   specification: '0.8.0-rc.3'
 });
 resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-rc.3' });
+resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-rc.4' });
 const referencePath: readonly (string | number)[] | undefined = componentResolution.provenance[0]?.referencePath;
 validateMcpDescription(document, { specification: '0.8.0-rc.3' });
 validateMcpDescription(document, { specification: '0.8.0-rc.4' });
@@ -75,5 +76,3 @@ supportedSpecifications.push('0.8.0-rc.3');
 specificationProvenance['0.8.0-draft.5'];
 // @ts-expect-error Draft 4 component resolution is not supported.
 resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-draft.4' });
-// @ts-expect-error RC.4 does not expose the required terminal-target provenance.
-resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-rc.4' });

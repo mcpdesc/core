@@ -110,7 +110,7 @@ test('keeps pre-standard client requirements strict and malformed extension maps
   }
 });
 
-for (const specification of ['0.8.0-rc.3']) {
+for (const specification of ['0.8.0-rc.3', '0.8.0-rc.4']) {
   test(`resolves ${specification} component references with terminal provenance`, () => {
     const document = fixture('expected-valid', 'reusable-components.json', specification);
     const original = structuredClone(document);
@@ -133,10 +133,6 @@ test('rejects component resolution for unsupported selectors', () => {
   assert.throws(
     () => resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-draft.4' }),
     /does not support specification: 0\.8\.0-draft\.4/
-  );
-  assert.throws(
-    () => resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-rc.4' }),
-    /does not support specification: 0\.8\.0-rc\.4/
   );
 });
 

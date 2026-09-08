@@ -57,9 +57,8 @@ should select RC.4. Earlier selectors remain available by pinning an older
 immutable validator release. npm integrity and trusted-publishing provenance identify released
 package bytes; specification repository tags and commits are informational.
 
-Component reference resolution remains available for RC.3. RC.4 validation is
-supported, but its snapshot resolver does not expose the terminal-target
-provenance required by the package's public resolution result contract.
+Component reference resolution is available for RC.3 and RC.4 with
+terminal-target provenance for each authored reference.
 
 ## Usage
 
@@ -141,9 +140,9 @@ maturity only; it does not validate extension-specific settings.
 
 npm package SemVer tracks implementation releases independently from specification snapshot identity. Adding a later snapshot is additive: it must use a sibling implementation and selector rather than changing an existing snapshot's schema, semantics, metadata, fixtures, or results.
 
-The RC.3 component resolver reports authored and terminal target paths for
-successful substitutions. RC.4 component resolution is unavailable because its
-snapshot resolver does not expose that provenance result.
+The RC.3 and RC.4 component resolvers report authored and terminal target paths
+for successful substitutions. Additive tooling corrections that provide this
+metadata are recorded explicitly in the integrity manifest.
 
 The runtime bundles its schema, performs no network fetches for external schema references, and imports no Node.js built-ins. Unresolved external Tool-schema references produce incomplete-validation warnings and are preserved. All three ESM entry points support Node.js 20 or later and browser bundlers.
 
