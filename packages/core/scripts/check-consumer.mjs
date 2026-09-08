@@ -219,6 +219,7 @@ try {
 
       for (const [specification, schemaUri] of [
         ['0.8.0-rc.3', RC_3_SCHEMA_URI],
+        ['0.8.0-rc.4', RC_4_SCHEMA_URI],
       ]) {
         const reusable = {
           ...source,
@@ -325,6 +326,10 @@ try {
       resolveMcpDescriptionComponentReferences(
         { mcpdesc: '0.8.0', info: {}, protocolVersions: [], components },
         { specification: '0.8.0-rc.3' },
+      );
+      resolveMcpDescriptionComponentReferences(
+        { mcpdesc: '0.8.0', info: {}, protocolVersions: [], components },
+        { specification: '0.8.0-rc.4' },
       );
     `,
   );

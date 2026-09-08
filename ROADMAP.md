@@ -46,8 +46,8 @@ repository.
 - [x] Narrow current runtime and package support to RC.2 and RC.3, deprecate
       RC.2, and retain retired snapshot artifacts as repository history.
 - [x] Adopt RC.4 across validation and supported core operations, advance the
-      active transition window to RC.3 and RC.4, and record component reference
-      resolution as unsupported until snapshot provenance is available.
+      active transition window to RC.3 and RC.4, and support component reference
+      resolution with terminal-target provenance.
 - Add normalization or comparison operations only where multiple consumers
   demonstrate the same requirement.
 

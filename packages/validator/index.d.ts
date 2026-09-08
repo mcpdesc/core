@@ -38,7 +38,7 @@ export interface McpDescriptionComponentResolutionResult {
 }
 
 export interface ResolveMcpDescriptionComponentReferencesOptions {
-  readonly specification: '0.8.0-rc.3';
+  readonly specification: '0.8.0-rc.3' | '0.8.0-rc.4';
 }
 
 export type McpExtensionMaturity = 'official' | 'experimental' | 'uncatalogued';

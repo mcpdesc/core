@@ -12,6 +12,10 @@
     {
       "path": "src/snapshots/0.8.0-rc.3/semantic.js",
       "reason": "Add terminal component-reference provenance without changing the RC.3 schema, conformance results, diagnostics, or fixtures."
+    },
+    {
+      "path": "src/snapshots/0.8.0-rc.4/semantic.js",
+      "reason": "Add terminal component-reference provenance without changing the RC.4 schema, conformance results, diagnostics, or fixtures."
     }
   ],
   "files": [
@@ -137,7 +141,7 @@
     },
     {
       "path": "src/snapshots/0.8.0-rc.4/semantic.js",
-      "sha256": "e085d09eabb0c724fd5d5adcd4175e573a2c860f0c6fcf3b12017f934dcf3496"
+      "sha256": "2e463165c25011c023eeb8f8a1d19f3f74beeae12181f08e09037b7a903995e0"
     },
     {
       "path": "test/snapshots/0.8.0-draft.1/README.md",

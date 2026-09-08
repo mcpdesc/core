@@ -1,6 +1,7 @@
 import * as rc3 from './snapshots/0.8.0-rc.3/index.js';
 import * as rc4 from './snapshots/0.8.0-rc.4/index.js';
 import { resolveComponentReferences as resolveRc3ComponentReferences } from './snapshots/0.8.0-rc.3/semantic.js';
+import { resolveComponentReferences as resolveRc4ComponentReferences } from './snapshots/0.8.0-rc.4/semantic.js';
 import {
   mcpExtensionCatalogue,
   mcpExtensionMaturity
@@ -14,7 +15,8 @@ const snapshots = Object.freeze({
 });
 
 const componentResolvers = Object.freeze({
-  '0.8.0-rc.3': resolveRc3ComponentReferences
+  '0.8.0-rc.3': resolveRc3ComponentReferences,
+  '0.8.0-rc.4': resolveRc4ComponentReferences
 });
 
 const schemaUris = Object.freeze({

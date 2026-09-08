@@ -26,6 +26,11 @@ schemas remain in `mcpdesc/mcpdesc-specification`.
 - Import reviewed specification artifacts with exact selector, schema digest,
   semantic implementation, and frozen fixtures. Source repository, tag, and
   commit are informational provenance rather than package integrity inputs.
+- Compare imported helper result contracts with the previous active selector.
+  If an operation loses only additive tooling metadata, require an explicit
+  maintainer decision on the published-snapshot integrity exception before
+  declaring that operation unsupported; do not confuse exporter regressions
+  with normative incompatibility.
 - Add later snapshots as siblings and update the registry, declarations,
   package README, changelog, package-content check, and browser build selector
   list together.

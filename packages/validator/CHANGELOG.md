@@ -8,6 +8,15 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ## [Unreleased]
 
+## [0.11.1] - 2026-09-08
+
+### Fixed
+
+- Added terminal-target provenance to RC.4 component reference resolution and
+	enabled RC.4 through the public resolver. This is an approved additive
+	tooling-metadata correction; schemas, conformance results, diagnostics, and
+	frozen fixtures are unchanged.
+
 ## [0.11.0] - 2026-09-08
 
 ### Added
@@ -155,7 +164,8 @@ Dates for published releases are the UTC publication dates recorded by npm.
 - Added synchronous structural and semantic validation for parsed JavaScript values with deterministic diagnostics and exact selector dispatch.
 - Added ESM browser support, TypeScript declarations, embedded schema provenance, frozen fixtures, and package-content checks.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/validator-v0.11.0...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/validator-v0.11.1...HEAD
+[0.11.1]: https://github.com/mcpdesc/core/compare/validator-v0.11.0...validator-v0.11.1
 [0.11.0]: https://github.com/mcpdesc/core/compare/validator-v0.10.1...validator-v0.11.0
 [0.10.1]: https://github.com/mcpdesc/core/compare/validator-v0.10.0...validator-v0.10.1
 [0.10.0]: https://github.com/mcpdesc/core/compare/validator-v0.9.0...validator-v0.10.0

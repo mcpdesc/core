@@ -20,7 +20,7 @@ type SelectorSensitiveOperation =
   | 'migrationFrom07'
   | 'projection'
   | 'selection';
-type SupportDisposition = 'supported' | 'unsupported';
+type SupportDisposition = 'supported';
 
 const supportBySpecification = {
   '0.8.0-rc.3': {
@@ -31,7 +31,7 @@ const supportBySpecification = {
     selection: 'supported',
   },
   '0.8.0-rc.4': {
-    componentResolution: 'unsupported',
+    componentResolution: 'supported',
     merge: 'supported',
     migrationFrom07: 'supported',
     projection: 'supported',
@@ -115,22 +115,7 @@ describe('selector-sensitive operation support', () => {
       const resolution = resolveMcpDescriptionComponentReferences(document, {
         specification,
       } as ResolveMcpDescriptionComponentReferencesOptions);
-      if (
-        supportBySpecification[specification].componentResolution ===
-        'supported'
-      ) {
-        expect(resolution.ok).toBe(true);
-      } else {
-        expect(resolution).toEqual({
-          ok: false,
-          diagnostics: [
-            expect.objectContaining({
-              code: 'unsupported-specification',
-              phase: 'operation',
-            }),
-          ],
-        });
-      }
+      expect(resolution.ok).toBe(true);
     });
   }
 });

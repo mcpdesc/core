@@ -4,6 +4,13 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 
 ## [Unreleased]
 
+## [0.10.1] - 2026-09-08
+
+### Fixed
+
+- Enabled RC.4 component reference resolution with deterministic terminal-target
+  provenance through `@mcpdesc/validator` `0.11.1`.
+
 ## [0.10.0] - 2026-09-08
 
 ### Added
@@ -204,7 +211,8 @@ tarball verification. The corresponding Git tag has not yet been created.
 - Apache-2.0 licensing, provenance, contribution guidance, and repository
   instructions for coding assistants.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/v0.10.1...HEAD
+[0.10.1]: https://github.com/mcpdesc/core/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/mcpdesc/core/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/mcpdesc/core/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/mcpdesc/core/compare/v0.8.1...v0.9.0

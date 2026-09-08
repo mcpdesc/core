@@ -57,7 +57,7 @@ const migrated = migrateMcpDescription07ToRc4(validatedLegacyDocument, {
 });
 
 const resolved = resolveMcpDescriptionComponentReferences(document, {
-  specification: '0.8.0-rc.3',
+  specification: '0.8.0-rc.4',
 });
 
 if (resolved.ok) {
@@ -75,13 +75,13 @@ tool and prompt `name`, resource `uri`, and resource template `uriTemplate`. It
 preserves all selected protocol-scoped variants and omits empty declaration
 collections.
 
-| Operation                          | RC.3                  | RC.4                                   |
-| ---------------------------------- | --------------------- | -------------------------------------- |
-| Effective Protocol View projection | Supported, deprecated | Supported                              |
-| Effective Protocol View merge      | Supported, deprecated | Supported                              |
-| Declaration selection              | Supported, deprecated | Supported                              |
-| Migration from 0.7.0               | Supported, deprecated | Supported                              |
-| Component reference resolution     | Supported, deprecated | Unsupported: snapshot omits provenance |
+| Operation                          | RC.3                  | RC.4      |
+| ---------------------------------- | --------------------- | --------- |
+| Effective Protocol View projection | Supported, deprecated | Supported |
+| Effective Protocol View merge      | Supported, deprecated | Supported |
+| Declaration selection              | Supported, deprecated | Supported |
+| Migration from 0.7.0               | Supported, deprecated | Supported |
+| Component reference resolution     | Supported, deprecated | Supported |
 
 | Specification selector | First validator release | First core release |
 | ---------------------- | ----------------------- | ------------------ |
@@ -97,15 +97,13 @@ applicable Effective Protocol View. `mergeEffectiveProtocolViews` combines
 compatible views, retains semantically equivalent declarations across scopes,
 and rejects conflicting views or unscoped metadata without mutating inputs.
 
-Component reference resolution supports RC.3. It validates before resolving,
-returns a deep-cloned document with root component registries retained, and
-reports deterministic provenance from each authored reference path to its
-terminal component path. Intermediate chain hops are not exposed. The operation
-uses the resolver exported through `@mcpdesc/validator/standalone`; this keeps
-the snapshot-owned traversal authoritative while avoiding the runtime AJV entry
-and a dependency cycle. RC.4 is intentionally unsupported because its snapshot
-resolver does not expose the terminal-target provenance required by this
-operation's public contract.
+Component reference resolution supports RC.3 and RC.4. It validates before
+resolving, returns a deep-cloned document with root component registries
+retained, and reports deterministic provenance from each authored reference path
+to its terminal component path. Intermediate chain hops are not exposed. The
+operation uses the resolver exported through `@mcpdesc/validator/standalone`;
+this keeps the snapshot-owned traversal authoritative while avoiding the runtime
+AJV entry and a dependency cycle.
 
 Migration accepts a caller-validated MCP Description 0.7.0 value and validates
 the result against the exact target snapshot. It moves the protocol revision to
