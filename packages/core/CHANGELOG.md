@@ -4,6 +4,14 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-09-09
+
+### Changed
+
+- Promoted the stable MCP Description `0.8.0` operations proven in `0.11.0-rc.1`
+  without changing public APIs or behavior, and pinned `@mcpdesc/validator`
+  `0.12.0`.
+
 ## [0.11.0-rc.1] - 2026-09-09
 
 ### Added
@@ -200,7 +208,8 @@ tarball verification. The corresponding Git tag has not yet been created.
   workflow.
 - Apache-2.0 licensing and package provenance files.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/v0.11.0-rc.1...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/mcpdesc/core/compare/v0.11.0-rc.1...v0.11.0
 [0.11.0-rc.1]: https://github.com/mcpdesc/core/compare/v0.10.1...v0.11.0-rc.1
 [0.10.1]: https://github.com/mcpdesc/core/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/mcpdesc/core/compare/v0.9.1...v0.10.0
