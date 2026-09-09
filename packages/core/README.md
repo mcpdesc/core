@@ -10,7 +10,7 @@ See [CHANGELOG.md](CHANGELOG.md) for package release history.
 
 ```ts
 import {
-  migrateMcpDescription07ToRc4,
+  migrateMcpDescription07To08,
   mergeEffectiveProtocolViews,
   projectEffectiveProtocolView,
   serializeMcpDescriptionMigrationReport,
@@ -28,7 +28,7 @@ if (!parsed.ok) {
 }
 
 const result = projectEffectiveProtocolView(document, {
-  specification: '0.8.0-rc.4',
+  specification: '0.8.0',
   protocolVersion: '2026-07-28',
 });
 
@@ -39,25 +39,25 @@ if (result.ok) {
 }
 
 const merged = mergeEffectiveProtocolViews(protocolViews, {
-  specification: '0.8.0-rc.4',
+  specification: '0.8.0',
 });
 
 const subset = selectMcpDescriptionDeclarations(document, {
-  specification: '0.8.0-rc.4',
+  specification: '0.8.0',
   selections: {
     tools: ['search'],
     resources: ['docs://index'],
   },
 });
 
-const migrated = migrateMcpDescription07ToRc4(validatedLegacyDocument, {
-  specification: '0.8.0-rc.4',
+const migrated = migrateMcpDescription07To08(validatedLegacyDocument, {
+  specification: '0.8.0',
   defaultProtocolVersion: '2026-07-28',
   sourceValidated: true,
 });
 
 const resolved = resolveMcpDescriptionComponentReferences(document, {
-  specification: '0.8.0-rc.4',
+  specification: '0.8.0',
 });
 
 if (resolved.ok) {
@@ -67,38 +67,39 @@ if (resolved.ok) {
 console.log(serializeMcpDescriptionMigrationReport(migrated.report));
 ```
 
-Semantic operations require an exact immutable selector and support `0.8.0-rc.3`
-and `0.8.0-rc.4`. RC.3 remains operational but is deprecated; new integrations
-should select RC.4. The operations validate their source and result with
-`@mcpdesc/validator`. Declaration selection uses MCP Description identities:
-tool and prompt `name`, resource `uri`, and resource template `uriTemplate`. It
-preserves all selected protocol-scoped variants and omits empty declaration
-collections.
+Semantic operations require an exact immutable selector and support `0.8.0-rc.4`
+and stable `0.8.0`. RC.4 remains operational but is deprecated; new integrations
+should select stable `0.8.0`. The operations validate their source and result
+with `@mcpdesc/validator`. Declaration selection uses MCP Description
+identities: tool and prompt `name`, resource `uri`, and resource template
+`uriTemplate`. It preserves all selected protocol-scoped variants and omits
+empty declaration collections.
 
-| Operation                          | RC.3                  | RC.4      |
-| ---------------------------------- | --------------------- | --------- |
-| Effective Protocol View projection | Supported, deprecated | Supported |
-| Effective Protocol View merge      | Supported, deprecated | Supported |
-| Declaration selection              | Supported, deprecated | Supported |
-| Migration from 0.7.0               | Supported, deprecated | Supported |
-| Component reference resolution     | Supported, deprecated | Supported |
+| Operation                          | RC.4                  | Stable 0.8.0 |
+| ---------------------------------- | --------------------- | ------------ |
+| Effective Protocol View projection | Supported, deprecated | Supported    |
+| Effective Protocol View merge      | Supported, deprecated | Supported    |
+| Declaration selection              | Supported, deprecated | Supported    |
+| Migration from 0.7.0               | Supported, deprecated | Supported    |
+| Component reference resolution     | Supported, deprecated | Supported    |
 
 | Specification selector | First validator release | First core release |
 | ---------------------- | ----------------------- | ------------------ |
+| `0.8.0`                | `0.12.0-rc.1`           | `0.11.0-rc.1`      |
 | `0.8.0-rc.4`           | `0.11.0`                | `0.10.0`           |
-| `0.8.0-rc.3`           | `0.10.0`                | `0.9.0`            |
 
-Consumers that still require Draft 4, RC.1, or RC.2 can pin an older immutable
-core and validator release. Those runtime snapshots are retained in Git for
-integrity history but are not part of the current package API or tarballs.
+Consumers that still require Draft 4, RC.1, RC.2, or RC.3 can pin an older
+immutable core and validator release. Those runtime snapshots are retained in
+Git for integrity history but are not part of the current package API or
+tarballs.
 
-RC.3 and RC.4 projection preserve pre-standard server extension maps in every
+RC.4 and stable projection preserve pre-standard server extension maps in every
 applicable Effective Protocol View. `mergeEffectiveProtocolViews` combines
 compatible views, retains semantically equivalent declarations across scopes,
 and rejects conflicting views or unscoped metadata without mutating inputs.
 
-Component reference resolution supports RC.3 and RC.4. It validates before
-resolving, returns a deep-cloned document with root component registries
+Component reference resolution supports RC.4 and stable `0.8.0`. It validates
+before resolving, returns a deep-cloned document with root component registries
 retained, and reports deterministic provenance from each authored reference path
 to its terminal component path. Intermediate chain hops are not exposed. The
 operation uses the resolver exported through `@mcpdesc/validator/standalone`;
@@ -110,8 +111,8 @@ the result against the exact target snapshot. It moves the protocol revision to
 root scope, wraps server capabilities, omits optional empty arrays, and converts
 inline legacy security schemes to deterministic named definitions and
 requirements. Generated names and deduplication are reported as warnings for
-author review. RC.3 and RC.4 callers may opt into `defaultProtocolVersion` when
-the source omits `info.protocolVersion`; the source value always takes
+author review. RC.4 and stable callers may opt into `defaultProtocolVersion`
+when the source omits `info.protocolVersion`; the source value always takes
 precedence, and no built-in default is applied. Every migration result includes
 a stable, JSON-compatible report that distinguishes success, success with
 warnings, and failure and records diagnostics, applied defaults, and proven

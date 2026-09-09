@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest';
 
 import {
   RC_4_SCHEMA_URI,
-  RC_3_SCHEMA_URI,
+  V0_8_SCHEMA_URI,
   projectEffectiveProtocolView,
   rc4Snapshot,
-  rc3Snapshot,
+  v0_8Snapshot,
 } from '../src/index.js';
 
 const source = {
@@ -163,15 +163,15 @@ describe('projectEffectiveProtocolView', () => {
     expect(Object.isFrozen(rc4Snapshot)).toBe(true);
   });
 
-  it('publishes RC.3 snapshot metadata', () => {
-    expect(rc3Snapshot).toMatchObject({
-      specification: '0.8.0-rc.3',
-      schemaUri: RC_3_SCHEMA_URI,
-      snapshotTag: 'v0.8.0-rc.3',
+  it('publishes stable snapshot metadata', () => {
+    expect(v0_8Snapshot).toMatchObject({
+      specification: '0.8.0',
+      schemaUri: V0_8_SCHEMA_URI,
+      snapshotTag: 'v0.8.0',
       schemaSha256:
-        'a9c3ff77ba37c72362909f538f6e957d055e6fdb372f8b3d529e3651af3fecf4',
+        '36686f92ba0cc98bde2c34eaad31c0304d6e5cebdd2c4d2be1be06aecef41119',
     });
-    expect(Object.isFrozen(rc3Snapshot)).toBe(true);
+    expect(Object.isFrozen(v0_8Snapshot)).toBe(true);
   });
 
   it('preserves protocol-independent RC.4 info metadata in older protocol views', () => {

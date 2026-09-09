@@ -19,10 +19,10 @@ const reusableComponents = JSON.parse(
 ) as JsonObject;
 
 const laterReusableComponents = {
-  '0.8.0-rc.3': JSON.parse(
+  '0.8.0': JSON.parse(
     readFileSync(
       new URL(
-        '../../validator/test/snapshots/0.8.0-rc.3/fixtures/expected-valid/reusable-components.json',
+        '../../validator/test/snapshots/0.8.0/fixtures/expected-valid/reusable-components.json',
         import.meta.url,
       ),
       'utf8',
@@ -41,7 +41,7 @@ const laterReusableComponents = {
 
 function resolve(document: unknown) {
   return resolveMcpDescriptionComponentReferences(document, {
-    specification: '0.8.0-rc.3',
+    specification: '0.8.0',
   });
 }
 
@@ -58,7 +58,7 @@ function expectDiagnostic(
 }
 
 describe('resolveMcpDescriptionComponentReferences', () => {
-  for (const specification of ['0.8.0-rc.3', '0.8.0-rc.4'] as const) {
+  for (const specification of ['0.8.0-rc.4', '0.8.0'] as const) {
     it(`resolves ${specification} references with terminal provenance`, () => {
       const document = laterReusableComponents[specification];
       const result = resolveMcpDescriptionComponentReferences(document, {
@@ -150,7 +150,7 @@ describe('resolveMcpDescriptionComponentReferences', () => {
 
   it('is a cloning no-op without components', () => {
     const document = {
-      $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.3.json',
+      $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0.json',
       mcpdesc: '0.8.0',
       info: { name: 'no-components', version: '1.0.0' },
       protocolVersions: ['2026-07-28'],
@@ -167,7 +167,7 @@ describe('resolveMcpDescriptionComponentReferences', () => {
 
   it('composes with Effective Protocol View projection in either order', () => {
     const document = {
-      $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.3.json',
+      $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0.json',
       mcpdesc: '0.8.0',
       info: { name: 'composition', version: '1.0.0' },
       protocolVersions: ['2025-11-25', '2026-07-28'],
@@ -194,12 +194,12 @@ describe('resolveMcpDescriptionComponentReferences', () => {
     );
     if (!resolvedFirst.ok) return;
     const thenProjected = projectEffectiveProtocolView(resolvedFirst.value, {
-      specification: '0.8.0-rc.3',
+      specification: '0.8.0',
       protocolVersion: '2026-07-28',
     });
 
     const projectedFirst = projectEffectiveProtocolView(document, {
-      specification: '0.8.0-rc.3',
+      specification: '0.8.0',
       protocolVersion: '2026-07-28',
     });
     expect(projectedFirst.ok).toBe(true);
@@ -333,7 +333,7 @@ describe('resolveMcpDescriptionComponentReferences', () => {
       reusableComponents,
       {
         specification: '0.8.0-draft.4',
-      } as unknown as { specification: '0.8.0-rc.3' },
+      } as unknown as { specification: '0.8.0' },
     );
 
     expect(result).toEqual({

@@ -20,7 +20,7 @@ function parseFixture(filename) {
   return filename.endsWith('.json') ? JSON.parse(source) : YAML.parse(source);
 }
 
-for (const specification of ['0.8.0-rc.3', '0.8.0-rc.4']) {
+for (const specification of ['0.8.0-rc.4', '0.8.0']) {
   const fixtureRoot = fileURLToPath(new URL(`./snapshots/${specification}/fixtures/`, import.meta.url));
   for (const [group, expected] of [
     ['expected-valid', 'valid'],

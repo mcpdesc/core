@@ -37,17 +37,23 @@ requires its validator dependency to already exist on npm.
 
 ## Publish
 
-Tag one package at a time. The explicit confirmation flag acknowledges that
-pushing the tag starts trusted npm publication:
+Preview and run the resumable validator-first workflow:
+
+```bash
+npm run release:plan -- --package both --channel <next|latest>
+npm run release:run -- --package both --channel <next|latest> --confirm-publish-via-tag
+```
+
+For a stable specification adoption, also pass
+`--require-specification-tag v<specification-version>`. The runner waits for
+each workflow and npm propagation, verifies integrity, provenance, signatures,
+dependency pins, and clean installation, and creates GitHub releases. Rerun the
+same command to resume after an interruption.
+
+Use the lower-level commands only for recovery or a single manual stage:
 
 ```bash
 npm run release:tag -- --package validator --version <version> --confirm-publish-via-tag
-```
-
-Watch `publish-validator.yml`, verify the npm version, integrity, provenance,
-and signatures, and create the GitHub release. Only then release core:
-
-```bash
 npm run release:check -- --package core --version <version> --run-validation
 npm run release:tag -- --package core --version <version> --confirm-publish-via-tag
 ```

@@ -31,8 +31,8 @@ try {
 }
 
 if (manifest.formatVersion !== 1) fail('formatVersion must be 1');
-if (!/^\d+\.\d+\.\d+-(?:draft|rc)\.\d+$/.test(manifest.selector ?? '')) {
-  fail('selector must use x.y.z-draft.n or x.y.z-rc.n');
+if (!/^\d+\.\d+\.\d+(?:-(?:draft|rc)\.\d+)?$/.test(manifest.selector ?? '')) {
+  fail('selector must use x.y.z, x.y.z-draft.n, or x.y.z-rc.n');
 }
 if (manifest.snapshotTag !== `v${manifest.selector}`) {
   fail('snapshotTag must equal v<selector>');

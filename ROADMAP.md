@@ -13,13 +13,14 @@ repository.
 
 ## 2. Integrate initial consumers
 
-- Integrate Effective Protocol View projection into the standalone MCP
-  Description CLI and generator CLI behind their existing parsing and file I/O
-  boundaries.
-- Exercise the same public package entry point in Node.js and browser consumers.
+- [x] Integrate shared MCP Description operations into the `mcpcontract` CLI
+      behind its existing parsing and file I/O boundaries.
+- [x] Exercise the public packages in both Node.js and browser consumers through
+      `mcpcontract` and `mcptoolkit-editor`.
 - [x] Provide CSP-safe document and declaration-selection entry points for
       browser consumers.
-- Gather consumer feedback before broadening the `0.x` API.
+- [x] Validate the initial `0.x` API through downstream integration feedback
+      from `mcpcontract` and `mcptoolkit-editor`.
 
 ## 3. Add reusable semantic operations
 
@@ -48,6 +49,9 @@ repository.
 - [x] Adopt RC.4 across validation and supported core operations, advance the
       active transition window to RC.3 and RC.4, and support component reference
       resolution with terminal-target provenance.
+- [x] Adopt stable 0.8.0 across validation and every selector-sensitive core
+      operation, advance the active transition window to RC.4 and stable, and
+      retire RC.3 from current package APIs and tarballs.
 - Add normalization or comparison operations only where multiple consumers
   demonstrate the same requirement.
 
@@ -57,8 +61,10 @@ normative schema applies.
 
 ## 4. Expand ecosystem adoption
 
-- Adopt shared operations in the editor and Inspector where they replace
-  duplicated semantic logic.
+- [x] Adopt shared operations in `mcptoolkit-editor` where they replace
+      duplicated semantic logic.
+- Adopt shared operations in Inspector where they replace duplicated semantic
+  logic.
 - Add later immutable MCP Description snapshots through an explicit active
   support decision. Record every selector-sensitive operation as supported or
   intentionally unsupported, retire selectors from current packages when their

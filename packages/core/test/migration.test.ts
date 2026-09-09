@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest';
 
 import {
   RC_4_SCHEMA_URI,
-  RC_3_SCHEMA_URI,
+  V0_8_SCHEMA_URI,
+  migrateMcpDescription07To08,
   migrateMcpDescription07ToRc4,
-  migrateMcpDescription07ToRc3,
   serializeMcpDescriptionMigrationReport,
   type MigrateMcpDescription07ToRc4Options,
 } from '../src/index.js';
@@ -233,18 +233,18 @@ describe('migrateMcpDescription07ToRc4', () => {
   });
 });
 
-describe('migrateMcpDescription07ToRc3', () => {
-  it('uses a source protocol version and validates the exact RC.3 snapshot', () => {
-    const result = migrateMcpDescription07ToRc3(source, {
-      specification: '0.8.0-rc.3',
+describe('migrateMcpDescription07To08', () => {
+  it('uses a source protocol version and validates the exact stable snapshot', () => {
+    const result = migrateMcpDescription07To08(source, {
+      specification: '0.8.0',
       sourceValidated: true,
     });
 
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.value.$schema).toBe(RC_3_SCHEMA_URI);
+    expect(result.value.$schema).toBe(V0_8_SCHEMA_URI);
     expect(result.value.mcpdesc).toBe('0.8.0');
     expect(result.value.protocolVersions).toEqual(['2025-11-25']);
-    expect(result.report.targetSpecification).toBe('0.8.0-rc.3');
+    expect(result.report.targetSpecification).toBe('0.8.0');
   });
 });

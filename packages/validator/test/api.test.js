@@ -15,23 +15,23 @@ import {
 } from '../src/index.js';
 
 const fixtureRoots = {
-  '0.8.0-rc.3': new URL('./snapshots/0.8.0-rc.3/fixtures/', import.meta.url),
-  '0.8.0-rc.4': new URL('./snapshots/0.8.0-rc.4/fixtures/', import.meta.url)
+  '0.8.0-rc.4': new URL('./snapshots/0.8.0-rc.4/fixtures/', import.meta.url),
+  '0.8.0': new URL('./snapshots/0.8.0/fixtures/', import.meta.url)
 };
 
-function fixture(group, name, specification = '0.8.0-rc.4') {
+function fixture(group, name, specification = '0.8.0') {
   return JSON.parse(fs.readFileSync(new URL(`${group}/${name}`, fixtureRoots[specification]), 'utf8'));
 }
 
-function validate(document, specification = '0.8.0-rc.4') {
+function validate(document, specification = '0.8.0') {
   return validateMcpDescription(document, { specification });
 }
 
 test('exports the active validator API', () => {
   assert.equal(typeof validateMcpDescription, 'function');
   assert.equal(typeof resolveMcpDescriptionComponentReferences, 'function');
-  assert.deepEqual(supportedSpecifications, ['0.8.0-rc.3', '0.8.0-rc.4']);
-  assert.deepEqual(deprecatedSpecifications, ['0.8.0-rc.3']);
+  assert.deepEqual(supportedSpecifications, ['0.8.0-rc.4', '0.8.0']);
+  assert.deepEqual(deprecatedSpecifications, ['0.8.0-rc.4']);
   assert.deepEqual(supportedProtocolVersions, [
     '2024-11-05',
     '2025-03-26',
@@ -40,15 +40,15 @@ test('exports the active validator API', () => {
     '2026-07-28'
   ]);
   assert.deepEqual(specificationProvenance, {
-    '0.8.0-rc.3': {
-      snapshotTag: 'v0.8.0-rc.3',
-      schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.3.json',
-      schemaSha256: 'a9c3ff77ba37c72362909f538f6e957d055e6fdb372f8b3d529e3651af3fecf4'
-    },
     '0.8.0-rc.4': {
       snapshotTag: 'v0.8.0-rc.4',
       schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.4.json',
       schemaSha256: 'd38e54db859813b63be2a5c91dde91250035f18bcb5910208cf71fa6875d6eef'
+    },
+    '0.8.0': {
+      snapshotTag: 'v0.8.0',
+      schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0.json',
+      schemaSha256: '36686f92ba0cc98bde2c34eaad31c0304d6e5cebdd2c4d2be1be06aecef41119'
     }
   });
 });
@@ -72,16 +72,16 @@ test('exports the pinned RC.2 extension catalogue and maturity classification', 
   assert.ok(Object.isFrozen(mcpExtensionCatalogue.experimentalIdentifiers));
 });
 
-test('keeps RC.3 protocol applicability and extension authority diagnostics independent', () => {
-  const official = fixture('expected-warning', 'pre-standard-extension-capabilities.json', '0.8.0-rc.3');
+test('keeps RC.4 protocol applicability and extension authority diagnostics independent', () => {
+  const official = fixture('expected-warning', 'pre-standard-extension-capabilities.json', '0.8.0-rc.4');
   assert.deepEqual(
-    validate(official, '0.8.0-rc.3').diagnostics.map(({ code, severity }) => ({ code, severity })),
+    validate(official, '0.8.0-rc.4').diagnostics.map(({ code, severity }) => ({ code, severity })),
     [{ code: 'extensions-not-supported-by-version', severity: 'warning' }]
   );
 
   official.capabilities[0].extensions = { 'io.modelcontextprotocol/future-capability': {} };
   assert.deepEqual(
-    validate(official, '0.8.0-rc.3').diagnostics.map(({ code, severity }) => ({ code, severity })),
+    validate(official, '0.8.0-rc.4').diagnostics.map(({ code, severity }) => ({ code, severity })),
     [
       { code: 'extensions-not-supported-by-version', severity: 'warning' },
       { code: 'unknown-reserved-extension-identifier', severity: 'warning' }
@@ -90,27 +90,27 @@ test('keeps RC.3 protocol applicability and extension authority diagnostics inde
 });
 
 test('keeps pre-standard client requirements strict and malformed extension maps invalid', () => {
-  const document = fixture('expected-warning', 'pre-standard-extension-capabilities.json', '0.8.0-rc.3');
+  const document = fixture('expected-warning', 'pre-standard-extension-capabilities.json', '0.8.0-rc.4');
   delete document.capabilities;
   document.tools = [{
     name: 'requires_apps',
     inputSchema: { type: 'object', additionalProperties: false },
     clientRequirements: { extensions: { 'io.modelcontextprotocol/ui': {} } }
   }];
-  const requirement = validate(document, '0.8.0-rc.3');
+  const requirement = validate(document, '0.8.0-rc.4');
   assert.equal(requirement.valid, false);
   assert.ok(requirement.diagnostics.some(({ code, severity }) => (
     code === 'client-requirement-version-mismatch' && severity === 'error'
   )));
 
   for (const extensions of [{}, { 'missing-prefix': {} }, { 'com.example/invalid': true }]) {
-    const malformed = fixture('expected-warning', 'pre-standard-extension-capabilities.json', '0.8.0-rc.3');
+    const malformed = fixture('expected-warning', 'pre-standard-extension-capabilities.json', '0.8.0-rc.4');
     malformed.capabilities[0].extensions = extensions;
-    assert.equal(validate(malformed, '0.8.0-rc.3').valid, false);
+    assert.equal(validate(malformed, '0.8.0-rc.4').valid, false);
   }
 });
 
-for (const specification of ['0.8.0-rc.3', '0.8.0-rc.4']) {
+for (const specification of ['0.8.0-rc.4', '0.8.0']) {
   test(`resolves ${specification} component references with terminal provenance`, () => {
     const document = fixture('expected-valid', 'reusable-components.json', specification);
     const original = structuredClone(document);
@@ -129,7 +129,7 @@ for (const specification of ['0.8.0-rc.3', '0.8.0-rc.4']) {
 }
 
 test('rejects component resolution for unsupported selectors', () => {
-  const document = fixture('expected-valid', 'reusable-components.json', '0.8.0-rc.3');
+  const document = fixture('expected-valid', 'reusable-components.json', '0.8.0-rc.4');
   assert.throws(
     () => resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-draft.4' }),
     /does not support specification: 0\.8\.0-draft\.4/
@@ -140,9 +140,10 @@ test('requires an explicit exact specification selector', () => {
   const document = fixture('expected-valid', 'minimal-zero-primitives.json');
   assert.throws(() => validateMcpDescription(document), /options\.specification is required/);
   assert.throws(() => validateMcpDescription(document, {}), /options\.specification is required/);
+  assert.equal(validateMcpDescription(document, { specification: '0.8.0-rc.4' }).valid, true);
   assert.throws(
-    () => validateMcpDescription(document, { specification: '0.8.0' }),
-    /Unsupported MCP Description specification: 0\.8\.0/
+    () => validateMcpDescription(document, { specification: '0.8.0-rc.3' }),
+    /Unsupported MCP Description specification: 0\.8\.0-rc\.3/
   );
   assert.throws(
     () => validateMcpDescription(document, { specification: { toString: () => '0.8.0-draft.1' } }),
@@ -157,13 +158,13 @@ test('resolves exact snapshot identity offline', () => {
   };
   try {
     assert.deepEqual(resolveMcpDescriptionSpecification({
-      $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.3.json',
+      $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0.json',
       mcpdesc: '0.8.0'
     }), {
       status: 'resolved',
-      specification: '0.8.0-rc.3',
-      schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.3.json',
-      provenance: specificationProvenance['0.8.0-rc.3'],
+      specification: '0.8.0',
+      schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0.json',
+      provenance: specificationProvenance['0.8.0'],
       diagnostics: []
     });
   } finally {
@@ -186,14 +187,14 @@ test('requires exact recognized identity instead of inferring from mcpdesc', () 
 
 test('checks explicit selector consistency with declared schema identity', () => {
   const selected = resolveMcpDescriptionSpecification({ mcpdesc: '0.8.0' }, {
-    specification: '0.8.0-rc.3'
+    specification: '0.8.0'
   });
   assert.equal(selected.status, 'resolved');
-  assert.equal(selected.specification, '0.8.0-rc.3');
+  assert.equal(selected.specification, '0.8.0');
 
   const contradiction = resolveMcpDescriptionSpecification({
     $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.4.json'
-  }, { specification: '0.8.0-rc.3' });
+  }, { specification: '0.8.0' });
   assert.equal(contradiction.status, 'unresolved');
   assert.equal(contradiction.diagnostics[0].code, 'contradictory-snapshot-identity');
 });
@@ -205,7 +206,7 @@ test('distinguishes invalid, unknown, and unsupported identity inputs', () => {
 });
 
 test('dispatches both active exact selectors', () => {
-  for (const specification of ['0.8.0-rc.3', '0.8.0-rc.4']) {
+  for (const specification of ['0.8.0-rc.4', '0.8.0']) {
     const document = fixture('expected-valid', 'reusable-components.json', specification);
     assert.equal(validate(document, specification).valid, true);
   }
@@ -254,12 +255,12 @@ test('exports immutable support and provenance data', () => {
   assert.ok(Object.isFrozen(deprecatedSpecifications));
   assert.ok(Object.isFrozen(supportedProtocolVersions));
   assert.ok(Object.isFrozen(specificationProvenance));
-  assert.ok(Object.isFrozen(specificationProvenance['0.8.0-rc.2']));
-  assert.ok(Object.isFrozen(specificationProvenance['0.8.0-rc.3']));
+  assert.ok(Object.isFrozen(specificationProvenance['0.8.0-rc.4']));
+  assert.ok(Object.isFrozen(specificationProvenance['0.8.0']));
   assert.throws(() => supportedSpecifications.push('0.8.0'));
   assert.throws(() => supportedProtocolVersions.pop());
   assert.throws(() => {
-    specificationProvenance['0.8.0-rc.2'].snapshotTag = 'changed';
+    specificationProvenance['0.8.0'].snapshotTag = 'changed';
   });
 });
 

@@ -16,7 +16,7 @@ try {
 
 function fixture(group, name) {
   return JSON.parse(fs.readFileSync(
-    new URL(`./snapshots/0.8.0-rc.4/fixtures/${group}/${name}`, import.meta.url),
+    new URL(`./snapshots/0.8.0/fixtures/${group}/${name}`, import.meta.url),
     'utf8'
   ));
 }
@@ -25,7 +25,7 @@ function validateUnderCsp(document) {
   globalThis.eval = () => { throw new EvalError('eval blocked by test CSP'); };
   globalThis.Function = function BlockedFunction() { throw new EvalError('Function blocked by test CSP'); };
   try {
-    return browser.validateMcpDescription(document, { specification: '0.8.0-rc.4' });
+    return browser.validateMcpDescription(document, { specification: '0.8.0' });
   } finally {
     globalThis.eval = originalEval;
     globalThis.Function = OriginalFunction;

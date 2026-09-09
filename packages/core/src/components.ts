@@ -5,7 +5,7 @@ import {
 } from '@mcpdesc/validator/standalone';
 
 import type { CoreDiagnostic, McpDescriptionDocument } from './model.js';
-import { RC_3_SPECIFICATION, RC_4_SPECIFICATION } from './snapshot.js';
+import { RC_4_SPECIFICATION, V0_8_SPECIFICATION } from './snapshot.js';
 
 export type {
   McpDescComponentNamespace,
@@ -19,12 +19,12 @@ export type {
 } from './model.js';
 
 export interface ResolveMcpDescriptionComponentReferencesOptions {
-  readonly specification: typeof RC_3_SPECIFICATION | typeof RC_4_SPECIFICATION;
+  readonly specification: typeof RC_4_SPECIFICATION | typeof V0_8_SPECIFICATION;
 }
 
 const componentReferenceSpecifications = new Set<string>([
-  RC_3_SPECIFICATION,
   RC_4_SPECIFICATION,
+  V0_8_SPECIFICATION,
 ]);
 
 export interface McpDescriptionComponentReferenceProvenance {

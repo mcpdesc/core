@@ -80,7 +80,7 @@ if (/\beval\s*\(|\bnew\s+Function\b/.test(standalone)) {
 if (/\bnode:/.test(standalone)) {
   throw new Error('Standalone bundle contains a Node.js built-in import');
 }
-for (const selector of ['0.8.0-rc.3', '0.8.0-rc.4']) {
+for (const selector of ['0.8.0-rc.4', '0.8.0']) {
   if (!standalone.includes(selector)) {
     throw new Error(`Standalone bundle is missing runtime snapshot ${selector}`);
   }

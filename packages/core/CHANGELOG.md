@@ -4,6 +4,21 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 
 ## [Unreleased]
 
+## [0.11.0-rc.1] - 2026-09-09
+
+### Added
+
+- Added stable MCP Description `0.8.0` support across projection, merge,
+  declaration selection, migration from 0.7.0, and component reference
+  resolution.
+- Added `migrateMcpDescription07To08` and stable snapshot metadata.
+
+### Changed
+
+- Advanced current core support to RC.4 and stable `0.8.0`, deprecated RC.4,
+  retired RC.3 from the current API, and pinned `@mcpdesc/validator`
+  `0.12.0-rc.1`.
+
 ## [0.10.1] - 2026-09-08
 
 ### Fixed
@@ -60,12 +75,6 @@ All notable changes to `@mcpdesc/core` are documented in this file.
   caller-validated MCP Description 0.7.0 documents with RC.2 result validation
   and conversion reports.
 
-### Fixed
-
-- npm publishing workflows use OIDC trusted publishing without token-oriented
-  registry configuration, and validator tags no longer trigger the core publish
-  workflow.
-
 ## [0.8.0] - 2026-09-04
 
 ### Added
@@ -106,16 +115,10 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 
 ## [0.6.0] - 2026-09-02
 
-### Added
-
-- `@mcpdesc/validator` as an independently versioned workspace package,
-  preserving its immutable snapshots, frozen fixtures, public APIs, and
-  strict-CSP browser contracts from `0.6.0`.
-
 ### Changed
 
-- Core development now consumes the repository-owned validator `0.7.0` workspace
-  package through the existing standalone entry.
+- Core now pins the repository-owned `@mcpdesc/validator` `0.7.0` package
+  through the existing standalone entry.
 
 ## [0.5.0] - 2026-09-02
 
@@ -170,19 +173,6 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 - `migrateMcpDescription07ToDraft4`, a pure migration for caller-validated 0.7.0
   documents with deterministic inline-security extraction, empty collection
   normalization, generated-name diagnostics, and Draft 4 result validation.
-- A maintainer-controlled release procedure covering tarball review, version and
-  tag consistency, first-publication bootstrap, trusted npm publishing,
-  provenance, and post-publication verification.
-- A tag-triggered GitHub Actions workflow that runs the full validation suite
-  and publishes `@mcpdesc/core` with npm provenance support.
-
-### Changed
-
-- Contribution guidance now uses lockfile-exact installation and links to the
-  release procedure.
-- The `Validate` workflow is enabled as a required check for `main`.
-- Future npm releases use GitHub Actions trusted publishing without a stored npm
-  token.
 
 ## [0.1.0] - 2026-08-31
 
@@ -208,10 +198,10 @@ tarball verification. The corresponding Git tag has not yet been created.
 - Type checking, formatting, browser bundling, exact package-content checks, and
   isolated tarball consumer verification in the local and CI validation
   workflow.
-- Apache-2.0 licensing, provenance, contribution guidance, and repository
-  instructions for coding assistants.
+- Apache-2.0 licensing and package provenance files.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/v0.10.1...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/v0.11.0-rc.1...HEAD
+[0.11.0-rc.1]: https://github.com/mcpdesc/core/compare/v0.10.1...v0.11.0-rc.1
 [0.10.1]: https://github.com/mcpdesc/core/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/mcpdesc/core/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/mcpdesc/core/compare/v0.9.0...v0.9.1

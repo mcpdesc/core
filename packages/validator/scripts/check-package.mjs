@@ -42,14 +42,14 @@ const expected = [
   'package.json',
   'standalone.js',
   'src/index.js',
-  'src/snapshots/0.8.0-rc.3/base.js',
-  'src/snapshots/0.8.0-rc.3/index.js',
-  'src/snapshots/0.8.0-rc.3/schema.json',
-  'src/snapshots/0.8.0-rc.3/semantic.js',
   'src/snapshots/0.8.0-rc.4/base.js',
   'src/snapshots/0.8.0-rc.4/index.js',
   'src/snapshots/0.8.0-rc.4/schema.json',
-  'src/snapshots/0.8.0-rc.4/semantic.js'
+  'src/snapshots/0.8.0-rc.4/semantic.js',
+  'src/snapshots/0.8.0/base.js',
+  'src/snapshots/0.8.0/index.js',
+  'src/snapshots/0.8.0/schema.json',
+  'src/snapshots/0.8.0/semantic.js'
 ].sort();
 
 if (JSON.stringify(actual) !== JSON.stringify(expected)) {
