@@ -8,6 +8,14 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-09-09
+
+### Changed
+
+- Promoted the stable MCP Description `0.8.0` support proven in `0.12.0-rc.1`
+	without changing schemas, conformance behavior, diagnostics, fixtures, or
+	public APIs.
+
 ## [0.12.0-rc.1] - 2026-09-09
 
 ### Added
@@ -174,7 +182,8 @@ Dates for published releases are the UTC publication dates recorded by npm.
 - Added synchronous structural and semantic validation for parsed JavaScript values with deterministic diagnostics and exact selector dispatch.
 - Added ESM browser support, TypeScript declarations, embedded schema provenance, frozen fixtures, and package-content checks.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/validator-v0.12.0-rc.1...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/validator-v0.12.0...HEAD
+[0.12.0]: https://github.com/mcpdesc/core/compare/validator-v0.12.0-rc.1...validator-v0.12.0
 [0.12.0-rc.1]: https://github.com/mcpdesc/core/compare/validator-v0.11.1...validator-v0.12.0-rc.1
 [0.11.1]: https://github.com/mcpdesc/core/compare/validator-v0.11.0...validator-v0.11.1
 [0.11.0]: https://github.com/mcpdesc/core/compare/validator-v0.10.1...validator-v0.11.0
