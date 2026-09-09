@@ -1,6 +1,6 @@
 {
   "name": "@mcpdesc/validator",
-  "version": "0.11.1",
+  "version": "0.12.0-rc.1",
   "description": "Structural and semantic validation for MCP Description snapshots",
   "type": "module",
   "types": "./index.d.ts",
@@ -31,8 +31,8 @@
   },
   "files": [
     "src/index.js",
-    "src/snapshots/0.8.0-rc.3",
     "src/snapshots/0.8.0-rc.4",
+    "src/snapshots/0.8.0",
     "standalone.js",
     "index.d.ts",
     "CHANGELOG.md",

@@ -8,6 +8,19 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ## [Unreleased]
 
+## [0.12.0-rc.1] - 2026-09-09
+
+### Added
+
+- Added the immutable stable `0.8.0` selector, its frozen conformance fixtures,
+  and component reference resolution with terminal-target provenance.
+
+### Changed
+
+- Advanced active runtime support to RC.4 and stable `0.8.0`, deprecated RC.4,
+  and retired RC.3 from current registries, declarations, bundles, and package
+  contents while retaining its immutable source and fixtures in Git.
+
 ## [0.11.1] - 2026-09-08
 
 ### Fixed
@@ -40,8 +53,6 @@ Dates for published releases are the UTC publication dates recorded by npm.
 - Narrowed active runtime support to RC.2 and RC.3 and marked RC.2 deprecated.
 - Excluded retired runtime snapshots from generated bundles and package
 	contents while retaining their source and frozen fixtures in Git.
-- Removed the retained snapshot-intake manifest; intake bundles are disposable
-	inputs and imported bytes remain protected by the snapshot integrity manifest.
 
 ## [0.10.0] - 2026-09-07
 
@@ -105,10 +116,9 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ### Changed
 
-- Moved package maintenance and publication from the MCP Description
-	specification repository to the MCP Description tooling repository without
-	changing public APIs, immutable snapshots, diagnostics, or validation
-	behavior.
+- Updated shipped repository metadata and provenance files to identify the MCP
+	Description tooling repository as the package maintenance location. Public
+	APIs, immutable snapshots, diagnostics, and validation behavior are unchanged.
 
 ## [0.6.0] - 2026-09-02
 
@@ -164,7 +174,8 @@ Dates for published releases are the UTC publication dates recorded by npm.
 - Added synchronous structural and semantic validation for parsed JavaScript values with deterministic diagnostics and exact selector dispatch.
 - Added ESM browser support, TypeScript declarations, embedded schema provenance, frozen fixtures, and package-content checks.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/validator-v0.11.1...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/validator-v0.12.0-rc.1...HEAD
+[0.12.0-rc.1]: https://github.com/mcpdesc/core/compare/validator-v0.11.1...validator-v0.12.0-rc.1
 [0.11.1]: https://github.com/mcpdesc/core/compare/validator-v0.11.0...validator-v0.11.1
 [0.11.0]: https://github.com/mcpdesc/core/compare/validator-v0.10.1...validator-v0.11.0
 [0.10.1]: https://github.com/mcpdesc/core/compare/validator-v0.10.0...validator-v0.10.1

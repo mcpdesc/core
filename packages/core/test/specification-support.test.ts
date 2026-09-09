@@ -2,11 +2,11 @@ import { describe, expect, it } from 'vitest';
 
 import {
   RC_4_SCHEMA_URI,
-  RC_3_SCHEMA_URI,
+  V0_8_SCHEMA_URI,
   deprecatedCoreSpecifications,
   mergeEffectiveProtocolViews,
   migrateMcpDescription07ToRc4,
-  migrateMcpDescription07ToRc3,
+  migrateMcpDescription07To08,
   projectEffectiveProtocolView,
   resolveMcpDescriptionComponentReferences,
   selectMcpDescriptionDeclarations,
@@ -23,14 +23,14 @@ type SelectorSensitiveOperation =
 type SupportDisposition = 'supported';
 
 const supportBySpecification = {
-  '0.8.0-rc.3': {
+  '0.8.0-rc.4': {
     componentResolution: 'supported',
     merge: 'supported',
     migrationFrom07: 'supported',
     projection: 'supported',
     selection: 'supported',
   },
-  '0.8.0-rc.4': {
+  '0.8.0': {
     componentResolution: 'supported',
     merge: 'supported',
     migrationFrom07: 'supported',
@@ -43,19 +43,19 @@ const supportBySpecification = {
 >;
 
 const schemaBySpecification = {
-  '0.8.0-rc.3': RC_3_SCHEMA_URI,
   '0.8.0-rc.4': RC_4_SCHEMA_URI,
+  '0.8.0': V0_8_SCHEMA_URI,
 } as const satisfies Record<SupportedCoreSpecification, string>;
 
 const migrateBySpecification = {
-  '0.8.0-rc.3': (source: unknown) =>
-    migrateMcpDescription07ToRc3(source, {
-      specification: '0.8.0-rc.3',
-      sourceValidated: true,
-    }),
   '0.8.0-rc.4': (source: unknown) =>
     migrateMcpDescription07ToRc4(source, {
       specification: '0.8.0-rc.4',
+      sourceValidated: true,
+    }),
+  '0.8.0': (source: unknown) =>
+    migrateMcpDescription07To08(source, {
+      specification: '0.8.0',
       sourceValidated: true,
     }),
 } satisfies Record<
@@ -75,8 +75,8 @@ const legacyDocument = {
 };
 
 describe('selector-sensitive operation support', () => {
-  it('marks RC.3 as deprecated while keeping it operational', () => {
-    expect(deprecatedCoreSpecifications).toEqual(['0.8.0-rc.3']);
+  it('marks RC.4 as deprecated while keeping it operational', () => {
+    expect(deprecatedCoreSpecifications).toEqual(['0.8.0-rc.4']);
     expect(Object.isFrozen(deprecatedCoreSpecifications)).toBe(true);
   });
 

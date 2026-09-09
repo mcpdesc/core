@@ -10,7 +10,7 @@ snapshots. The package:
 
 Use it when accepting, generating, migrating, or transforming MCP Description
 documents and you need to know whether the result conforms to a specific
-published draft or release candidate. It validates MCP Description documents,
+published draft, release candidate, or stable version. It validates MCP Description documents,
 not live MCP servers or MCP protocol messages.
 
 ## Install
@@ -25,7 +25,7 @@ npm install @mcpdesc/validator
 import { validateMcpDescription } from '@mcpdesc/validator';
 
 const result = validateMcpDescription(parsedDocument, {
-  specification: '0.8.0-rc.4',
+  specification: '0.8.0',
 });
 
 for (const diagnostic of result.diagnostics) {
@@ -48,21 +48,23 @@ The package supports these immutable selectors, newest first:
 
 | Selector | First validator release | Embedded schema SHA-256 |
 |---|---|---|
-| `0.8.0-rc.4` | `0.11.0` | `d38e54db859813b63be2a5c91dde91250035f18bcb5910208cf71fa6875d6eef` |
-| `0.8.0-rc.3` (deprecated) | `0.10.0` | `a9c3ff77ba37c72362909f538f6e957d055e6fdb372f8b3d529e3651af3fecf4` |
+| `0.8.0` | `0.12.0-rc.1` | `36686f92ba0cc98bde2c34eaad31c0304d6e5cebdd2c4d2be1be06aecef41119` |
+| `0.8.0-rc.4` (deprecated) | `0.11.0` | `d38e54db859813b63be2a5c91dde91250035f18bcb5910208cf71fa6875d6eef` |
 
 The validator package embeds the schema and executable behavior for each
-selector. RC.3 remains available for migration compatibility; new integrations
-should select RC.4. Earlier selectors remain available by pinning an older
+selector. RC.4 remains available for migration compatibility; new integrations
+should select stable `0.8.0`. Earlier selectors remain available by pinning an older
 immutable validator release. npm integrity and trusted-publishing provenance identify released
 package bytes; specification repository tags and commits are informational.
 
-Component reference resolution is available for RC.3 and RC.4 with
+Component reference resolution is available for RC.4 and stable `0.8.0` with
 terminal-target provenance for each authored reference.
 
 ## Usage
 
-The `options` argument and exact `specification` selector are required. The unqualified selector `0.8.0` is intentionally unsupported because draft and release-candidate iterations are immutable compatibility contracts.
+The `options` argument and exact `specification` selector are required. Stable,
+draft, and release-candidate selectors remain distinct immutable compatibility
+contracts.
 
 ### Entry points
 
@@ -130,17 +132,17 @@ Structural paths start with AJV's instance path. A `required` error appends its 
 
 ## Support metadata
 
-The package exports frozen `supportedSpecifications`, `deprecatedSpecifications`, `supportedProtocolVersions`, and `specificationProvenance` values. Provenance records include the snapshot tag, recorded schema URI, and embedded schema SHA-256 digest. Public validation dispatches through a registry keyed by exact specification selectors. The active selector set is `0.8.0-rc.3` and `0.8.0-rc.4`; `deprecatedSpecifications` contains RC.3. The protocol-version export is the deduplicated union supported by active snapshots.
+The package exports frozen `supportedSpecifications`, `deprecatedSpecifications`, `supportedProtocolVersions`, and `specificationProvenance` values. Provenance records include the snapshot tag, recorded schema URI, and embedded schema SHA-256 digest. Public validation dispatches through a registry keyed by exact specification selectors. The active selector set is `0.8.0-rc.4` and `0.8.0`; `deprecatedSpecifications` contains RC.4. The protocol-version export is the deduplicated union supported by active snapshots.
 
 The package also exports the frozen `mcpExtensionCatalogue` and
-`mcpExtensionMaturity` classifier pinned by the RC.3 snapshot. The catalogue
+`mcpExtensionMaturity` classifier pinned by the stable snapshot. The catalogue
 records its authoritative source, effective date, and official or experimental
 identifier assignments. Catalogue recognition establishes authority and
 maturity only; it does not validate extension-specific settings.
 
 npm package SemVer tracks implementation releases independently from specification snapshot identity. Adding a later snapshot is additive: it must use a sibling implementation and selector rather than changing an existing snapshot's schema, semantics, metadata, fixtures, or results.
 
-The RC.3 and RC.4 component resolvers report authored and terminal target paths
+The RC.4 and stable component resolvers report authored and terminal target paths
 for successful substitutions. Additive tooling corrections that provide this
 metadata are recorded explicitly in the integrity manifest.
 

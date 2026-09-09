@@ -13,10 +13,10 @@ import type {
 import {
   RC_4_SCHEMA_URI,
   RC_4_SPECIFICATION,
-  RC_3_SCHEMA_URI,
-  RC_3_SPECIFICATION,
   rc4Snapshot,
-  rc3Snapshot,
+  V0_8_SCHEMA_URI,
+  V0_8_SPECIFICATION,
+  v0_8Snapshot,
   type SupportedCoreSpecification,
 } from './snapshot.js';
 
@@ -43,15 +43,15 @@ export interface MigrateMcpDescription07ToRc4Options {
   readonly sourceValidated: true;
 }
 
-export interface MigrateMcpDescription07ToRc3Options {
-  readonly specification: typeof RC_3_SPECIFICATION;
+export interface MigrateMcpDescription07To08Options {
+  readonly specification: typeof V0_8_SPECIFICATION;
   readonly defaultProtocolVersion?: SupportedProtocolVersion;
   readonly protocolVersion?: SupportedProtocolVersion;
   readonly sourceValidated: true;
 }
 
 type SupportedMigrationOptions =
-  MigrateMcpDescription07ToRc4Options | MigrateMcpDescription07ToRc3Options;
+  MigrateMcpDescription07ToRc4Options | MigrateMcpDescription07To08Options;
 
 export interface McpDescriptionMigrationDefault {
   readonly code: 'migration-default-protocol-version';
@@ -322,7 +322,7 @@ function migrateMcpDescription07(
   source: unknown,
   options: SupportedMigrationOptions,
   targetSpecification: SupportedCoreSpecification,
-  targetSchemaUri: typeof RC_3_SCHEMA_URI | typeof RC_4_SCHEMA_URI,
+  targetSchemaUri: typeof RC_4_SCHEMA_URI | typeof V0_8_SCHEMA_URI,
   targetProtocolVersions: readonly SupportedProtocolVersion[],
 ): McpDescriptionMigrationResult {
   if (options.specification !== targetSpecification) {
@@ -508,15 +508,15 @@ export function migrateMcpDescription07ToRc4(
   );
 }
 
-export function migrateMcpDescription07ToRc3(
+export function migrateMcpDescription07To08(
   source: unknown,
-  options: MigrateMcpDescription07ToRc3Options,
+  options: MigrateMcpDescription07To08Options,
 ): McpDescriptionMigrationResult {
   return migrateMcpDescription07(
     source,
     options,
-    RC_3_SPECIFICATION,
-    RC_3_SCHEMA_URI,
-    rc3Snapshot.protocolVersions,
+    V0_8_SPECIFICATION,
+    V0_8_SCHEMA_URI,
+    v0_8Snapshot.protocolVersions,
   );
 }

@@ -49,7 +49,7 @@ test('standalone bundle contains no dynamic code generation', () => {
   assert.doesNotMatch(source, /\beval\s*\(|\bnew\s+Function\b/);
 });
 
-for (const specification of ['0.8.0-rc.3', '0.8.0-rc.4']) {
+for (const specification of ['0.8.0-rc.4', '0.8.0']) {
   const fixtureRoot = fileURLToPath(new URL(`./snapshots/${specification}/fixtures/`, import.meta.url));
   test(`standalone ${specification} matches standard fixture outcomes`, () => {
     for (const filename of fixtureFiles(fixtureRoot)) {

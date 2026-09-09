@@ -59,10 +59,18 @@ test('preserves the immutable Release Candidate 3 schema digest and metadata', (
   const digest = createHash('sha256').update(embedded).digest('hex');
 
   assert.equal(digest, rc3SchemaSha256);
-  assert.deepEqual(specificationProvenance['0.8.0-rc.3'], {
-    snapshotTag: 'v0.8.0-rc.3',
-    schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.3.json',
-    schemaSha256: rc3SchemaSha256
+});
+
+test('preserves the immutable stable 0.8.0 schema digest and metadata', () => {
+  const embedded = fs.readFileSync(new URL('../src/snapshots/0.8.0/schema.json', import.meta.url));
+  const stableSchemaSha256 = '36686f92ba0cc98bde2c34eaad31c0304d6e5cebdd2c4d2be1be06aecef41119';
+  const digest = createHash('sha256').update(embedded).digest('hex');
+
+  assert.equal(digest, stableSchemaSha256);
+  assert.deepEqual(specificationProvenance['0.8.0'], {
+    snapshotTag: 'v0.8.0',
+    schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0.json',
+    schemaSha256: stableSchemaSha256
   });
 });
 

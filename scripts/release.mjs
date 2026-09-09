@@ -1,17 +1,21 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 const targets = {
   core: {
     manifest: 'packages/core/package.json',
     changelog: 'packages/core/CHANGELOG.md',
     tagPrefix: 'v',
+    workflow: 'publish.yml',
     validation: ['npm', ['run', 'check']],
   },
   validator: {
     manifest: 'packages/validator/package.json',
     changelog: 'packages/validator/CHANGELOG.md',
     tagPrefix: 'validator-v',
+    workflow: 'publish-validator.yml',
     validation: ['npm', ['test', '--workspace', '@mcpdesc/validator']],
   },
 };
@@ -23,6 +27,7 @@ function fail(message) {
 
 function run(command, args, options = {}) {
   const output = execFileSync(command, args, {
+    cwd: options.cwd,
     encoding: 'utf8',
     stdio: options.stdio ?? 'pipe',
   });
@@ -47,6 +52,29 @@ function parsePackages() {
   return [value];
 }
 
+function parseChannel() {
+  const channel = argument('--channel') ?? 'latest';
+  if (!['next', 'latest'].includes(channel)) {
+    fail('pass --channel next or --channel latest');
+  }
+  return channel;
+}
+
+function isPrerelease(version) {
+  return version.includes('-');
+}
+
+function checkChannelVersion(channel, packageName, version) {
+  if (channel === 'next' && !isPrerelease(version)) {
+    fail(
+      `${packageName}@${version} must use prerelease SemVer for channel next`,
+    );
+  }
+  if (channel === 'latest' && isPrerelease(version)) {
+    fail(`${packageName}@${version} must use stable SemVer for channel latest`);
+  }
+}
+
 function isNpmVersionUnused(packageName, version) {
   const result = spawnSync(
     'npm',
@@ -60,6 +88,27 @@ function isNpmVersionUnused(packageName, version) {
   fail(`could not query npm for ${packageName}@${version}`);
 }
 
+function npmMetadata(packageName, version) {
+  const result = spawnSync(
+    'npm',
+    [
+      'view',
+      `${packageName}@${version}`,
+      'version',
+      'dependencies',
+      'dist.integrity',
+      'dist.signatures',
+      'dist.attestations',
+      '--json',
+      '--prefer-online',
+    ],
+    { encoding: 'utf8' },
+  );
+  if (result.status === 0) return JSON.parse(result.stdout);
+  if (`${result.stderr}\n${result.stdout}`.includes('E404')) return null;
+  fail(`could not query npm for ${packageName}@${version}`);
+}
+
 function tagExists(tag) {
   if (
     spawnSync('git', ['rev-parse', '--verify', '--quiet', `refs/tags/${tag}`])
@@ -70,6 +119,153 @@ function tagExists(tag) {
   return (
     run('git', ['ls-remote', '--tags', 'origin', `refs/tags/${tag}`]).length > 0
   );
+}
+
+function pause(milliseconds) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, milliseconds);
+}
+
+function tagCommit(tag) {
+  try {
+    return run('git', ['rev-list', '-n', '1', tag]);
+  } catch {
+    return null;
+  }
+}
+
+function waitForWorkflow(release) {
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    const output = run('gh', [
+      'run',
+      'list',
+      '--workflow',
+      release.target.workflow,
+      '--limit',
+      '20',
+      '--json',
+      'databaseId,headBranch',
+    ]);
+    const workflow = JSON.parse(output).find(
+      (candidate) => candidate.headBranch === release.tag,
+    );
+    if (workflow) {
+      run(
+        'gh',
+        ['run', 'watch', String(workflow.databaseId), '--exit-status'],
+        {
+          stdio: 'inherit',
+        },
+      );
+      return;
+    }
+    pause(2_000);
+  }
+  fail(`timed out waiting for ${release.target.workflow} for ${release.tag}`);
+}
+
+function waitForNpm(release) {
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    const metadata = npmMetadata(release.packageName, release.version);
+    if (metadata) return metadata;
+    pause(2_000);
+  }
+  fail(
+    `timed out waiting for ${release.packageName}@${release.version} on npm`,
+  );
+}
+
+function verifyMetadata(release, metadata) {
+  if (metadata.version !== release.version) {
+    fail(`npm returned unexpected version for ${release.packageName}`);
+  }
+  if (!(metadata.dist?.integrity ?? metadata['dist.integrity'])) {
+    fail(`${release.packageName}@${release.version} has no registry integrity`);
+  }
+  if (!(metadata.dist?.signatures ?? metadata['dist.signatures'])?.length) {
+    fail(`${release.packageName}@${release.version} has no registry signature`);
+  }
+  if (
+    !(metadata.dist?.attestations ?? metadata['dist.attestations'])?.provenance
+  ) {
+    fail(
+      `${release.packageName}@${release.version} has no provenance attestation`,
+    );
+  }
+  if (release.name === 'core') {
+    const expectedValidator = JSON.parse(
+      readFileSync(release.target.manifest, 'utf8'),
+    ).dependencies['@mcpdesc/validator'];
+    if (metadata.dependencies?.['@mcpdesc/validator'] !== expectedValidator) {
+      fail(
+        `published core does not pin @mcpdesc/validator@${expectedValidator}`,
+      );
+    }
+  }
+}
+
+function verifyInstall(release) {
+  const directory = mkdtempSync(join(tmpdir(), 'mcpdesc-release-'));
+  try {
+    writeFileSync(
+      join(directory, 'package.json'),
+      '{"name":"mcpdesc-release-verification","private":true}\n',
+    );
+    run(
+      'npm',
+      [
+        'install',
+        '--ignore-scripts',
+        `${release.packageName}@${release.version}`,
+      ],
+      { cwd: directory },
+    );
+    run('npm', ['audit', 'signatures'], { cwd: directory, stdio: 'inherit' });
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+}
+
+function changelogNotes(release) {
+  const changelog = readFileSync(release.target.changelog, 'utf8');
+  const heading = `## [${release.version}]`;
+  const start = changelog.indexOf(heading);
+  if (start === -1)
+    fail(`${release.target.changelog} has no ${release.version}`);
+  const contentStart = changelog.indexOf('\n', start) + 1;
+  const next = changelog.indexOf('\n## [', contentStart);
+  return changelog.slice(contentStart, next === -1 ? undefined : next).trim();
+}
+
+function ensureGitHubRelease(release, channel) {
+  const existing = spawnSync('gh', ['release', 'view', release.tag], {
+    encoding: 'utf8',
+  });
+  if (existing.status === 0) return;
+  const args = [
+    'release',
+    'create',
+    release.tag,
+    '--title',
+    `${release.packageName} ${release.version}`,
+    '--notes',
+    changelogNotes(release),
+  ];
+  if (channel === 'next') args.push('--prerelease');
+  run('gh', args, { stdio: 'inherit' });
+}
+
+function ensureSpecificationTag() {
+  const tag = argument('--require-specification-tag');
+  if (!tag) return;
+  const output = run('gh', [
+    'api',
+    `repos/mcpdesc/mcpdesc-specification/git/ref/tags/${tag}`,
+    '--jq',
+    '.ref',
+  ]);
+  if (output !== `refs/tags/${tag}`) {
+    fail(`remote specification tag ${tag} is not available`);
+  }
 }
 
 function checkRequiredChecks(commit) {
@@ -169,6 +365,71 @@ function checkTarget(name, packageNames) {
   };
 }
 
+function plannedTarget(name) {
+  const target = targets[name];
+  const manifest = JSON.parse(readFileSync(target.manifest, 'utf8'));
+  return {
+    name,
+    packageName: manifest.name,
+    version: manifest.version,
+    tag: `${target.tagPrefix}${manifest.version}`,
+    target,
+  };
+}
+
+function checkPreparedReleases(releases) {
+  for (const release of releases) {
+    const changelog = readFileSync(release.target.changelog, 'utf8');
+    if (!changelog.includes(`## [${release.version}]`)) {
+      fail(
+        `${release.target.changelog} has no ${release.version} release section`,
+      );
+    }
+  }
+  const core = releases.find((release) => release.name === 'core');
+  const validator = releases.find((release) => release.name === 'validator');
+  if (core && validator) {
+    const dependency = JSON.parse(readFileSync(core.target.manifest, 'utf8'))
+      .dependencies?.['@mcpdesc/validator'];
+    if (dependency !== validator.version) {
+      fail(`core must pin the prepared validator version ${validator.version}`);
+    }
+  }
+}
+
+function runRelease(release, channel, head) {
+  checkChannelVersion(channel, release.packageName, release.version);
+  let metadata = npmMetadata(release.packageName, release.version);
+  if (!metadata) {
+    const existingTagCommit = tagCommit(release.tag);
+    if (existingTagCommit && existingTagCommit !== head) {
+      fail(`${release.tag} does not identify current main`);
+    }
+    if (!existingTagCommit) {
+      run(
+        'git',
+        [
+          'tag',
+          '-s',
+          release.tag,
+          '-m',
+          `Release ${release.packageName} ${release.version}`,
+        ],
+        { stdio: 'inherit' },
+      );
+      run('git', ['push', 'origin', release.tag], { stdio: 'inherit' });
+    }
+    waitForWorkflow(release);
+    metadata = waitForNpm(release);
+  }
+  verifyMetadata(release, metadata);
+  verifyInstall(release);
+  ensureGitHubRelease(release, channel);
+  console.log(
+    `${release.packageName}@${release.version}: published and verified`,
+  );
+}
+
 function printPlan(releases) {
   for (const release of releases) {
     console.log(
@@ -182,10 +443,23 @@ function printPlan(releases) {
   }
 }
 
+function printOrchestrationPlan(releases, channel) {
+  console.log(`Release channel: ${channel}`);
+  for (const release of releases) {
+    checkChannelVersion(channel, release.packageName, release.version);
+    console.log(`${release.name}:`);
+    console.log(`  check ${release.packageName}@${release.version}`);
+    console.log(`  tag ${release.tag}`);
+    console.log(`  wait for trusted publication`);
+    console.log(`  verify registry signatures and provenance`);
+    console.log(`  create GitHub release`);
+  }
+}
+
 const command = process.argv[2];
-if (!['check', 'tag'].includes(command)) {
+if (!['check', 'plan', 'run', 'tag'].includes(command)) {
   fail(
-    'usage: node scripts/release.mjs <check|tag> --package <core|validator|both> [--version <version>] [--run-validation]',
+    'usage: node scripts/release.mjs <check|plan|run|tag> --package <core|validator|both> [--version <version>] [--channel <next|latest>] [--run-validation]',
   );
 }
 
@@ -196,7 +470,27 @@ if (command === 'tag' && packageNames.length !== 1) {
   );
 }
 
+if (command === 'plan') {
+  printOrchestrationPlan(packageNames.map(plannedTarget), parseChannel());
+  process.exit(0);
+}
+
 checkRepository();
+if (command === 'run') {
+  if (!hasArgument('--confirm-publish-via-tag')) {
+    fail('pass --confirm-publish-via-tag after explicit maintainer approval');
+  }
+  const channel = parseChannel();
+  if (channel === 'latest') ensureSpecificationTag();
+  const head = run('git', ['rev-parse', 'HEAD']);
+  const plannedReleases = packageNames.map(plannedTarget);
+  checkPreparedReleases(plannedReleases);
+  for (const release of plannedReleases) {
+    runRelease(release, channel, head);
+  }
+  process.exit(0);
+}
+
 const releases = packageNames.map((name) => checkTarget(name, packageNames));
 
 if (hasArgument('--run-validation')) {

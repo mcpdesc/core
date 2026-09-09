@@ -2,7 +2,7 @@
 name: validator-snapshot-intake
 description:
   Import reviewed MCP Description artifacts as an immutable validator selector.
-  Use when adding a new draft or release-candidate selector to
+  Use when adding a new draft, release-candidate, or stable selector to
   @mcpdesc/validator.
 license: Apache-2.0
 ---
@@ -12,7 +12,8 @@ license: Apache-2.0
 ## Prerequisites
 
 - Read the root and `packages/validator/AGENTS.md` files.
-- Require an approved exact specification selector.
+- Require an approved exact specification selector, including a local stable tag
+  during pre-publication integration testing.
 - Obtain a bundle with `manifest.json`, `runtime/`, and `fixtures/` from
   `mcpdesc/mcpdesc-specification`.
 - Confirm both repositories have clean worktrees before generation or import.

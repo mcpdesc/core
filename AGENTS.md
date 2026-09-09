@@ -15,8 +15,10 @@ validation without creating a second source of normative specification text.
 - Confirm the next milestone with the maintainer when it requires publication, a
   new public operation, a cross-repository integration, or a package-boundary
   decision.
-- Keep the relevant package changelog and `ROADMAP.md` synchronized with
-  delivered behavior and approved sequencing.
+- Record repository structure, maintainer workflow, development script, and
+  release infrastructure changes in the root `CHANGELOG.md`. Record published
+  behavior and package-content changes in the owning package changelog. Keep
+  `ROADMAP.md` synchronized with delivered behavior and approved sequencing.
 
 ## Ownership boundaries
 

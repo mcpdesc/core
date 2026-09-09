@@ -16,6 +16,8 @@
     "format:check": "prettier --check .",
     "release:assess": "node scripts/assess-release.mjs",
     "release:check": "node scripts/release.mjs check",
+    "release:plan": "node scripts/release.mjs plan",
+    "release:run": "node scripts/release.mjs run",
     "release:tag": "node scripts/release.mjs tag",
     "test": "vitest run packages/core/test && npm test --workspace @mcpdesc/validator",
     "typecheck": "tsc --build --pretty false"

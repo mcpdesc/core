@@ -7,6 +7,7 @@ name: Publish
       - '!validator-v*'
 
 permissions:
+  checks: read
   contents: read
   id-token: write
 
@@ -25,6 +26,24 @@ jobs:
           package_version=$(node --input-type=module --eval "import packageMetadata from './packages/core/package.json' with { type: 'json' }; console.log(packageMetadata.version)")
           test "$GITHUB_REF_NAME" = "v$package_version"
           test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)"
+      - name: Verify required checks
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          commit=$(git rev-parse HEAD)
+          for required in validate validator-node-20; do
+            count=$(gh api "repos/${GITHUB_REPOSITORY}/commits/$commit/check-runs" \
+              --jq "[.check_runs[] | select(.name == \"$required\" and .conclusion == \"success\")] | length")
+            test "$count" -gt 0
+          done
       - run: npm ci
-      - run: npm run check
-      - run: npm publish --workspace @mcpdesc/core --access public --provenance
+      - run: npm run build --workspace @mcpdesc/core
+      - run: npm run check:package --workspace @mcpdesc/core
+      - name: Publish core
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          if [[ "$version" == *-* ]]; then
+            npm publish --workspace @mcpdesc/core --access public --tag next --provenance
+          else
+            npm publish --workspace @mcpdesc/core --access public --tag latest --provenance
+          fi

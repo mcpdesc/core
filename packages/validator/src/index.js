@@ -1,31 +1,31 @@
-import * as rc3 from './snapshots/0.8.0-rc.3/index.js';
 import * as rc4 from './snapshots/0.8.0-rc.4/index.js';
-import { resolveComponentReferences as resolveRc3ComponentReferences } from './snapshots/0.8.0-rc.3/semantic.js';
+import * as stable from './snapshots/0.8.0/index.js';
 import { resolveComponentReferences as resolveRc4ComponentReferences } from './snapshots/0.8.0-rc.4/semantic.js';
+import { resolveComponentReferences as resolveStableComponentReferences } from './snapshots/0.8.0/semantic.js';
 import {
   mcpExtensionCatalogue,
   mcpExtensionMaturity
-} from './snapshots/0.8.0-rc.3/semantic.js';
+} from './snapshots/0.8.0/semantic.js';
 
 export { mcpExtensionCatalogue, mcpExtensionMaturity };
 
 const snapshots = Object.freeze({
-  [rc3.specification]: rc3,
-  [rc4.specification]: rc4
+  [rc4.specification]: rc4,
+  [stable.specification]: stable
 });
 
 const componentResolvers = Object.freeze({
-  '0.8.0-rc.3': resolveRc3ComponentReferences,
-  '0.8.0-rc.4': resolveRc4ComponentReferences
+  '0.8.0-rc.4': resolveRc4ComponentReferences,
+  '0.8.0': resolveStableComponentReferences
 });
 
 const schemaUris = Object.freeze({
-  '0.8.0-rc.3': 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.3.json',
-  '0.8.0-rc.4': 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.4.json'
+  '0.8.0-rc.4': 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.4.json',
+  '0.8.0': 'https://mcpdesc.org/schema/mcp-description/0.8.0.json'
 });
 
 export const supportedSpecifications = Object.freeze(Object.keys(snapshots));
-export const deprecatedSpecifications = Object.freeze(['0.8.0-rc.3']);
+export const deprecatedSpecifications = Object.freeze(['0.8.0-rc.4']);
 export const supportedProtocolVersions = Object.freeze([
   ...new Set(Object.values(snapshots).flatMap((snapshot) => snapshot.supportedProtocolVersions))
 ]);
