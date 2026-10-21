@@ -38,7 +38,15 @@ schemas remain in `mcpdesc/mcpdesc-specification`.
   current registries, declarations, bundles, and package contents while keeping
   its immutable source and fixtures in Git; direct consumers to the older
   package release that contains it.
-- Do not infer an exact selector from an unqualified format version.
+- Maintain selector lifecycle, schema identity, and per-format defaults in
+  `config/selectors.yaml`. Regenerate with `npm run config:write` and keep
+  `npm run check:config` passing; never hand-edit generated runtime config.
+- When the caller omits a selector, resolve only through the YAML-configured
+  format default. `mcpdesc` alone does not identify a unique selector; a format
+  version without a default fails explicitly. Never choose a selector by
+  ordering or downgrade to an earlier format version.
+- Draft and release-candidate selectors are never defaults. Honor each
+  default's `schemaPins` setting when resolving a declared `$schema`.
 
 ## Validation
 

@@ -4,6 +4,7 @@ import test from 'node:test';
 
 import {
   deprecatedSpecifications,
+  defaultSpecifications,
   mcpExtensionCatalogue,
   mcpExtensionMaturity,
   resolveMcpDescriptionComponentReferences,
@@ -32,6 +33,9 @@ test('exports the active validator API', () => {
   assert.equal(typeof resolveMcpDescriptionComponentReferences, 'function');
   assert.deepEqual(supportedSpecifications, ['0.8.0-rc.4', '0.8.0']);
   assert.deepEqual(deprecatedSpecifications, ['0.8.0-rc.4']);
+  assert.deepEqual(defaultSpecifications, {
+    '0.8.0': { selector: '0.8.0', schemaPins: false }
+  });
   assert.deepEqual(supportedProtocolVersions, [
     '2024-11-05',
     '2025-03-26',
@@ -136,18 +140,49 @@ test('rejects component resolution for unsupported selectors', () => {
   );
 });
 
-test('requires an explicit exact specification selector', () => {
+test('defaults from the format version unless the caller pins a selector', () => {
   const document = fixture('expected-valid', 'minimal-zero-primitives.json');
-  assert.throws(() => validateMcpDescription(document), /options\.specification is required/);
-  assert.throws(() => validateMcpDescription(document, {}), /options\.specification is required/);
-  assert.equal(validateMcpDescription(document, { specification: '0.8.0-rc.4' }).valid, true);
+  const defaultResult = validateMcpDescription(document);
+  assert.equal(defaultResult.valid, true);
+  assert.equal(defaultResult.selector, '0.8.0');
+  assert.equal(defaultResult.specification, '0.8.0');
+  assert.equal(defaultResult.defaulted, true);
+
+  const pinnedResult = validateMcpDescription(document, { selector: '0.8.0-rc.4' });
+  assert.equal(pinnedResult.valid, true);
+  assert.equal(pinnedResult.selector, '0.8.0-rc.4');
+  assert.equal(pinnedResult.specification, '0.8.0-rc.4');
+  assert.equal(pinnedResult.defaulted, false);
+
+  const legacyPinnedResult = validateMcpDescription(document, { specification: '0.8.0-rc.4' });
+  assert.equal(legacyPinnedResult.selector, '0.8.0-rc.4');
+  assert.throws(
+    () => validateMcpDescription(document, { selector: '0.8.0', specification: '0.8.0-rc.4' }),
+    /must identify the same selector/
+  );
+
+  const noSchemaDocument = structuredClone(document);
+  delete noSchemaDocument.$schema;
+  const noSchemaResult = validateMcpDescription(noSchemaDocument);
+  assert.equal(noSchemaResult.valid, true);
+  assert.equal(noSchemaResult.specification, '0.8.0');
+  assert.equal(noSchemaResult.defaulted, true);
+
+  const unsupportedDocument = { ...document, mcpdesc: '0.9.0' };
+  delete unsupportedDocument.$schema;
+  const unsupported = validateMcpDescription(unsupportedDocument);
+  assert.equal(unsupported.valid, false);
+  assert.equal(unsupported.specification, null);
+  assert.equal(unsupported.diagnostics[0].code, 'unsupported-format-version');
+
+  assert.equal(validateMcpDescription(document, {}).specification, '0.8.0');
   assert.throws(
     () => validateMcpDescription(document, { specification: '0.8.0-rc.3' }),
-    /Unsupported MCP Description specification: 0\.8\.0-rc\.3/
+    /Unsupported MCP Description selector: 0\.8\.0-rc\.3/
   );
   assert.throws(
     () => validateMcpDescription(document, { specification: { toString: () => '0.8.0-draft.1' } }),
-    /Unsupported MCP Description specification: 0\.8\.0-draft\.1/
+    /Unsupported MCP Description selector: 0\.8\.0-draft\.1/
   );
 });
 
@@ -162,7 +197,9 @@ test('resolves exact snapshot identity offline', () => {
       mcpdesc: '0.8.0'
     }), {
       status: 'resolved',
+      selector: '0.8.0',
       specification: '0.8.0',
+      defaulted: true,
       schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0.json',
       provenance: specificationProvenance['0.8.0'],
       diagnostics: []
@@ -172,37 +209,71 @@ test('resolves exact snapshot identity offline', () => {
   }
 });
 
-test('requires exact recognized identity instead of inferring from mcpdesc', () => {
-  const missing = resolveMcpDescriptionSpecification({ mcpdesc: '0.8.0' });
-  assert.equal(missing.status, 'unresolved');
-  assert.equal(missing.diagnostics[0].code, 'missing-snapshot-identity');
+test('uses maintainer defaults and fails unsupported format versions without fallback', () => {
+  const defaulted = resolveMcpDescriptionSpecification({ mcpdesc: '0.8.0' });
+  assert.equal(defaulted.status, 'resolved');
+  assert.equal(defaulted.selector, '0.8.0');
+  assert.equal(defaulted.specification, '0.8.0');
+  assert.equal(defaulted.defaulted, true);
+
+  const unsupported = resolveMcpDescriptionSpecification({ mcpdesc: '0.9.0' });
+  assert.equal(unsupported.status, 'unresolved');
+  assert.equal(unsupported.diagnostics[0].code, 'unsupported-format-version');
 
   const retired = resolveMcpDescriptionSpecification({
-    $schema: 'https://mcpdesc.org/schema/0.8.0.json',
+    $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.3.json',
     mcpdesc: '0.8.0'
   });
-  assert.equal(retired.status, 'unresolved');
-  assert.equal(retired.diagnostics[0].code, 'unknown-schema-identity');
+  assert.equal(retired.status, 'resolved');
+  assert.equal(retired.selector, '0.8.0');
+  assert.equal(retired.defaulted, true);
+
+  const rcSchemaDefault = resolveMcpDescriptionSpecification({
+    $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.4.json',
+    mcpdesc: '0.8.0'
+  });
+  assert.equal(rcSchemaDefault.status, 'resolved');
+  assert.equal(rcSchemaDefault.selector, '0.8.0');
+  assert.equal(rcSchemaDefault.defaulted, true);
+
+  const missing = resolveMcpDescriptionSpecification({});
+  assert.equal(missing.status, 'unresolved');
+  assert.equal(missing.diagnostics[0].code, 'missing-format-version');
 });
 
 test('checks explicit selector consistency with declared schema identity', () => {
   const selected = resolveMcpDescriptionSpecification({ mcpdesc: '0.8.0' }, {
-    specification: '0.8.0'
+    selector: '0.8.0'
   });
   assert.equal(selected.status, 'resolved');
+  assert.equal(selected.selector, '0.8.0');
   assert.equal(selected.specification, '0.8.0');
 
   const contradiction = resolveMcpDescriptionSpecification({
     $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.4.json'
-  }, { specification: '0.8.0' });
-  assert.equal(contradiction.status, 'unresolved');
-  assert.equal(contradiction.diagnostics[0].code, 'contradictory-snapshot-identity');
+  }, { selector: '0.8.0' });
+  assert.equal(contradiction.status, 'resolved');
+  assert.equal(contradiction.selector, '0.8.0');
+
+  const formatContradiction = resolveMcpDescriptionSpecification({
+    $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0.json',
+    mcpdesc: '0.9.0'
+  });
+  assert.equal(formatContradiction.status, 'unresolved');
+  assert.equal(formatContradiction.diagnostics[0].code, 'contradictory-format-version');
+
+  const optionConflict = resolveMcpDescriptionSpecification({ mcpdesc: '0.8.0' }, {
+    selector: '0.8.0',
+    specification: '0.8.0-rc.4'
+  });
+  assert.equal(optionConflict.status, 'unresolved');
+  assert.equal(optionConflict.diagnostics[0].code, 'conflicting-selector-options');
 });
 
 test('distinguishes invalid, unknown, and unsupported identity inputs', () => {
   assert.equal(resolveMcpDescriptionSpecification({ $schema: 42 }).diagnostics[0].code, 'invalid-schema-identity');
   assert.equal(resolveMcpDescriptionSpecification({ $schema: 'https://example.com/schema.json' }).diagnostics[0].code, 'unknown-schema-identity');
-  assert.equal(resolveMcpDescriptionSpecification({}, { specification: '0.8.0-draft.99' }).diagnostics[0].code, 'unsupported-specification');
+  assert.equal(resolveMcpDescriptionSpecification({}, { selector: '0.8.0-draft.99' }).diagnostics[0].code, 'unsupported-selector');
 });
 
 test('dispatches both active exact selectors', () => {
@@ -253,6 +324,8 @@ test('is deterministic and does not mutate the input document', () => {
 test('exports immutable support and provenance data', () => {
   assert.ok(Object.isFrozen(supportedSpecifications));
   assert.ok(Object.isFrozen(deprecatedSpecifications));
+  assert.ok(Object.isFrozen(defaultSpecifications));
+  assert.ok(Object.isFrozen(defaultSpecifications['0.8.0']));
   assert.ok(Object.isFrozen(supportedProtocolVersions));
   assert.ok(Object.isFrozen(specificationProvenance));
   assert.ok(Object.isFrozen(specificationProvenance['0.8.0-rc.4']));
@@ -293,7 +366,13 @@ test('uses browser-neutral UTF-8 lengths and canonical base64 checks', () => {
       }
     }
   }];
-  assert.deepEqual(validate(utf8Document), { valid: true, diagnostics: [] });
+  assert.deepEqual(validate(utf8Document), {
+    valid: true,
+    diagnostics: [],
+    selector: '0.8.0',
+    specification: '0.8.0',
+    defaulted: false
+  });
 
   const base64Document = structuredClone(utf8Document);
   delete base64Document.resources[0].size;

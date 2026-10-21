@@ -9,6 +9,23 @@ scripts, and release infrastructure.
 > - [`@mcpdesc/core`](packages/core/CHANGELOG.md)
 > - [`@mcpdesc/validator`](packages/validator/CHANGELOG.md)
 
+## 2026-10-21
+
+### Added
+
+- Added a validator maintainer guide and a design record for validator
+  revisions, selector naming, and planned default selectors, using issue #24 as
+  the worked example.
+- Added a maintainer decision flow covering specification, conformance, fixture,
+  tooling-metadata, default, lifecycle, and API changes.
+- Extended validator snapshot intake to accept date-based `rev` selectors.
+- Updated validator maintenance rules for explicit per-format defaults and
+  unsupported-version failures without fallback.
+- Added a shared terminology guide and a selector configuration design for
+  authoring YAML metadata and generating static runtime configuration.
+- Implemented YAML-backed validator selector configuration with generated,
+  freshness-checked runtime data and config-derived standalone selector lists.
+
 ## 2026-09-09
 
 ### Added

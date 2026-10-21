@@ -52,6 +52,9 @@ repository.
 - [x] Adopt stable 0.8.0 across validation and every selector-sensitive core
       operation, advance the active transition window to RC.4 and stable, and
       retire RC.3 from current package APIs and tarballs.
+- [x] Add maintainer-configured default selectors, selector-first validation
+      APIs, and generated YAML-backed validator configuration while preserving
+      explicit selector pins and unsupported-format failures.
 - Add normalization or comparison operations only where multiple consumers
   demonstrate the same requirement.
 

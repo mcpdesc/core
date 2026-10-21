@@ -8,6 +8,29 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ## [Unreleased]
 
+## [0.13.0-rc.1] - 2026-10-21
+
+### Added
+
+- Added validated YAML configuration for selector lifecycle, schema identities,
+  and per-format defaults, with freshness-checked generated runtime data.
+- Added maintainer-chosen default selectors by MCP Description format version
+	and report the selector used plus whether selection was defaulted.
+- Added `options.selector` and `result.selector` as the canonical selector names;
+	the prior `specification` option and result field remain compatibility aliases.
+- Return `unsupported-format-version` when no default exists instead of
+	silently falling back to an older format.
+
+### Changed
+
+- Simplified TypeScript declarations so supported selector literals are defined
+	once and reused by support, default, provenance, and component-resolution
+	types.
+- Resolve known historical schema URIs through their format's configured
+	default when `schemaPins` is false.
+- Made the validation selector optional; callers may omit it to use the
+	maintainer-configured format default or pass one explicitly to pin behavior.
+
 ## [0.12.0] - 2026-09-09
 
 ### Changed
@@ -182,7 +205,8 @@ Dates for published releases are the UTC publication dates recorded by npm.
 - Added synchronous structural and semantic validation for parsed JavaScript values with deterministic diagnostics and exact selector dispatch.
 - Added ESM browser support, TypeScript declarations, embedded schema provenance, frozen fixtures, and package-content checks.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/validator-v0.12.0...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/validator-v0.13.0-rc.1...HEAD
+[0.13.0-rc.1]: https://github.com/mcpdesc/core/compare/validator-v0.12.0...validator-v0.13.0-rc.1
 [0.12.0]: https://github.com/mcpdesc/core/compare/validator-v0.12.0-rc.1...validator-v0.12.0
 [0.12.0-rc.1]: https://github.com/mcpdesc/core/compare/validator-v0.11.1...validator-v0.12.0-rc.1
 [0.11.1]: https://github.com/mcpdesc/core/compare/validator-v0.11.0...validator-v0.11.1

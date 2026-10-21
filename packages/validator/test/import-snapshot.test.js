@@ -88,6 +88,28 @@ test('accepts a complete bundle without source repository metadata', () => {
   }
 });
 
+test('accepts a dated revision selector', () => {
+  const root = createBundle();
+  try {
+    const manifestPath = path.join(root, 'manifest.json');
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    manifest.selector = '9.9.9-rev.20261021';
+    manifest.snapshotTag = 'v9.9.9-rev.20261021';
+    const indexPath = path.join(root, 'runtime/index.js');
+    const indexSource = "export const specification = '9.9.9-rev.20261021';\n";
+    fs.writeFileSync(indexPath, indexSource);
+    manifest.files.find((file) => file.path === 'runtime/index.js').sha256 = sha256(indexSource);
+    fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+
+    const output = execFileSync(process.execPath, [script, '--check', root], {
+      encoding: 'utf8',
+    });
+    assert.match(output, /Validated 9\.9\.9-rev\.20261021/);
+  } finally {
+    fs.rmSync(root, { force: true, recursive: true });
+  }
+});
+
 test('rejects a snapshot bundle whose bytes do not match its manifest', () => {
   const root = createBundle();
   try {

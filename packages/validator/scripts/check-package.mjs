@@ -42,6 +42,7 @@ const expected = [
   'package.json',
   'standalone.js',
   'src/index.js',
+  'src/generated/selector-config.js',
   'src/snapshots/0.8.0-rc.4/base.js',
   'src/snapshots/0.8.0-rc.4/index.js',
   'src/snapshots/0.8.0-rc.4/schema.json',

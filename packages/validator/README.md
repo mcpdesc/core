@@ -1,7 +1,12 @@
 # @mcpdesc/validator
 
-Validate parsed MCP Description documents against exact, immutable specification
-snapshots. The package:
+A **selector** names one exact validation contract, such as `0.8.0`. It is
+distinct from the document's `mcpdesc` format version. Callers normally use the
+maintainer-configured default; `options.selector` pins a particular contract.
+See the [terminology guide](../../docs/validator-terminology.md) for details.
+
+Validate parsed MCP Description documents against immutable validator snapshots.
+The package:
 
 - checks document structure against the snapshot's embedded JSON Schema;
 - applies semantic rules that JSON Schema alone cannot express;
@@ -10,7 +15,7 @@ snapshots. The package:
 
 Use it when accepting, generating, migrating, or transforming MCP Description
 documents and you need to know whether the result conforms to a specific
-published draft, release candidate, or stable version. It validates MCP Description documents,
+published draft, release candidate, or stable snapshot. It validates MCP Description documents,
 not live MCP servers or MCP protocol messages.
 
 ## Install
@@ -24,9 +29,7 @@ npm install @mcpdesc/validator
 ```js
 import { validateMcpDescription } from '@mcpdesc/validator';
 
-const result = validateMcpDescription(parsedDocument, {
-  specification: '0.8.0',
-});
+const result = validateMcpDescription(parsedDocument);
 
 for (const diagnostic of result.diagnostics) {
   console.log(diagnostic.severity, diagnostic.path, diagnostic.message);
@@ -35,12 +38,29 @@ for (const diagnostic of result.diagnostics) {
 if (!result.valid) {
   // At least one error diagnostic was returned.
 }
+
+// Pin a selector only when reproducibility is required.
+const pinned = validateMcpDescription(parsedDocument, { selector: '0.8.0' });
 ```
 
 Callers provide an already parsed JavaScript value. JSON and YAML parsing, file
 access, network access, and live-server inspection are outside this package.
-The exact `specification` selector is required so validation never changes when
-a later draft is published.
+The document's `mcpdesc` field gives its format version; callers normally do
+not need to pass a selector. The validator uses the maintainer-chosen default
+for that format version. Pass `options.selector` only to pin an exact immutable
+validation contract. The result reports the selector used and whether it was
+selected by default. Unsupported format versions fail without falling back to
+an earlier version. The older `options.specification` name remains supported
+as a compatibility alias for `options.selector`.
+
+## Maintainer documentation
+
+- [Validator maintainer guide](../../docs/validator-maintainer-guide.md):
+  workflow for importing, testing, and releasing a validator snapshot.
+- [Selector configuration design](../../docs/validator-configuration-design.md):
+  YAML source of truth, validation rules, and generated static runtime data.
+- [Snapshot design record](../../docs/validator-snapshots.md): rationale and
+  decisions for revisions, defaults, and issue #24.
 
 ## Supported snapshots
 
@@ -62,9 +82,9 @@ terminal-target provenance for each authored reference.
 
 ## Usage
 
-The `options` argument and exact `specification` selector are required. Stable,
-draft, and release-candidate selectors remain distinct immutable compatibility
-contracts.
+The `options` argument is optional. Pass `options.selector` to pin an exact
+immutable validation contract; otherwise, the validator uses the
+maintainer-selected default for the document's format version.
 
 ### Entry points
 
@@ -86,37 +106,48 @@ The default entry remains unchanged and uses AJV runtime compilation. Applicatio
 
 ## Snapshot resolution
 
-`resolveMcpDescriptionSpecification` resolves an exact validator selector from
-the document's `$schema` identity or checks a caller-supplied exact selector:
+`resolveMcpDescriptionSpecification` resolves a selector from the document's
+`$schema`, the maintainer default for its `mcpdesc` format version, or a
+caller-supplied selector. Pass `options.selector` to pin; `options.specification`
+is retained as a compatibility alias:
 
 ```js
 import { resolveMcpDescriptionSpecification } from '@mcpdesc/validator';
 
 const resolution = resolveMcpDescriptionSpecification(parsedDocument);
 if (resolution.status === 'resolved') {
-  console.log(resolution.specification, resolution.provenance);
+  console.log(resolution.selector, resolution.provenance);
 } else {
   console.error(resolution.diagnostics);
 }
 ```
 
 Resolution is pure and performs no network retrieval. It does not validate the
-document and never infers a draft snapshot from `mcpdesc: "0.8.0"` alone.
-Retired schema identities are reported as unknown by current releases. Pin an
-older package release to resolve or validate a retired selector.
+document. A caller-supplied selector always pins that selector. Without one, a
+recognized schema URI selects its exact selector when `schemaPins` is true; if
+false, it selects the format version's default. If `$schema` is absent, the
+`mcpdesc` field selects the default. A format version with no configured default
+returns `unsupported-format-version`; the validator never downgrades to an
+earlier format version.
 
 Unresolved results distinguish missing, invalid, unknown, and
 contradictory identity, as well as unsupported caller selectors. A supplied
-selector can resolve a document with no `$schema`; when `$schema` is present it
-must match the selected snapshot's recorded schema URI.
+selector can resolve a document with no `$schema`. When `$schema` is present,
+its URI must identify the selected format; it must identify the exact selector
+when that format's `schemaPins` setting is true.
 
 ## Result
 
-`validateMcpDescription` returns:
+`validateMcpDescription` returns the validation result and records which
+selector was used:
 
 ```ts
 interface McpDescriptionValidationResult {
   valid: boolean;
+  selector: McpDescriptionSelector | null;
+  /** @deprecated Use `selector`. */
+  specification: McpDescriptionSpecification | null;
+  defaulted: boolean;
   diagnostics: Array<{
     code: string;
     severity: 'error' | 'warning';
@@ -126,13 +157,29 @@ interface McpDescriptionValidationResult {
 }
 ```
 
-`valid` is false only when at least one error diagnostic exists. Structural JSON Schema failures are emitted as individual diagnostics. Semantic diagnostics are deterministic and receive root-relative paths at their rule sites.
+`valid` is false when at least one error diagnostic exists. `selector` is
+`null` when no supported selector could be resolved. The legacy `specification`
+result field aliases `selector`. `defaulted` is true when the selector came
+from `defaultSpecifications`; it is false for a caller-pinned selector.
+Structural JSON Schema failures are emitted as individual
+diagnostics. Semantic diagnostics are deterministic and receive root-relative
+paths at their rule sites.
 
 Structural paths start with AJV's instance path. A `required` error appends its `missingProperty`; an `additionalProperties` error appends its `additionalProperty`. This lets callers identify the absent or unexpected property directly.
 
 ## Support metadata
 
-The package exports frozen `supportedSpecifications`, `deprecatedSpecifications`, `supportedProtocolVersions`, and `specificationProvenance` values. Provenance records include the snapshot tag, recorded schema URI, and embedded schema SHA-256 digest. Public validation dispatches through a registry keyed by exact specification selectors. The active selector set is `0.8.0-rc.4` and `0.8.0`; `deprecatedSpecifications` contains RC.4. The protocol-version export is the deduplicated union supported by active snapshots.
+The package exports frozen `supportedSpecifications`, `deprecatedSpecifications`,
+`defaultSpecifications`, `supportedProtocolVersions`, and
+`specificationProvenance` values. These historical export names use
+"specification", but they list or describe validator selectors. New code should
+use `result.selector` and `options.selector`. Each default maps a format version
+to a selector and indicates whether `$schema` pins that selector. Provenance records
+include the snapshot tag, recorded schema URI, and embedded schema SHA-256
+digest. Public validation dispatches through a registry keyed by exact selector.
+The active selector set is `0.8.0-rc.4` and `0.8.0`; `deprecatedSpecifications`
+contains RC.4. The current default for `mcpdesc: "0.8.0"` is `0.8.0`. The
+protocol-version export is the deduplicated union supported by active snapshots.
 
 The package also exports the frozen `mcpExtensionCatalogue` and
 `mcpExtensionMaturity` classifier pinned by the stable snapshot. The catalogue

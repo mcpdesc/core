@@ -12,16 +12,18 @@ license: Apache-2.0
 ## Prerequisites
 
 - Read the root and `packages/validator/AGENTS.md` files.
-- Require an approved exact specification selector, including a local stable tag
-  during pre-publication integration testing.
+- Require an approved exact specification selector (`x.y.z`, `x.y.z-draft.n`,
+  `x.y.z-rc.n`, or `x.y.z-rev.YYYYMMDD`), including a local tag during
+  pre-publication integration testing.
 - Obtain a bundle with `manifest.json`, `runtime/`, and `fixtures/` from
   `mcpdesc/mcpdesc-specification`.
 - Confirm both repositories have clean worktrees before generation or import.
 
 ## Bundle Contract
 
-The manifest uses `formatVersion: 1`, an exact prerelease `selector`, matching
-`snapshotTag`, and a complete sorted-capable `files` array. Every file entry
+The manifest uses `formatVersion: 1`, an exact `selector`, matching
+`snapshotTag` (`v<selector>`), and a complete sorted-capable `files` array.
+Revision selectors use the date format `x.y.z-rev.YYYYMMDD`. Every file entry
 contains a bundle-relative path under `runtime/` or `fixtures/` and its
 lowercase SHA-256 digest. Source repository and commit metadata are optional and
 informational.
