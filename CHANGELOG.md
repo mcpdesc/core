@@ -11,6 +11,12 @@ scripts, and release infrastructure.
 
 ## 2026-10-22
 
+### Added
+
+- Added a consumer migration guide for `@mcpdesc/validator` 0.13.0 covering
+  maintained defaults, exact selector pins, result-shape changes, unsupported
+  formats, component resolution, and regression testing.
+
 ### Changed
 
 - Updated GitHub Actions to v7 and run full validation on Node.js 22 and 24,

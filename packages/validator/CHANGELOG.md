@@ -8,6 +8,19 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-10-22
+
+### Added
+
+- Added a consumer migration guide for choosing maintained defaults or exact
+	selector pins when upgrading from validator 0.12.x to 0.13.0.
+
+### Changed
+
+- Promoted the default-selector behavior and issue #24 revision proven in
+	`0.13.0-rc.1` without changing schemas, conformance behavior, diagnostics, or
+	public APIs.
+
 ## [0.13.0-rc.1] - 2026-10-21
 
 ### Added
@@ -224,7 +237,8 @@ Dates for published releases are the UTC publication dates recorded by npm.
 - Added synchronous structural and semantic validation for parsed JavaScript values with deterministic diagnostics and exact selector dispatch.
 - Added ESM browser support, TypeScript declarations, embedded schema provenance, frozen fixtures, and package-content checks.
 
-[Unreleased]: https://github.com/mcpdesc/core/compare/validator-v0.13.0-rc.1...HEAD
+[Unreleased]: https://github.com/mcpdesc/core/compare/validator-v0.13.0...HEAD
+[0.13.0]: https://github.com/mcpdesc/core/compare/validator-v0.13.0-rc.1...validator-v0.13.0
 [0.13.0-rc.1]: https://github.com/mcpdesc/core/compare/validator-v0.12.0...validator-v0.13.0-rc.1
 [0.12.0]: https://github.com/mcpdesc/core/compare/validator-v0.12.0-rc.1...validator-v0.12.0
 [0.12.0-rc.1]: https://github.com/mcpdesc/core/compare/validator-v0.11.1...validator-v0.12.0-rc.1

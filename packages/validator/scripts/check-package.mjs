@@ -46,6 +46,7 @@ const snapshotFiles = supportedSelectors.flatMap((selector) => [
 const expected = [
   'CHANGELOG.md',
   'LICENSE',
+  'MIGRATING-0.13.md',
   'MODIFICATIONS.md',
   'NOTICE',
   'ORIGIN.md',
