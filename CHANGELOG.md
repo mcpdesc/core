@@ -13,6 +13,9 @@ scripts, and release infrastructure.
 
 ### Changed
 
+- Updated GitHub Actions to v7 and run full validation on Node.js 22 and 24,
+  while preserving stable release-gate check names and Node.js 20 validator
+  compatibility coverage.
 - Centralized validator selector declarations, component resolvers, schema
   digests, package expectations, and generic test matrices in generated
   YAML-backed configuration. Snapshot intake now reports the verified schema
