@@ -24,6 +24,9 @@ not live MCP servers or MCP protocol messages.
 npm install @mcpdesc/validator
 ```
 
+Upgrading an existing 0.12.x integration? See the
+[validator 0.13.0 migration guide](./MIGRATING-0.13.md).
+
 ## Quick start
 
 ```js

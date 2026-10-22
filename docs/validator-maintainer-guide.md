@@ -7,10 +7,9 @@ and workflow, see the
 rationale and rejected options, see the
 [snapshot design record](validator-snapshots.md).
 
-> Validator `0.13.0-rc.1` includes the issue #24 revision selector and makes it
-> the configured default for format `0.8.0`. Stable `0.8.0` and RC.4 remain
-> available as deprecated explicit pins while the candidate is tested before
-> stable `0.13.0`.
+> Validator `0.13.0` promotes the issue #24 revision selector and configured
+> `0.8.0` default proven in `0.13.0-rc.1`. Stable selector `0.8.0` and RC.4
+> remain available as deprecated explicit pins.
 
 ## Route a proposed change
 

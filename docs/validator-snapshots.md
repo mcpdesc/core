@@ -10,8 +10,9 @@ configuration proposal, see the
 
 ## Synthesis
 
-**Status:** implemented for testing in `@mcpdesc/validator@0.13.0-rc.1`; the
-reviewed revision bundle is imported and active as the `0.8.0` format default.
+**Status:** implemented in `@mcpdesc/validator@0.13.0`; the reviewed revision
+bundle is active as the `0.8.0` format default after validation in
+`0.13.0-rc.1`.
 
 **Problem.** Issue [#24](https://github.com/mcpdesc/core/issues/24) is a
 validator bug: the published `0.8.0` selector rejects `x-mcp-header` in Tool
@@ -35,13 +36,11 @@ selectors are immutable, so the fix cannot change `0.8.0` itself.
 5. A document whose format version has no default, such as `mcpdesc: "0.9.0"`
    today, fails explicitly. The validator never falls back to an earlier format
    version.
-6. Validator `0.13.0-rc.1` introduces default selection and includes the
-   revision as the default for `0.8.0`. The stable `0.8.0` selector becomes
-   deprecated. RC.4 remains supported as deprecated because `@mcpdesc/core`
-   still uses it; retiring it requires a coordinated core API review and
-   release. Validator `0.13.0-rc.1` ships the configuration, default-selection
-   API, and revision on npm `next` for editor and `mcpcontract` testing before
-   `0.13.0` ships on `latest`.
+6. Validator `0.13.0-rc.1` introduced default selection and the revision as the
+   default for `0.8.0`; stable `0.13.0` promotes that tested behavior on npm
+   `latest`. The stable `0.8.0` selector is deprecated. RC.4 remains supported
+   as deprecated because `@mcpdesc/core` still uses it; retiring it requires a
+   coordinated core API review and release.
 7. Not chosen: changing published selectors in place, a `0.8.1` format release
    for a validator-only fix, and silent fallback. A validator `1.0.0` release is
    deferred.
@@ -55,9 +54,9 @@ selectors are immutable, so the fix cannot change `0.8.0` itself.
 | Clients that pass a selector        | Results unchanged; they stop passing it to receive defaults |
 | RC.4 users                          | RC.4 remains available but deprecated                       |
 
-**Next steps.** Test validator `0.13.0-rc.1` in the editor and `mcpcontract`,
-then review the stable `0.13.0` release. Core selector support remains unchanged
-until a separate operation-by-operation adoption review is approved.
+**Next steps.** Publish and verify stable validator `0.13.0`. Core selector
+support remains unchanged until a separate operation-by-operation adoption
+review is approved.
 
 The rest of this document records the terminology, the reasoning, and the
 rejected options.
@@ -433,9 +432,8 @@ Adopting `-rev.` selectors requires these `mcpdesc/core` changes:
 ## Validator `0.13.0` with default selectors
 
 **Status:** default-selection infrastructure and `0.8.0-rev.20261021` are
-implemented in `@mcpdesc/validator@0.13.0-rc.1`. The revision is the configured
-default and is ready for editor and `mcpcontract` testing on npm `next` before
-`0.13.0` can ship on `latest`.
+implemented in `@mcpdesc/validator@0.13.0` after validation in `0.13.0-rc.1`.
+The revision is the configured default.
 
 ### Goal
 
@@ -450,6 +448,7 @@ maintainer-defined defaults move.
 | ----------------- | --------------------------------------------------------------------- | ------------------------------ |
 | `0.12.0`          | `0.8.0-rc.4` (deprecated), `0.8.0`                                    | None; a selector is required   |
 | `0.13.0-rc.1`     | `0.8.0-rc.4` (deprecated), `0.8.0` (deprecated), `0.8.0-rev.20261021` | `0.8.0-rev.20261021`           |
+| `0.13.0`          | `0.8.0-rc.4` (deprecated), `0.8.0` (deprecated), `0.8.0-rev.20261021` | `0.8.0-rev.20261021`           |
 
 RC.4 stays available as a deprecated selector because `@mcpdesc/core` currently
 depends on it. Retirement is deferred to a coordinated core compatibility
@@ -557,9 +556,8 @@ The editor and the `mcpcontract` CLI should:
 - call `validateMcpDescription(document)` without a selector by default;
 - show `result.specification`, and indicate when `result.defaulted` is `true`;
 - offer an explicit pin, for example a CLI `--specification` option, for users
-  who need reproducible CI results;
-- test default selection and the issue #24 revision against `0.13.0-rc.1` before
-  `0.13.0` is published.
+  who need reproducible CI results; and
+- follow the packaged `MIGRATING-0.13.md` guide when upgrading from 0.12.x.
 
 ### Versioning
 

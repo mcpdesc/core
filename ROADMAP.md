@@ -61,6 +61,8 @@ repository.
 - [x] Review core adoption for `0.8.0-rev.20261021`: keep `@mcpdesc/core` on
       released validator `0.12.0` and do not widen selector-sensitive core
       operations during this validator-only RC.1 intake.
+- [x] Prepare stable `@mcpdesc/validator@0.13.0` from the tested RC.1 behavior,
+      including consumer migration guidance, without releasing `@mcpdesc/core`.
 - Add normalization or comparison operations only where multiple consumers
   demonstrate the same requirement.
 
