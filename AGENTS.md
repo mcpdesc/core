@@ -43,12 +43,15 @@ validation without creating a second source of normative specification text.
   freeze the exact schema, semantic implementation, and fixtures owned by the
   validator package. Upstream tags and commits are informational provenance;
   never require a sibling specification checkout in routine CI.
-- Existing directories under `packages/validator/src/snapshots/` and
+- Existing non-retired directories under `packages/validator/src/snapshots/` and
   `packages/validator/test/snapshots/` are immutable. Add sibling selectors.
 - Runtime and package support is an explicit lifecycle decision. Retiring a
   selector removes it from registries, declarations, generated bundles, and
-  package contents without deleting or modifying its historical source and
-  fixtures; consumers can pin the older immutable package release.
+  package contents. After confirming its complete source and fixtures are
+  committed to repository history, remove both retired snapshot directories from
+  `HEAD`, retain its identity metadata in `config/selectors.yaml`, and direct
+  consumers to the older immutable package release. Preserve retired trees in
+  validator release tags when the release sequence provides one.
 - A maintainer may approve an additive tooling-metadata correction to a
   published snapshot implementation only when its schema, conformance results,
   diagnostics, and frozen fixtures remain unchanged. Record each exception in

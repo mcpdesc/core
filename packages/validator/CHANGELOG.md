@@ -12,6 +12,10 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ### Added
 
+- Added immutable selector `0.8.0-rev.20261021` and its frozen fixtures. The
+	revision fixes issue #24 by preserving unknown and custom Tool-schema
+	keywords and applying MCP-specific `x-mcp-header` checks only to MCP
+	`2026-07-28`.
 - Added validated YAML configuration for selector lifecycle, schema identities,
   and per-format defaults, with freshness-checked generated runtime data.
 - Added maintainer-chosen default selectors by MCP Description format version
@@ -23,13 +27,28 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ### Changed
 
-- Simplified TypeScript declarations so supported selector literals are defined
-	once and reused by support, default, provenance, and component-resolution
-	types.
+- Changed the `0.8.0` format default from stable `0.8.0` to
+	`0.8.0-rev.20261021` with `schemaPins: false`. Documents using the stable
+	schema URI or no `$schema` receive the revision; explicit selector pins keep
+	their original results. The schema URI and SHA-256 digest are unchanged.
+- Generate the supported-selector TypeScript union and component-resolver
+	registry from selector configuration, and derive generic package and test
+	matrices from the same non-retired selector set.
+- Store schema SHA-256 identities in selector configuration, validate them
+	against imported bytes, and derive public provenance without per-selector
+	hash tests. Snapshot intake reports the verified URI and digest.
+- Remove retired Draft 1-4 and RC.1-3 runtime and fixture directories from
+	`HEAD`; repository history retains their complete artifacts while
+	configuration preserves their identity tombstones.
 - Resolve known historical schema URIs through their format's configured
 	default when `schemaPins` is false.
 - Made the validation selector optional; callers may omit it to use the
 	maintainer-configured format default or pass one explicitly to pin behavior.
+
+### Deprecated
+
+- Deprecated stable selector `0.8.0`; pin it explicitly to retain its original
+  validation results. RC.4 remains supported and deprecated.
 
 ## [0.12.0] - 2026-09-09
 

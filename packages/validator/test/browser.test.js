@@ -48,7 +48,7 @@ test('browser entry imports and validates with dynamic code generation blocked',
 test('browser entry applies the format default when no selector is passed', () => {
   const result = validateUnderCsp(fixture('expected-valid', 'minimal-zero-primitives.json'), {});
   assert.equal(result.valid, true);
-  assert.equal(result.specification, '0.8.0');
+  assert.equal(result.specification, '0.8.0-rev.20261021');
   assert.equal(result.defaulted, true);
 });
 

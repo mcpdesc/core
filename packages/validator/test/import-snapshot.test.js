@@ -23,7 +23,8 @@ function createBundle() {
   const contents = {
     'runtime/base.js': 'export const supportedProtocolVersions = [];\n',
     'runtime/index.js': "export const specification = '9.9.9-draft.1';\n",
-    'runtime/schema.json': '{"type":"object"}\n',
+    'runtime/schema.json':
+      '{"$id":"https://mcpdesc.org/schema/mcp-description/9.9.9-draft.1.json","type":"object"}\n',
     'runtime/semantic.js': 'export function validate() { return []; }\n',
     'fixtures/expected-valid/minimal.json': '{}\n',
   };
@@ -66,6 +67,12 @@ test('validates a complete snapshot bundle without writing it', () => {
       encoding: 'utf8',
     });
     assert.match(output, /Validated 9\.9\.9-draft\.1/);
+    assert.match(
+      output,
+      /Schema URI: https:\/\/mcpdesc\.org\/schema\/mcp-description\/9\.9\.9-draft\.1\.json/,
+    );
+    const schema = fs.readFileSync(path.join(root, 'runtime/schema.json'));
+    assert.match(output, new RegExp(`Schema SHA-256: ${sha256(schema)}`));
   } finally {
     fs.rmSync(root, { force: true, recursive: true });
   }

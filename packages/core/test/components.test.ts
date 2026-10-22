@@ -11,7 +11,7 @@ import {
 const reusableComponents = JSON.parse(
   readFileSync(
     new URL(
-      '../../validator/test/snapshots/0.8.0-rc.3/fixtures/expected-valid/reusable-components.json',
+      '../../validator/test/snapshots/0.8.0/fixtures/expected-valid/reusable-components.json',
       import.meta.url,
     ),
     'utf8',
@@ -19,15 +19,7 @@ const reusableComponents = JSON.parse(
 ) as JsonObject;
 
 const laterReusableComponents = {
-  '0.8.0': JSON.parse(
-    readFileSync(
-      new URL(
-        '../../validator/test/snapshots/0.8.0/fixtures/expected-valid/reusable-components.json',
-        import.meta.url,
-      ),
-      'utf8',
-    ),
-  ) as JsonObject,
+  '0.8.0': reusableComponents,
   '0.8.0-rc.4': JSON.parse(
     readFileSync(
       new URL(

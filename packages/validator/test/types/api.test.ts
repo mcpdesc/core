@@ -26,11 +26,11 @@ const selector: McpDescriptionSelector = result.selector!;
 const componentResolution = resolveMcpDescriptionComponentReferences(document, {
   specification: '0.8.0'
 });
-resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-rc.4' });
-resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0' });
 const referencePath: readonly (string | number)[] | undefined = componentResolution.provenance[0]?.referencePath;
-validateMcpDescription(document, { specification: '0.8.0-rc.4' });
-validateMcpDescription(document, { specification: '0.8.0' });
+for (const configuredSelector of supportedSpecifications) {
+  resolveMcpDescriptionComponentReferences(document, { specification: configuredSelector });
+  validateMcpDescription(document, { specification: configuredSelector });
+}
 const standaloneResult: McpDescriptionValidationResult = validateStandalone(document, {
   specification: '0.8.0'
 });
@@ -39,16 +39,15 @@ const browserResult: McpDescriptionValidationResult = validateBrowser(document, 
 });
 const diagnostic: McpDescriptionDiagnostic | undefined = result.diagnostics[0];
 const pathSegment: string | number | undefined = diagnostic?.path[0];
-const rc4: McpDescriptionSelector = supportedSpecifications[0];
-const stable: McpDescriptionSelector = supportedSpecifications[1];
-const deprecatedRc4: McpDescriptionSelector = deprecatedSpecifications[0];
+const configuredSelector: McpDescriptionSelector = supportedSpecifications[0];
+const deprecatedSelector: McpDescriptionSelector = deprecatedSpecifications[0];
 const defaultedStable: McpDescriptionSelector | undefined = defaultSpecifications['0.8.0']?.selector;
 const catalogueDate: '2026-09-04' = mcpExtensionCatalogue.effectiveDate;
 const extensionMaturity: 'official' | 'experimental' | 'uncatalogued' = mcpExtensionMaturity('io.modelcontextprotocol/ui');
 const protocolVersion: string = supportedProtocolVersions[0];
-const rc4SchemaUri: string = specificationProvenance[rc4].schemaUri;
-const stableTag: `v${McpDescriptionSelector}` = specificationProvenance[stable].snapshotTag;
-const resolution = resolveMcpDescriptionSpecification(document, { selector: rc4 });
+const configuredSchemaUri: string = specificationProvenance[configuredSelector].schemaUri;
+const configuredTag: `v${McpDescriptionSelector}` = specificationProvenance[configuredSelector].snapshotTag;
+const resolution = resolveMcpDescriptionSpecification(document, { selector: configuredSelector });
 if (resolution.status === 'resolved') {
   const resolvedSelector: string = resolution.selector;
   const resolvedSchemaUri: string = resolution.schemaUri;
@@ -60,11 +59,10 @@ void pathSegment;
 void selector;
 void defaultResult;
 void protocolVersion;
-void stableTag;
-void rc4SchemaUri;
-void rc4;
-void stable;
-void deprecatedRc4;
+void configuredTag;
+void configuredSchemaUri;
+void configuredSelector;
+void deprecatedSelector;
 void defaultedStable;
 void catalogueDate;
 void extensionMaturity;

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import test from 'node:test';
 
@@ -14,11 +15,19 @@ import {
   supportedSpecifications,
   validateMcpDescription
 } from '../src/index.js';
+import { validatorConfiguration } from '../src/generated/selector-config.js';
 
-const fixtureRoots = {
-  '0.8.0-rc.4': new URL('./snapshots/0.8.0-rc.4/fixtures/', import.meta.url),
-  '0.8.0': new URL('./snapshots/0.8.0/fixtures/', import.meta.url)
-};
+const configuredSelectors = Object.entries(validatorConfiguration.selectors);
+const expectedSupportedSpecifications = configuredSelectors
+  .filter(([, metadata]) => metadata.lifecycle !== 'retired')
+  .map(([selector]) => selector);
+const expectedDeprecatedSpecifications = configuredSelectors
+  .filter(([, metadata]) => metadata.lifecycle === 'deprecated')
+  .map(([selector]) => selector);
+const fixtureRoots = Object.fromEntries(supportedSpecifications.map((specification) => [
+  specification,
+  new URL(`./snapshots/${specification}/fixtures/`, import.meta.url)
+]));
 
 function fixture(group, name, specification = '0.8.0') {
   return JSON.parse(fs.readFileSync(new URL(`${group}/${name}`, fixtureRoots[specification]), 'utf8'));
@@ -31,10 +40,10 @@ function validate(document, specification = '0.8.0') {
 test('exports the active validator API', () => {
   assert.equal(typeof validateMcpDescription, 'function');
   assert.equal(typeof resolveMcpDescriptionComponentReferences, 'function');
-  assert.deepEqual(supportedSpecifications, ['0.8.0-rc.4', '0.8.0']);
-  assert.deepEqual(deprecatedSpecifications, ['0.8.0-rc.4']);
+  assert.deepEqual(supportedSpecifications, expectedSupportedSpecifications);
+  assert.deepEqual(deprecatedSpecifications, expectedDeprecatedSpecifications);
   assert.deepEqual(defaultSpecifications, {
-    '0.8.0': { selector: '0.8.0', schemaPins: false }
+    '0.8.0': { selector: '0.8.0-rev.20261021', schemaPins: false }
   });
   assert.deepEqual(supportedProtocolVersions, [
     '2024-11-05',
@@ -43,18 +52,21 @@ test('exports the active validator API', () => {
     '2025-11-25',
     '2026-07-28'
   ]);
-  assert.deepEqual(specificationProvenance, {
-    '0.8.0-rc.4': {
-      snapshotTag: 'v0.8.0-rc.4',
-      schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.4.json',
-      schemaSha256: 'd38e54db859813b63be2a5c91dde91250035f18bcb5910208cf71fa6875d6eef'
-    },
-    '0.8.0': {
-      snapshotTag: 'v0.8.0',
-      schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0.json',
-      schemaSha256: '36686f92ba0cc98bde2c34eaad31c0304d6e5cebdd2c4d2be1be06aecef41119'
-    }
-  });
+  assert.deepEqual(Object.keys(specificationProvenance), supportedSpecifications);
+});
+
+test('exports configured provenance for each supported schema', () => {
+  for (const specification of supportedSpecifications) {
+    const metadata = validatorConfiguration.selectors[specification];
+    const schema = fs.readFileSync(new URL(`../src/snapshots/${specification}/schema.json`, import.meta.url));
+    const schemaSha256 = createHash('sha256').update(schema).digest('hex');
+    assert.equal(metadata.schemaSha256, schemaSha256);
+    assert.deepEqual(specificationProvenance[specification], {
+      snapshotTag: metadata.specificationTag,
+      schemaUri: metadata.schemaUri,
+      schemaSha256
+    });
+  }
 });
 
 test('exports the pinned RC.2 extension catalogue and maturity classification', () => {
@@ -114,7 +126,7 @@ test('keeps pre-standard client requirements strict and malformed extension maps
   }
 });
 
-for (const specification of ['0.8.0-rc.4', '0.8.0']) {
+for (const specification of supportedSpecifications) {
   test(`resolves ${specification} component references with terminal provenance`, () => {
     const document = fixture('expected-valid', 'reusable-components.json', specification);
     const original = structuredClone(document);
@@ -144,8 +156,8 @@ test('defaults from the format version unless the caller pins a selector', () =>
   const document = fixture('expected-valid', 'minimal-zero-primitives.json');
   const defaultResult = validateMcpDescription(document);
   assert.equal(defaultResult.valid, true);
-  assert.equal(defaultResult.selector, '0.8.0');
-  assert.equal(defaultResult.specification, '0.8.0');
+  assert.equal(defaultResult.selector, '0.8.0-rev.20261021');
+  assert.equal(defaultResult.specification, '0.8.0-rev.20261021');
   assert.equal(defaultResult.defaulted, true);
 
   const pinnedResult = validateMcpDescription(document, { selector: '0.8.0-rc.4' });
@@ -165,7 +177,7 @@ test('defaults from the format version unless the caller pins a selector', () =>
   delete noSchemaDocument.$schema;
   const noSchemaResult = validateMcpDescription(noSchemaDocument);
   assert.equal(noSchemaResult.valid, true);
-  assert.equal(noSchemaResult.specification, '0.8.0');
+  assert.equal(noSchemaResult.specification, '0.8.0-rev.20261021');
   assert.equal(noSchemaResult.defaulted, true);
 
   const unsupportedDocument = { ...document, mcpdesc: '0.9.0' };
@@ -175,7 +187,7 @@ test('defaults from the format version unless the caller pins a selector', () =>
   assert.equal(unsupported.specification, null);
   assert.equal(unsupported.diagnostics[0].code, 'unsupported-format-version');
 
-  assert.equal(validateMcpDescription(document, {}).specification, '0.8.0');
+  assert.equal(validateMcpDescription(document, {}).specification, '0.8.0-rev.20261021');
   assert.throws(
     () => validateMcpDescription(document, { specification: '0.8.0-rc.3' }),
     /Unsupported MCP Description selector: 0\.8\.0-rc\.3/
@@ -197,11 +209,11 @@ test('resolves exact snapshot identity offline', () => {
       mcpdesc: '0.8.0'
     }), {
       status: 'resolved',
-      selector: '0.8.0',
-      specification: '0.8.0',
+      selector: '0.8.0-rev.20261021',
+      specification: '0.8.0-rev.20261021',
       defaulted: true,
       schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0.json',
-      provenance: specificationProvenance['0.8.0'],
+      provenance: specificationProvenance['0.8.0-rev.20261021'],
       diagnostics: []
     });
   } finally {
@@ -212,8 +224,8 @@ test('resolves exact snapshot identity offline', () => {
 test('uses maintainer defaults and fails unsupported format versions without fallback', () => {
   const defaulted = resolveMcpDescriptionSpecification({ mcpdesc: '0.8.0' });
   assert.equal(defaulted.status, 'resolved');
-  assert.equal(defaulted.selector, '0.8.0');
-  assert.equal(defaulted.specification, '0.8.0');
+  assert.equal(defaulted.selector, '0.8.0-rev.20261021');
+  assert.equal(defaulted.specification, '0.8.0-rev.20261021');
   assert.equal(defaulted.defaulted, true);
 
   const unsupported = resolveMcpDescriptionSpecification({ mcpdesc: '0.9.0' });
@@ -225,7 +237,7 @@ test('uses maintainer defaults and fails unsupported format versions without fal
     mcpdesc: '0.8.0'
   });
   assert.equal(retired.status, 'resolved');
-  assert.equal(retired.selector, '0.8.0');
+  assert.equal(retired.selector, '0.8.0-rev.20261021');
   assert.equal(retired.defaulted, true);
 
   const rcSchemaDefault = resolveMcpDescriptionSpecification({
@@ -233,7 +245,7 @@ test('uses maintainer defaults and fails unsupported format versions without fal
     mcpdesc: '0.8.0'
   });
   assert.equal(rcSchemaDefault.status, 'resolved');
-  assert.equal(rcSchemaDefault.selector, '0.8.0');
+  assert.equal(rcSchemaDefault.selector, '0.8.0-rev.20261021');
   assert.equal(rcSchemaDefault.defaulted, true);
 
   const missing = resolveMcpDescriptionSpecification({});
@@ -276,8 +288,8 @@ test('distinguishes invalid, unknown, and unsupported identity inputs', () => {
   assert.equal(resolveMcpDescriptionSpecification({}, { selector: '0.8.0-draft.99' }).diagnostics[0].code, 'unsupported-selector');
 });
 
-test('dispatches both active exact selectors', () => {
-  for (const specification of ['0.8.0-rc.4', '0.8.0']) {
+test('dispatches all supported exact selectors', () => {
+  for (const specification of supportedSpecifications) {
     const document = fixture('expected-valid', 'reusable-components.json', specification);
     assert.equal(validate(document, specification).valid, true);
   }
@@ -328,8 +340,9 @@ test('exports immutable support and provenance data', () => {
   assert.ok(Object.isFrozen(defaultSpecifications['0.8.0']));
   assert.ok(Object.isFrozen(supportedProtocolVersions));
   assert.ok(Object.isFrozen(specificationProvenance));
-  assert.ok(Object.isFrozen(specificationProvenance['0.8.0-rc.4']));
-  assert.ok(Object.isFrozen(specificationProvenance['0.8.0']));
+  for (const specification of supportedSpecifications) {
+    assert.ok(Object.isFrozen(specificationProvenance[specification]));
+  }
   assert.throws(() => supportedSpecifications.push('0.8.0'));
   assert.throws(() => supportedProtocolVersions.pop());
   assert.throws(() => {

@@ -9,6 +9,18 @@ scripts, and release infrastructure.
 > - [`@mcpdesc/core`](packages/core/CHANGELOG.md)
 > - [`@mcpdesc/validator`](packages/validator/CHANGELOG.md)
 
+## 2026-10-22
+
+### Changed
+
+- Centralized validator selector declarations, component resolvers, schema
+  digests, package expectations, and generic test matrices in generated
+  YAML-backed configuration. Snapshot intake now reports the verified schema
+  identity used by that configuration.
+- Pruned retired validator runtime and fixture directories from `HEAD` while
+  retaining them in repository history; selector configuration preserves their
+  lifecycle, tag, schema URI, and digest tombstones.
+
 ## 2026-10-21
 
 ### Added
@@ -24,7 +36,12 @@ scripts, and release infrastructure.
 - Added a shared terminology guide and a selector configuration design for
   authoring YAML metadata and generating static runtime configuration.
 - Implemented YAML-backed validator selector configuration with generated,
-  freshness-checked runtime data and config-derived standalone selector lists.
+  freshness-checked runtime data, component resolvers, TypeScript selector
+  declarations, and config-derived package and test matrices.
+- Imported the reviewed `0.8.0-rev.20261021` validator snapshot and frozen
+  fixtures for issue #24, made it the `0.8.0` format default in
+  `@mcpdesc/validator@0.13.0-rc.1`, and retained stable `0.8.0` and RC.4 as
+  deprecated explicit pins.
 
 ## 2026-09-09
 

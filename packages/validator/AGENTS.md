@@ -19,6 +19,8 @@ schemas remain in `mcpdesc/mcpdesc-specification`.
 ## Snapshot changes
 
 - Never modify a published selector under `src/snapshots/` or `test/snapshots/`.
+  Retirement may delete both complete directories from `HEAD` after confirming
+  they are committed to repository history; never edit their contents first.
 - Exception: a maintainer may approve additive tooling result metadata in a
   published `src/snapshots/` implementation when schema validation, semantic
   conformance, diagnostics, and frozen fixtures remain unchanged. Record the
@@ -31,16 +33,20 @@ schemas remain in `mcpdesc/mcpdesc-specification`.
   maintainer decision on the published-snapshot integrity exception before
   declaring that operation unsupported; do not confuse exporter regressions
   with normative incompatibility.
-- Add later snapshots as siblings and update the registry, declarations,
-  package README, changelog, package-content check, and browser build selector
-  list together.
+- Add later snapshots as siblings, update `config/selectors.yaml`, the explicit
+  npm `files` allowlist, package README, and changelog, then regenerate selector
+  configuration, declarations, integrity data, and the standalone bundle.
+  Generic package expectations and selector test matrices follow the
+  non-retired configured selectors.
 - Retire a selector only through an explicit support decision. Remove it from
-  current registries, declarations, bundles, and package contents while keeping
-  its immutable source and fixtures in Git; direct consumers to the older
-  package release that contains it.
-- Maintain selector lifecycle, schema identity, and per-format defaults in
-  `config/selectors.yaml`. Regenerate with `npm run config:write` and keep
-  `npm run check:config` passing; never hand-edit generated runtime config.
+  current registries, declarations, bundles, package contents, and snapshot
+  trees after verifying its complete artifacts are committed; retain its
+  configuration tombstone, preserve it in a validator release tag when
+  available, and direct consumers to the older package release.
+- Maintain selector lifecycle, schema URI and digest identity, and per-format
+  defaults in `config/selectors.yaml`. Regenerate with `npm run config:write`
+  and keep `npm run check:config` passing; never hand-edit generated runtime
+  config.
 - When the caller omits a selector, resolve only through the YAML-configured
   format default. `mcpdesc` alone does not identify a unique selector; a format
   version without a default fails explicitly. Never choose a selector by

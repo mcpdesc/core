@@ -7,10 +7,10 @@ and workflow, see the
 rationale and rejected options, see the
 [snapshot design record](validator-snapshots.md).
 
-> Default selection and revision-selector intake ship for testing in validator
-> `0.13.0-rc.1`. Its configured default remains stable `0.8.0`; the issue #24
-> revision snapshot is still pending and must be tested in a later prerelease
-> before stable `0.13.0`.
+> Validator `0.13.0-rc.1` includes the issue #24 revision selector and makes it
+> the configured default for format `0.8.0`. Stable `0.8.0` and RC.4 remain
+> available as deprecated explicit pins while the candidate is tested before
+> stable `0.13.0`.
 
 ## Route a proposed change
 
@@ -37,15 +37,15 @@ flowchart TD
   K -->|Public API only| P[Review API compatibility<br/>Update declarations and tests]
 ```
 
-| Change type                                           | Where it goes                                                                                                                                                                                                               | Main consequence                                                                                                          |
-| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| **Normative rule or schema changes**                  | `mcpdesc-specification`: update the specification, canonical schema, and fixtures; create a new format release and selector. Import its bundle into `mcpdesc/core`.                                                         | Authors may need to update `mcpdesc` and `$schema`; `@mcpdesc/core` operations need a support review.                     |
-| **Validator result changes, specification unchanged** | Fix candidate validator behavior and regression fixtures; export and import a new `rev` selector.                                                                                                                           | The old selector keeps its old result. Moving the default reaches unpinned documents, but explicit pins remain unchanged. |
-| **Fixture expectation changes**                       | If the expected validity or diagnostics change, treat this as a conformance change and create a new `rev`. If adding coverage without changing expectations or validator results, add a separate validator regression test. | Never edit fixtures inside a published snapshot: they are part of its integrity contract.                                 |
-| **Tooling metadata only**                             | A maintainer may approve the narrow integrity exception for additive metadata that changes no schema, conformance, diagnostics, or fixtures. Record it in `snapshot-integrity.json` and the changelog.                      | Requires explicit review; it is not a route for conformance fixes.                                                        |
-| **Default changes, no snapshot changes**              | Update the maintainer-chosen `defaultSpecifications` entry and release in a minor validator version.                                                                                                                        | Unpinned callers can see different results after upgrading; callers that pass a selector are unaffected.                  |
-| **Selector deprecation or retirement**                | Update the registry, declarations, package contents, support docs, and changelog.                                                                                                                                           | Consumers may need to migrate or pin an older npm release; in `0.x`, retirement may ship in a minor release.              |
-| **Public API changes**                                | Review separately from snapshot changes; update types, browser and standalone entry points, tests, and migration notes.                                                                                                     | Callers may need code changes even when validation semantics stay the same.                                               |
+| Change type                                           | Where it goes                                                                                                                                                                                                                           | Main consequence                                                                                                          |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Normative rule or schema changes**                  | `mcpdesc-specification`: update the specification, canonical schema, and fixtures; create a new format release and selector. Import its bundle into `mcpdesc/core`.                                                                     | Authors may need to update `mcpdesc` and `$schema`; `@mcpdesc/core` operations need a support review.                     |
+| **Validator result changes, specification unchanged** | Fix candidate validator behavior and regression fixtures; export and import a new `rev` selector.                                                                                                                                       | The old selector keeps its old result. Moving the default reaches unpinned documents, but explicit pins remain unchanged. |
+| **Fixture expectation changes**                       | If the expected validity or diagnostics change, treat this as a conformance change and create a new `rev`. If adding coverage without changing expectations or validator results, add a separate validator regression test.             | Never edit fixtures inside a published snapshot: they are part of its integrity contract.                                 |
+| **Tooling metadata only**                             | A maintainer may approve the narrow integrity exception for additive metadata that changes no schema, conformance, diagnostics, or fixtures. Record it in `snapshot-integrity.json` and the changelog.                                  | Requires explicit review; it is not a route for conformance fixes.                                                        |
+| **Default changes, no snapshot changes**              | Update the maintainer-chosen `defaultSpecifications` entry and release in a minor validator version.                                                                                                                                    | Unpinned callers can see different results after upgrading; callers that pass a selector are unaffected.                  |
+| **Selector deprecation or retirement**                | Update selector configuration, generated artifacts, package contents, support docs, and changelog. After confirming complete artifacts are committed to repository history, remove retired runtime and fixture directories from `HEAD`. | Consumers may need to migrate or pin an older npm release; in `0.x`, retirement may ship in a minor release.              |
+| **Public API changes**                                | Review separately from snapshot changes; update types, browser and standalone entry points, tests, and migration notes.                                                                                                                 | Callers may need code changes even when validation semantics stay the same.                                               |
 
 “Fixture-only” needs care: changing a fixture's expected result changes the
 recorded conformance contract, even if no runtime code changes. Only adding a
@@ -102,7 +102,10 @@ not a validator revision.
 
 2. Add its lifecycle, tag, schema URI, and format version to
    `packages/validator/config/selectors.yaml`; generate the runtime module and
-   update declarations, package checks, and `snapshot-integrity.json`.
+   selector declaration, recording the importer-reported schema URI and digest;
+   update the explicit npm `files` allowlist and `snapshot-integrity.json`.
+   Generic package expectations and selector test matrices derive from the
+   non-retired selectors automatically.
 3. Update the format's `defaultSelector` if the revision becomes the default,
    and mark the previous selector deprecated.
 4. Review `@mcpdesc/core` support for the selector, as described in

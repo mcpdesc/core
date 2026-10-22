@@ -10,8 +10,8 @@ configuration proposal, see the
 
 ## Synthesis
 
-**Status:** implementation in progress; the approved `mcpdesc-specification`
-revision bundle is still needed to complete and activate the issue #24 fix.
+**Status:** implemented for testing in `@mcpdesc/validator@0.13.0-rc.1`; the
+reviewed revision bundle is imported and active as the `0.8.0` format default.
 
 **Problem.** Issue [#24](https://github.com/mcpdesc/core/issues/24) is a
 validator bug: the published `0.8.0` selector rejects `x-mcp-header` in Tool
@@ -35,14 +35,13 @@ selectors are immutable, so the fix cannot change `0.8.0` itself.
 5. A document whose format version has no default, such as `mcpdesc: "0.9.0"`
    today, fails explicitly. The validator never falls back to an earlier format
    version.
-6. Validator `0.13.0-rc.1` introduces default selection with stable `0.8.0` as
-   the initial default. A later prerelease adds the revision and makes it the
-   default for `0.8.0` before stable `0.13.0`. The stable `0.8.0` selector
-   becomes deprecated. RC.4 remains supported as deprecated because
-   `@mcpdesc/core` still uses it; retiring it requires a coordinated core API
-   review and release. Validator `0.13.0-rc.1` ships the configuration and
-   default-selection API on npm `next`; a later candidate adds the revision for
-   editor and `mcpcontract` testing before `0.13.0` ships on `latest`.
+6. Validator `0.13.0-rc.1` introduces default selection and includes the
+   revision as the default for `0.8.0`. The stable `0.8.0` selector becomes
+   deprecated. RC.4 remains supported as deprecated because `@mcpdesc/core`
+   still uses it; retiring it requires a coordinated core API review and
+   release. Validator `0.13.0-rc.1` ships the configuration, default-selection
+   API, and revision on npm `next` for editor and `mcpcontract` testing before
+   `0.13.0` ships on `latest`.
 7. Not chosen: changing published selectors in place, a `0.8.1` format release
    for a validator-only fix, and silent fallback. A validator `1.0.0` release is
    deferred.
@@ -56,10 +55,9 @@ selectors are immutable, so the fix cannot change `0.8.0` itself.
 | Clients that pass a selector        | Results unchanged; they stop passing it to receive defaults |
 | RC.4 users                          | RC.4 remains available but deprecated                       |
 
-**Next steps.** Produce the revision bundle in `mcpdesc-specification`, update
-the default to that selector, and complete the repository changes listed in
-[Required policy and code changes](#required-policy-and-code-changes), implement
-validator `0.13.0`, then release it.
+**Next steps.** Test validator `0.13.0-rc.1` in the editor and `mcpcontract`,
+then review the stable `0.13.0` release. Core selector support remains unchanged
+until a separate operation-by-operation adoption review is approved.
 
 The rest of this document records the terminology, the reasoning, and the
 rejected options.
@@ -432,13 +430,12 @@ Adopting `-rev.` selectors requires these `mcpdesc/core` changes:
 - Describe revision selectors in `packages/validator/README.md`, `AGENTS.md`,
   and the `validator-snapshot-intake` skill.
 
-## Planned: validator `0.13.0` with default selectors
+## Validator `0.13.0` with default selectors
 
-**Status:** default-selection infrastructure is implemented in
-`@mcpdesc/validator@0.13.0-rc.1`, with stable `0.8.0` as the configured default.
-The `0.8.0-rev.20261021` snapshot remains pending; it must ship in a later
-prerelease on npm `next` for editor and `mcpcontract` testing before `0.13.0`
-can ship on `latest`.
+**Status:** default-selection infrastructure and `0.8.0-rev.20261021` are
+implemented in `@mcpdesc/validator@0.13.0-rc.1`. The revision is the configured
+default and is ready for editor and `mcpcontract` testing on npm `next` before
+`0.13.0` can ship on `latest`.
 
 ### Goal
 
@@ -452,8 +449,7 @@ maintainer-defined defaults move.
 | Validator release | Supported selectors                                                   | Default for `mcpdesc: "0.8.0"` |
 | ----------------- | --------------------------------------------------------------------- | ------------------------------ |
 | `0.12.0`          | `0.8.0-rc.4` (deprecated), `0.8.0`                                    | None; a selector is required   |
-| `0.13.0-rc.1`     | `0.8.0-rc.4` (deprecated), `0.8.0`                                    | `0.8.0`                        |
-| Later prerelease  | `0.8.0-rc.4` (deprecated), `0.8.0` (deprecated), `0.8.0-rev.20261021` | `0.8.0-rev.20261021`           |
+| `0.13.0-rc.1`     | `0.8.0-rc.4` (deprecated), `0.8.0` (deprecated), `0.8.0-rev.20261021` | `0.8.0-rev.20261021`           |
 
 RC.4 stays available as a deprecated selector because `@mcpdesc/core` currently
 depends on it. Retirement is deferred to a coordinated core compatibility
@@ -464,7 +460,7 @@ The validator exports the defaults as a table the maintainer edits:
 ```js
 export const defaultSpecifications = Object.freeze({
   '0.8.0': Object.freeze({
-    specification: '0.8.0-rev.20261021',
+    selector: '0.8.0-rev.20261021',
     schemaPins: false,
   }),
 });
@@ -528,7 +524,7 @@ including retired ones. `draft` and `rc` URIs never resolve to a default.
 | --------------------------------- | --------------------------- | ------------------------------------------ |
 | `$schema` is the `0.8.0` URI      | `0.8.0`                     | `0.8.0-rev.20261021` (`schemaPins: false`) |
 | No `$schema`, `mcpdesc: "0.8.0"`  | `missing-snapshot-identity` | `0.8.0-rev.20261021`                       |
-| `$schema` is the `0.8.0-rc.4` URI | `0.8.0-rc.4`                | `0.8.0-rc.4` (deprecated)                  |
+| `$schema` is the `0.8.0-rc.4` URI | `0.8.0-rc.4`                | `0.8.0-rev.20261021` (`schemaPins: false`) |
 | `mcpdesc: "0.9.0"`                | Structural errors           | `unsupported-format-version`               |
 | Caller passes `selector: '0.8.0'` | `0.8.0`                     | `0.8.0`, deprecated                        |
 
@@ -562,8 +558,8 @@ The editor and the `mcpcontract` CLI should:
 - show `result.specification`, and indicate when `result.defaulted` is `true`;
 - offer an explicit pin, for example a CLI `--specification` option, for users
   who need reproducible CI results;
-- test default selection against `0.13.0-rc.1`, then test the issue #24 revision
-  against the later prerelease that includes it before `0.13.0` is published.
+- test default selection and the issue #24 revision against `0.13.0-rc.1` before
+  `0.13.0` is published.
 
 ### Versioning
 
@@ -579,9 +575,7 @@ behavior:
 A validator `1.0.0` release is deferred. When it happens, retiring an active
 selector becomes a breaking change that requires a major release.
 
-### Draft release notes for the revision prerelease
-
-Adapt these for the later prerelease that imports and activates the revision:
+### Release notes for the revision candidate
 
 ```markdown
 ### Added

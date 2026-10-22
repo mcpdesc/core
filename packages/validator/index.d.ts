@@ -1,4 +1,6 @@
-export type McpDescriptionSelector = '0.8.0-rc.4' | '0.8.0';
+import type { ConfiguredMcpDescriptionSelector } from './src/generated/selector-config.js';
+
+export type McpDescriptionSelector = ConfiguredMcpDescriptionSelector;
 export type McpDescriptionSpecification = McpDescriptionSelector;
 type FormatVersionOf<Selector extends string> =
   Selector extends `${infer FormatVersion}-${string}` ? FormatVersion : Selector;

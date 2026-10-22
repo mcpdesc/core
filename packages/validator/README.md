@@ -68,16 +68,19 @@ The package supports these immutable selectors, newest first:
 
 | Selector | First validator release | Embedded schema SHA-256 |
 |---|---|---|
-| `0.8.0` | `0.12.0-rc.1` | `36686f92ba0cc98bde2c34eaad31c0304d6e5cebdd2c4d2be1be06aecef41119` |
+| `0.8.0-rev.20261021` | `0.13.0-rc.1` | `36686f92ba0cc98bde2c34eaad31c0304d6e5cebdd2c4d2be1be06aecef41119` |
+| `0.8.0` (deprecated) | `0.12.0-rc.1` | `36686f92ba0cc98bde2c34eaad31c0304d6e5cebdd2c4d2be1be06aecef41119` |
 | `0.8.0-rc.4` (deprecated) | `0.11.0` | `d38e54db859813b63be2a5c91dde91250035f18bcb5910208cf71fa6875d6eef` |
 
 The validator package embeds the schema and executable behavior for each
-selector. RC.4 remains available for migration compatibility; new integrations
-should select stable `0.8.0`. Earlier selectors remain available by pinning an older
+selector. The issue #24 revision is the default for `mcpdesc: "0.8.0"` and
+preserves the stable schema URI and digest while correcting validator behavior.
+Stable `0.8.0` and RC.4 remain available as explicit deprecated pins. Earlier selectors remain available by pinning an older
 immutable validator release. npm integrity and trusted-publishing provenance identify released
 package bytes; specification repository tags and commits are informational.
 
-Component reference resolution is available for RC.4 and stable `0.8.0` with
+Component reference resolution is available for RC.4, stable `0.8.0`, and the
+issue #24 revision with
 terminal-target provenance for each authored reference.
 
 ## Usage
@@ -177,8 +180,9 @@ use `result.selector` and `options.selector`. Each default maps a format version
 to a selector and indicates whether `$schema` pins that selector. Provenance records
 include the snapshot tag, recorded schema URI, and embedded schema SHA-256
 digest. Public validation dispatches through a registry keyed by exact selector.
-The active selector set is `0.8.0-rc.4` and `0.8.0`; `deprecatedSpecifications`
-contains RC.4. The current default for `mcpdesc: "0.8.0"` is `0.8.0`. The
+The supported selector set is `0.8.0-rc.4`, `0.8.0`, and
+`0.8.0-rev.20261021`; `deprecatedSpecifications` contains RC.4 and stable
+`0.8.0`. The current default for `mcpdesc: "0.8.0"` is the revision. The
 protocol-version export is the deduplicated union supported by active snapshots.
 
 The package also exports the frozen `mcpExtensionCatalogue` and
@@ -189,9 +193,9 @@ maturity only; it does not validate extension-specific settings.
 
 npm package SemVer tracks implementation releases independently from specification snapshot identity. Adding a later snapshot is additive: it must use a sibling implementation and selector rather than changing an existing snapshot's schema, semantics, metadata, fixtures, or results.
 
-The RC.4 and stable component resolvers report authored and terminal target paths
-for successful substitutions. Additive tooling corrections that provide this
-metadata are recorded explicitly in the integrity manifest.
+All three supported component resolvers report authored and terminal target
+paths for successful substitutions. The imported revision already preserves
+that public result contract, so it requires no integrity exception.
 
 The runtime bundles its schema, performs no network fetches for external schema references, and imports no Node.js built-ins. Unresolved external Tool-schema references produce incomplete-validation warnings and are preserved. All three ESM entry points support Node.js 20 or later and browser bundlers.
 
@@ -200,12 +204,12 @@ The runtime bundles its schema, performs no network fetches for external schema 
 For each approved specification snapshot, maintainers import artifacts from an
 exact specification repository tag or commit and then:
 
-1. Add a versioned implementation under `src/snapshots/<selector>/` with its exact selector, snapshot tag, embedded schema, schema SHA-256 digest, and semantic rules. Existing snapshot directories remain unchanged.
+1. Add a versioned implementation under `src/snapshots/<selector>/` with its exact selector, snapshot tag, embedded schema, schema SHA-256 digest, and semantic rules. Existing non-retired snapshot directories remain unchanged.
 2. Freeze the matching fixture corpus under `test/snapshots/<selector>/fixtures/`. Package tests must not read mutable `spec/draft/fixtures/` for an already published selector.
 3. Add the exact selector to the runtime registry and update support metadata, TypeScript declarations, tests, the package changelog, and expected package contents. Unqualified versions, aliases, ranges, and not-yet-published selectors remain unsupported.
 4. Run the package and repository validation suites. The schema digest, immutable metadata, fixture behavior, browser bundle, declarations, and tarball contents must all pass.
 
-The test snapshots are repository-only development assets and are excluded from the npm tarball. Historical runtime sources remain in Git for integrity history. Only active runtime snapshot implementations and embedded schemas ship, so installed packages remain self-contained without accumulating retired selectors.
+The test snapshots are repository-only development assets and are excluded from the npm tarball. When a selector retires, repository history and available validator release tags preserve its complete runtime and fixture tree, while its configuration tombstone retains tag and schema identity metadata in `HEAD`. Only active and deprecated runtime snapshots ship, so installed packages and the current source tree do not accumulate retired selectors.
 
 Specification approval and imported supporting code do not authorize package
 publication. During release review, a maintainer explicitly decides the

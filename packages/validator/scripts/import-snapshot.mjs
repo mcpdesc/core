@@ -99,12 +99,18 @@ if (JSON.stringify(actualPaths) !== JSON.stringify(expectedPaths)) {
   fail('manifest file list does not exactly match bundle contents');
 }
 
+const computedDigests = new Map();
 for (const file of manifest.files) {
   const digest = createHash('sha256')
     .update(fs.readFileSync(path.join(bundleRoot, file.path)))
     .digest('hex');
   if (digest !== file.sha256) fail(`digest mismatch: ${file.path}`);
+  computedDigests.set(file.path, digest);
 }
+
+const schema = JSON.parse(fs.readFileSync(path.join(bundleRoot, 'runtime/schema.json'), 'utf8'));
+if (typeof schema.$id !== 'string') fail('runtime/schema.json must have a string $id');
+const schemaSha256 = computedDigests.get('runtime/schema.json');
 
 const runtimeTarget = path.join(
   packageRoot,
@@ -141,8 +147,10 @@ if (!checkOnly) {
 console.log(
   `${checkOnly ? 'Validated' : 'Imported'} ${manifest.selector} (${manifest.files.length} files).`,
 );
+console.log(`Schema URI: ${schema.$id}`);
+console.log(`Schema SHA-256: ${schemaSha256}`);
 if (!checkOnly) {
   console.log(
-    'Update the registry, declarations, README, changelog, package checks, browser selectors, and snapshot-integrity.json before validation.',
+    'Add the selector lifecycle and reported schema identity to config/selectors.yaml, then regenerate configuration, integrity data, and the standalone bundle.',
   );
 }

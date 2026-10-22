@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -6,6 +7,7 @@ import { parseDocument } from 'yaml';
 const packageRoot = fileURLToPath(new URL('..', import.meta.url));
 const configPath = path.join(packageRoot, 'config/selectors.yaml');
 const generatedPath = path.join(packageRoot, 'src/generated/selector-config.js');
+const generatedDeclarationsPath = path.join(packageRoot, 'src/generated/selector-config.d.ts');
 const selectorPattern = /^(\d+\.\d+\.\d+)(?:-(?:draft\.\d+|rc\.\d+|rev\.\d{8}))?$/;
 const lifecycleValues = new Set(['active', 'deprecated', 'retired']);
 
@@ -71,7 +73,7 @@ for (const [selector, value] of Object.entries(selectors)) {
   const match = selectorPattern.exec(selector);
   if (!match) fail(location, 'key is not a supported selector');
   const metadata = record(value, location);
-  onlyKeys(metadata, new Set(['formatVersion', 'lifecycle', 'specificationTag', 'schemaUri']), location);
+  onlyKeys(metadata, new Set(['formatVersion', 'lifecycle', 'specificationTag', 'schemaUri', 'schemaSha256']), location);
   if (metadata.formatVersion !== match[1]) fail(`${location}.formatVersion`, `must be ${match[1]}`);
   if (!lifecycleValues.has(metadata.lifecycle)) fail(`${location}.lifecycle`, 'must be active, deprecated, or retired');
   if (metadata.specificationTag !== `v${selector}`) fail(`${location}.specificationTag`, `must be v${selector}`);
@@ -80,6 +82,9 @@ for (const [selector, value] of Object.entries(selectors)) {
     new URL(metadata.schemaUri);
   } catch {
     fail(`${location}.schemaUri`, 'must be an absolute URI');
+  }
+  if (!/^[a-f0-9]{64}$/.test(metadata.schemaSha256 ?? '')) {
+    fail(`${location}.schemaSha256`, 'must be a lowercase SHA-256 digest');
   }
 
   const snapshotDirectory = path.join(packageRoot, 'src/snapshots', selector);
@@ -93,8 +98,12 @@ for (const [selector, value] of Object.entries(selectors)) {
     const snapshot = await import(pathToFileURL(snapshotIndex).href);
     if (snapshot.specification !== selector) fail(location, 'snapshot implementation exports a different selector');
     if (snapshot.snapshotTag !== metadata.specificationTag) fail(`${location}.specificationTag`, 'does not match the snapshot implementation');
-    const schema = JSON.parse(fs.readFileSync(schemaPath, 'utf8'));
+    const schemaBytes = fs.readFileSync(schemaPath);
+    const schema = JSON.parse(schemaBytes);
     if (schema.$id !== metadata.schemaUri) fail(`${location}.schemaUri`, `does not match embedded schema $id ${JSON.stringify(schema.$id)}`);
+    const schemaSha256 = createHash('sha256').update(schemaBytes).digest('hex');
+    if (schemaSha256 !== metadata.schemaSha256) fail(`${location}.schemaSha256`, 'does not match embedded schema bytes');
+    if (snapshot.schemaSha256 !== metadata.schemaSha256) fail(`${location}.schemaSha256`, 'does not match the snapshot implementation');
   }
   configuredSelectors.add(selector);
 }
@@ -134,17 +143,24 @@ for (const [formatVersion, format] of Object.entries(formats)) {
   }
 }
 
-const activeSelectors = Object.entries(selectors)
+const supportedSelectors = Object.entries(selectors)
   .filter(([, metadata]) => metadata.lifecycle !== 'retired')
   .map(([selector]) => selector);
-const imports = activeSelectors.map((selector, index) =>
+const imports = supportedSelectors.map((selector, index) =>
   `import * as snapshot${index + 1} from ${JSON.stringify(`../snapshots/${selector}/index.js`)};`
 );
-const implementationEntries = activeSelectors.map((selector, index) =>
+const resolverImports = supportedSelectors.map((selector, index) =>
+  `import { resolveComponentReferences as resolveComponentReferences${index + 1} } from ${JSON.stringify(`../snapshots/${selector}/semantic.js`)};`
+);
+const implementationEntries = supportedSelectors.map((selector, index) =>
   `  ${JSON.stringify(selector)}: snapshot${index + 1},`
+);
+const resolverEntries = supportedSelectors.map((selector, index) =>
+  `  ${JSON.stringify(selector)}: resolveComponentReferences${index + 1},`
 );
 const generated = [
   ...imports,
+  ...resolverImports,
   '',
   'function deepFreeze(value) {',
   '  if (value !== null && typeof value === \'object\' && !Object.isFrozen(value)) {',
@@ -159,16 +175,28 @@ const generated = [
   'export const snapshotImplementations = Object.freeze({',
   ...implementationEntries,
   '});',
+  '',
+  'export const componentResolvers = Object.freeze({',
+  ...resolverEntries,
+  '});',
+  ''
+].join('\n');
+const generatedDeclarations = [
+  `export type ConfiguredMcpDescriptionSelector = ${supportedSelectors.map(JSON.stringify).join(' | ')};`,
   ''
 ].join('\n');
 
 if (process.argv.includes('--write')) {
   fs.mkdirSync(path.dirname(generatedPath), { recursive: true });
   fs.writeFileSync(generatedPath, generated);
-  console.log(`Generated ${path.relative(packageRoot, generatedPath)}.`);
+  fs.writeFileSync(generatedDeclarationsPath, generatedDeclarations);
+  console.log(`Generated ${path.relative(packageRoot, generatedPath)} and ${path.relative(packageRoot, generatedDeclarationsPath)}.`);
 } else {
   if (!fs.existsSync(generatedPath) || fs.readFileSync(generatedPath, 'utf8') !== generated) {
     fail('src/generated/selector-config.js', 'is stale; run npm run config:write --workspace @mcpdesc/validator');
+  }
+  if (!fs.existsSync(generatedDeclarationsPath) || fs.readFileSync(generatedDeclarationsPath, 'utf8') !== generatedDeclarations) {
+    fail('src/generated/selector-config.d.ts', 'is stale; run npm run config:write --workspace @mcpdesc/validator');
   }
   console.log('Selector configuration is valid and generated output is current.');
 }

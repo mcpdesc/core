@@ -1,6 +1,8 @@
-import { resolveComponentReferences as resolveRc4ComponentReferences } from './snapshots/0.8.0-rc.4/semantic.js';
-import { resolveComponentReferences as resolveStableComponentReferences } from './snapshots/0.8.0/semantic.js';
-import { validatorConfiguration, snapshotImplementations } from './generated/selector-config.js';
+import {
+  componentResolvers,
+  snapshotImplementations,
+  validatorConfiguration
+} from './generated/selector-config.js';
 import {
   mcpExtensionCatalogue,
   mcpExtensionMaturity
@@ -9,11 +11,6 @@ import {
 export { mcpExtensionCatalogue, mcpExtensionMaturity };
 
 const snapshots = snapshotImplementations;
-
-const componentResolvers = Object.freeze({
-  '0.8.0-rc.4': resolveRc4ComponentReferences,
-  '0.8.0': resolveStableComponentReferences
-});
 
 const selectorMetadata = validatorConfiguration.selectors;
 const schemaUris = Object.freeze(Object.fromEntries(
@@ -40,7 +37,7 @@ export const specificationProvenance = Object.freeze(Object.fromEntries(
   Object.entries(snapshots).map(([selector, snapshot]) => [selector, Object.freeze({
     snapshotTag: snapshot.snapshotTag,
     schemaUri: schemaUris[selector],
-    schemaSha256: snapshot.schemaSha256
+    schemaSha256: selectorMetadata[selector].schemaSha256
   })])
 ));
 
