@@ -2,6 +2,7 @@ import { build } from 'esbuild';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { build as viteBuild } from 'vite';
+import { validatorConfiguration } from '../src/generated/selector-config.js';
 
 const entryPoint = fileURLToPath(new URL('../test/browser-entry.js', import.meta.url));
 const result = await build({
@@ -80,16 +81,13 @@ if (/\beval\s*\(|\bnew\s+Function\b/.test(standalone)) {
 if (/\bnode:/.test(standalone)) {
   throw new Error('Standalone bundle contains a Node.js built-in import');
 }
-for (const selector of ['0.8.0-rc.4', '0.8.0']) {
+const runtimeSelectors = Object.entries(validatorConfiguration.selectors)
+  .filter(([, metadata]) => metadata.lifecycle !== 'retired')
+  .map(([selector]) => selector);
+for (const selector of runtimeSelectors) {
   if (!standalone.includes(selector)) {
     throw new Error(`Standalone bundle is missing runtime snapshot ${selector}`);
   }
 }
-for (const selector of ['0.8.0-draft.1', '0.8.0-draft.2', '0.8.0-draft.3', '0.8.0-draft.4', '0.8.0-rc.1', '0.8.0-rc.2']) {
-  if (standalone.includes(selector)) {
-    throw new Error(`Standalone bundle contains retired runtime snapshot ${selector}`);
-  }
-}
-
 const viteBundleSize = viteChunks.reduce((size, chunk) => size + Buffer.byteLength(chunk.code), 0);
 console.log(`Browser bundles passed (esbuild browser ${result.outputFiles[0].contents.byteLength} bytes, esbuild standalone ${standaloneBundleSize} bytes, Vite browser ${viteBundleSize} bytes, generated standalone ${Buffer.byteLength(standalone)} bytes).`);

@@ -1,6 +1,6 @@
 {
   "name": "@mcpdesc/validator",
-  "version": "0.12.0",
+  "version": "0.13.0-rc.1",
   "description": "Structural and semantic validation for MCP Description snapshots",
   "type": "module",
   "types": "./index.d.ts",
@@ -31,8 +31,11 @@
   },
   "files": [
     "src/index.js",
+    "src/generated/selector-config.js",
+    "src/generated/selector-config.d.ts",
     "src/snapshots/0.8.0-rc.4",
     "src/snapshots/0.8.0",
+    "src/snapshots/0.8.0-rev.20261021",
     "standalone.js",
     "index.d.ts",
     "CHANGELOG.md",
@@ -43,10 +46,12 @@
     "MODIFICATIONS.md"
   ],
   "scripts": {
+    "config:write": "node scripts/build-selector-config.mjs --write",
+    "check:config": "node scripts/build-selector-config.mjs --check",
     "build:standalone": "node scripts/build-standalone.mjs",
     "check:snapshots": "node scripts/check-snapshot-integrity.mjs",
     "import:snapshot": "node scripts/import-snapshot.mjs",
-    "test": "npm run check:snapshots && npm run build:standalone && node --test test/*.test.js && npm run test:types && npm run test:browser && npm run test:package",
+    "test": "npm run check:config && npm run check:snapshots && npm run build:standalone && node --test test/*.test.js && npm run test:types && npm run test:browser && npm run test:package",
     "test:browser": "node scripts/check-browser-bundle.mjs",
     "test:package": "node scripts/check-package.mjs",
     "test:types": "tsc --project test/types/tsconfig.json && node scripts/check-declarations.mjs"

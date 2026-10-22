@@ -5,7 +5,7 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
 
-import { validateMcpDescription } from '../src/index.js';
+import { supportedSpecifications, validateMcpDescription } from '../src/index.js';
 
 function fixtureFiles(fixtureRoot, group) {
   const directory = path.join(fixtureRoot, group);
@@ -20,7 +20,7 @@ function parseFixture(filename) {
   return filename.endsWith('.json') ? JSON.parse(source) : YAML.parse(source);
 }
 
-for (const specification of ['0.8.0-rc.4', '0.8.0']) {
+for (const specification of supportedSpecifications) {
   const fixtureRoot = fileURLToPath(new URL(`./snapshots/${specification}/fixtures/`, import.meta.url));
   for (const [group, expected] of [
     ['expected-valid', 'valid'],

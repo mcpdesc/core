@@ -6,13 +6,16 @@ import standaloneCode from 'ajv/dist/standalone/index.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { validatorConfiguration } from '../src/generated/selector-config.js';
 
 const packageRoot = fileURLToPath(new URL('..', import.meta.url));
 const output = path.join(packageRoot, 'standalone.js');
 const draft7Adapter = path.join(packageRoot, 'src/standalone/ajv-adapter.js');
 const draft2020Adapter = path.join(packageRoot, 'src/standalone/ajv-2020-adapter.js');
 const formatsAdapter = path.join(packageRoot, 'src/standalone/ajv-formats-adapter.js');
-const selectors = ['0.8.0-rc.4', '0.8.0'];
+const selectors = Object.entries(validatorConfiguration.selectors)
+  .filter(([, metadata]) => metadata.lifecycle !== 'retired')
+  .map(([selector]) => selector);
 const schemas = selectors.map((selector) => JSON.parse(fs.readFileSync(
   path.join(packageRoot, 'src/snapshots', selector, 'schema.json'),
   'utf8'

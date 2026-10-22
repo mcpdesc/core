@@ -2,6 +2,8 @@ import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
+import { validatorConfiguration } from '../src/generated/selector-config.js';
+
 const packageRoot = fileURLToPath(new URL('..', import.meta.url));
 const packageJson = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const changelog = fs.readFileSync(new URL('../CHANGELOG.md', import.meta.url), 'utf8');
@@ -31,6 +33,16 @@ for (const [entry, conditions] of Object.entries(packageJson.exports)) {
   }
 }
 
+const supportedSelectors = Object.entries(validatorConfiguration.selectors)
+  .filter(([, metadata]) => metadata.lifecycle !== 'retired')
+  .map(([selector]) => selector);
+const snapshotFiles = supportedSelectors.flatMap((selector) => [
+  'base.js',
+  'index.js',
+  'schema.json',
+  'semantic.js'
+].map((filename) => `src/snapshots/${selector}/${filename}`));
+
 const expected = [
   'CHANGELOG.md',
   'LICENSE',
@@ -42,14 +54,9 @@ const expected = [
   'package.json',
   'standalone.js',
   'src/index.js',
-  'src/snapshots/0.8.0-rc.4/base.js',
-  'src/snapshots/0.8.0-rc.4/index.js',
-  'src/snapshots/0.8.0-rc.4/schema.json',
-  'src/snapshots/0.8.0-rc.4/semantic.js',
-  'src/snapshots/0.8.0/base.js',
-  'src/snapshots/0.8.0/index.js',
-  'src/snapshots/0.8.0/schema.json',
-  'src/snapshots/0.8.0/semantic.js'
+  'src/generated/selector-config.js',
+  'src/generated/selector-config.d.ts',
+  ...snapshotFiles
 ].sort();
 
 if (JSON.stringify(actual) !== JSON.stringify(expected)) {

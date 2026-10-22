@@ -45,13 +45,22 @@ repository.
       pure operation with deterministic terminal-target provenance and existing
       unresolved-reference diagnostics.
 - [x] Narrow current runtime and package support to RC.2 and RC.3, deprecate
-      RC.2, and retain retired snapshot artifacts as repository history.
+      RC.2, preserving retired snapshot artifacts in repository history.
 - [x] Adopt RC.4 across validation and supported core operations, advance the
       active transition window to RC.3 and RC.4, and support component reference
       resolution with terminal-target provenance.
 - [x] Adopt stable 0.8.0 across validation and every selector-sensitive core
       operation, advance the active transition window to RC.4 and stable, and
       retire RC.3 from current package APIs and tarballs.
+- [x] Add maintainer-configured default selectors, selector-first validation
+      APIs, and generated YAML-backed validator configuration while preserving
+      explicit selector pins and unsupported-format failures.
+- [x] Import the issue #24 `0.8.0-rev.20261021` validator snapshot in
+      `@mcpdesc/validator@0.13.0-rc.1`, make it the format default, and
+      deprecate stable `0.8.0` while preserving explicit pins.
+- [x] Review core adoption for `0.8.0-rev.20261021`: keep `@mcpdesc/core` on
+      released validator `0.12.0` and do not widen selector-sensitive core
+      operations during this validator-only RC.1 intake.
 - Add normalization or comparison operations only where multiple consumers
   demonstrate the same requirement.
 

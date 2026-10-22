@@ -21,11 +21,11 @@ function fixture(group, name) {
   ));
 }
 
-function validateUnderCsp(document) {
+function validateUnderCsp(document, options = { specification: '0.8.0' }) {
   globalThis.eval = () => { throw new EvalError('eval blocked by test CSP'); };
   globalThis.Function = function BlockedFunction() { throw new EvalError('Function blocked by test CSP'); };
   try {
-    return browser.validateMcpDescription(document, { specification: '0.8.0' });
+    return browser.validateMcpDescription(document, options);
   } finally {
     globalThis.eval = originalEval;
     globalThis.Function = OriginalFunction;
@@ -45,8 +45,16 @@ test('browser entry imports and validates with dynamic code generation blocked',
   assert.ok(schemaMismatchPaths.includes('tools.0.examples.wrong-types.result.structuredContent'));
 });
 
+test('browser entry applies the format default when no selector is passed', () => {
+  const result = validateUnderCsp(fixture('expected-valid', 'minimal-zero-primitives.json'), {});
+  assert.equal(result.valid, true);
+  assert.equal(result.specification, '0.8.0-rev.20261021');
+  assert.equal(result.defaulted, true);
+});
+
 test('browser entry remains the standalone implementation', async () => {
   const standalone = await import('@mcpdesc/validator/standalone');
   assert.strictEqual(browser.validateMcpDescription, standalone.validateMcpDescription);
   assert.strictEqual(browser.supportedSpecifications, standalone.supportedSpecifications);
+  assert.strictEqual(browser.defaultSpecifications, standalone.defaultSpecifications);
 });

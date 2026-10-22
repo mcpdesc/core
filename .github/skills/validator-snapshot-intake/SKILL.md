@@ -12,16 +12,18 @@ license: Apache-2.0
 ## Prerequisites
 
 - Read the root and `packages/validator/AGENTS.md` files.
-- Require an approved exact specification selector, including a local stable tag
-  during pre-publication integration testing.
+- Require an approved exact specification selector (`x.y.z`, `x.y.z-draft.n`,
+  `x.y.z-rc.n`, or `x.y.z-rev.YYYYMMDD`), including a local tag during
+  pre-publication integration testing.
 - Obtain a bundle with `manifest.json`, `runtime/`, and `fixtures/` from
   `mcpdesc/mcpdesc-specification`.
 - Confirm both repositories have clean worktrees before generation or import.
 
 ## Bundle Contract
 
-The manifest uses `formatVersion: 1`, an exact prerelease `selector`, matching
-`snapshotTag`, and a complete sorted-capable `files` array. Every file entry
+The manifest uses `formatVersion: 1`, an exact `selector`, matching
+`snapshotTag` (`v<selector>`), and a complete sorted-capable `files` array.
+Revision selectors use the date format `x.y.z-rev.YYYYMMDD`. Every file entry
 contains a bundle-relative path under `runtime/` or `fixtures/` and its
 lowercase SHA-256 digest. Source repository and commit metadata are optional and
 informational.
@@ -34,10 +36,11 @@ informational.
    npm run import:snapshot --workspace @mcpdesc/validator -- --check <bundle-directory>
    ```
 
-2. Review the manifest, schema digest, semantic implementation, fixture corpus,
-   and exported tooling result contracts against the previous active selector.
-   Distinguish normative conformance changes from dropped additive tooling
-   metadata such as provenance or reporting fields.
+2. Review the manifest, importer-reported schema URI and SHA-256 digest,
+   semantic implementation, fixture corpus, and exported tooling result
+   contracts against the previous active selector. Distinguish normative
+   conformance changes from dropped additive tooling metadata such as provenance
+   or reporting fields.
 3. Import only after approval:
 
    ```bash
@@ -50,8 +53,9 @@ informational.
    additive correction. Do not treat an exporter regression as a snapshot
    incompatibility when schemas, conformance behavior, diagnostics, and frozen
    fixtures remain unchanged.
-5. Update the runtime registry, declarations, validator README and changelog,
-   package-content expectations, browser selector lists, and package version.
+5. Add the selector lifecycle and importer-reported schema identity to
+   `config/selectors.yaml`; update the explicit npm `files` allowlist, validator
+   README and changelog, and package version; then regenerate configuration.
 6. If `@mcpdesc/core` will consume or advertise the selector, perform the root
    `AGENTS.md` new-snapshot adoption review. Update every selector-sensitive
    operation's support disposition, tests, public types, package checks, and

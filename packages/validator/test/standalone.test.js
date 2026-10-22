@@ -5,7 +5,10 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
 
-import { validateMcpDescription as validateStandard } from '../src/index.js';
+import {
+  supportedSpecifications,
+  validateMcpDescription as validateStandard
+} from '../src/index.js';
 
 const originalEval = globalThis.eval;
 const OriginalFunction = globalThis.Function;
@@ -49,7 +52,7 @@ test('standalone bundle contains no dynamic code generation', () => {
   assert.doesNotMatch(source, /\beval\s*\(|\bnew\s+Function\b/);
 });
 
-for (const specification of ['0.8.0-rc.4', '0.8.0']) {
+for (const specification of supportedSpecifications) {
   const fixtureRoot = fileURLToPath(new URL(`./snapshots/${specification}/fixtures/`, import.meta.url));
   test(`standalone ${specification} matches standard fixture outcomes`, () => {
     for (const filename of fixtureFiles(fixtureRoot)) {

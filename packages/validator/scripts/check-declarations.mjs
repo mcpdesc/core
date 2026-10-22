@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-for (const filename of ['index.d.ts']) {
+for (const filename of ['index.d.ts', 'src/generated/selector-config.d.ts']) {
   const source = fs.readFileSync(new URL(`../${filename}`, import.meta.url), 'utf8');
   if (/\bany\b/.test(source)) {
     throw new Error(`${filename} exposes the any type`);
