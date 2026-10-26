@@ -66,5 +66,6 @@ export {
   deprecatedCoreSpecifications,
   rc4Snapshot,
   v0_8Snapshot,
+  type CoreSelectorOptions,
   type SupportedCoreSpecification,
 } from './snapshot.js';

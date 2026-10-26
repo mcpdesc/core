@@ -90,8 +90,8 @@ const legacyDocument = {
 };
 
 describe('selector-sensitive operation support', () => {
-  it('marks RC.4 as deprecated while keeping it operational', () => {
-    expect(deprecatedCoreSpecifications).toEqual(['0.8.0-rc.4']);
+  it('marks RC.4 and the original 0.8.0 rules as deprecated while keeping them operational', () => {
+    expect(deprecatedCoreSpecifications).toEqual(['0.8.0-rc.4', '0.8.0']);
     expect(Object.isFrozen(deprecatedCoreSpecifications)).toBe(true);
   });
 
@@ -177,6 +177,52 @@ describe('default selector resolution', () => {
       expect(revisionOnlyValid).toEqual(original);
     });
   }
+
+  it('accepts selector as the canonical option and specification as its alias', () => {
+    const pinned = { selector: '0.8.0', protocolVersion } as const;
+    expect(projectEffectiveProtocolView(revisionOnlyValid, pinned).ok).toBe(
+      false,
+    );
+    expect(
+      projectEffectiveProtocolView(revisionOnlyValid, {
+        selector: '0.8.0-rev.20261021',
+        specification: '0.8.0-rev.20261021',
+        protocolVersion,
+      }).ok,
+    ).toBe(true);
+    const migrated = migrateMcpDescription07To08(legacyDocument, {
+      selector: '0.8.0',
+      sourceValidated: true,
+    });
+    expect(migrated.report.targetSpecification).toBe('0.8.0');
+  });
+
+  it('rejects conflicting selector and specification options', () => {
+    const conflicting = {
+      selector: '0.8.0-rev.20261021',
+      specification: '0.8.0',
+    } as const;
+    const results = [
+      projectEffectiveProtocolView(revisionOnlyValid, {
+        ...conflicting,
+        protocolVersion,
+      }),
+      selectMcpDescriptionDeclarations(revisionOnlyValid, {
+        ...conflicting,
+        selections: tools,
+      }),
+      mergeEffectiveProtocolViews([revisionOnlyValid], conflicting),
+      resolveMcpDescriptionComponentReferences(revisionOnlyValid, conflicting),
+      migrateMcpDescription07To08(legacyDocument, {
+        ...conflicting,
+        sourceValidated: true,
+      }),
+    ];
+    for (const result of results) {
+      expect(result.ok).toBe(false);
+      expect(result.diagnostics[0]?.code).toBe('conflicting-selector-options');
+    }
+  });
 
   it('reports unresolvable documents instead of guessing a selector', () => {
     const result = projectEffectiveProtocolView(

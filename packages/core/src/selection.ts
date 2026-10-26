@@ -12,7 +12,7 @@ import type {
 } from './model.js';
 import {
   selectCoreSpecification,
-  type SupportedCoreSpecification,
+  type CoreSelectorOptions,
 } from './snapshot.js';
 
 const declarationIdentities = {
@@ -29,8 +29,7 @@ export interface DeclarationSelections {
   readonly prompts?: readonly string[];
 }
 
-export interface SelectMcpDescriptionDeclarationsOptions {
-  readonly specification?: SupportedCoreSpecification;
+export interface SelectMcpDescriptionDeclarationsOptions extends CoreSelectorOptions {
   readonly selections: DeclarationSelections;
 }
 
@@ -107,7 +106,7 @@ export function selectMcpDescriptionDeclarations(
 ): OperationResult<McpDescriptionDocument> {
   const selection = selectCoreSpecification(
     document,
-    options.specification,
+    options,
     'Declaration selection',
   );
   if (!selection.ok) return selection;

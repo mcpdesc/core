@@ -82,10 +82,10 @@ explicitly to pin exact rules. See the
 
 ## Compatibility
 
-| Package                       | Supported selectors                                                            | Runtime     |
-| ----------------------------- | ------------------------------------------------------------------------------ | ----------- |
-| `@mcpdesc/validator` `0.13.x` | `0.8.0-rev.20261021` (default for `0.8.0`), `0.8.0`, `0.8.0-rc.4` (deprecated) | Node.js 20+ |
-| `@mcpdesc/core` `0.12.x`      | Same selectors and defaults; pins `@mcpdesc/validator` `0.13.1`                | Node.js 22+ |
+| Package                       | Supported selectors                                                               | Runtime     |
+| ----------------------------- | --------------------------------------------------------------------------------- | ----------- |
+| `@mcpdesc/validator` `0.13.x` | `0.8.0-rev.20261021` (default for `0.8.0`); `0.8.0` and `0.8.0-rc.4` (deprecated) | Node.js 20+ |
+| `@mcpdesc/core` `0.12.x`      | Same selectors and defaults; pins `@mcpdesc/validator` `0.13.1`                   | Node.js 22+ |
 
 Older drafts and release candidates remain available from earlier package
 releases. npm versions are below `1.0.0`: a minor release may contain breaking

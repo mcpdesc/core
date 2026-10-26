@@ -7,7 +7,7 @@ import {
 import type { CoreDiagnostic, McpDescriptionDocument } from './model.js';
 import {
   selectCoreSpecification,
-  type SupportedCoreSpecification,
+  type CoreSelectorOptions,
 } from './snapshot.js';
 
 export type {
@@ -21,9 +21,8 @@ export type {
   McpDescToolExampleComponentMap,
 } from './model.js';
 
-export interface ResolveMcpDescriptionComponentReferencesOptions {
-  readonly specification?: SupportedCoreSpecification;
-}
+export type ResolveMcpDescriptionComponentReferencesOptions =
+  CoreSelectorOptions;
 
 export interface McpDescriptionComponentReferenceProvenance {
   readonly referencePath: readonly (number | string)[];
@@ -75,7 +74,7 @@ export function resolveMcpDescriptionComponentReferences(
 ): ResolveMcpDescriptionComponentReferencesResult {
   const selection = selectCoreSpecification(
     document,
-    options.specification,
+    options,
     'Component reference resolution',
   );
   if (!selection.ok) return selection;

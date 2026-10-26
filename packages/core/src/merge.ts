@@ -13,7 +13,7 @@ import type {
 } from './model.js';
 import {
   selectCoreSpecification,
-  type SupportedCoreSpecification,
+  type CoreSelectorOptions,
 } from './snapshot.js';
 
 const scopedCollections = [
@@ -27,9 +27,7 @@ const scopedCollections = [
 
 type MutableObject = Record<string, unknown>;
 
-export interface MergeEffectiveProtocolViewsOptions {
-  readonly specification?: SupportedCoreSpecification;
-}
+export type MergeEffectiveProtocolViewsOptions = CoreSelectorOptions;
 
 function canonicalize(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(canonicalize);
@@ -230,7 +228,11 @@ export function mergeEffectiveProtocolViews(
   documents: readonly unknown[],
   options: MergeEffectiveProtocolViewsOptions = {},
 ): OperationResult<McpDescriptionDocument> {
-  if (options.specification === undefined && documents.length === 0) {
+  if (
+    options.selector === undefined &&
+    options.specification === undefined &&
+    documents.length === 0
+  ) {
     return {
       ok: false,
       diagnostics: [
@@ -243,7 +245,7 @@ export function mergeEffectiveProtocolViews(
   }
   const selection = selectCoreSpecification(
     documents[0],
-    options.specification,
+    options,
     'Effective Protocol View merge',
   );
   if (!selection.ok) return selection;

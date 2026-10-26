@@ -77,27 +77,33 @@ human-readable `message`, and a `path` into the document, such as
 ## Choosing a selector
 
 A selector names one exact set of validation rules. Normally you omit the
-`specification` option: each operation uses the validator's default selector for
-the document's `mcpdesc` format version, currently `0.8.0-rev.20261021` for
-`0.8.0` documents. Upgrading the package can then deliver validator corrections.
+`selector` option: each operation uses the validator's default selector for the
+document's `mcpdesc` format version, currently `0.8.0-rev.20261021` for `0.8.0`
+documents. Upgrading the package can then deliver validator corrections.
 
-Pass `specification` to pin exact rules, for example in CI that must produce
+Pass `selector` to pin exact rules, for example in CI that must produce
 identical results across upgrades:
 
 ```ts
 projectEffectiveProtocolView(document, {
-  specification: '0.8.0-rev.20261021',
+  selector: '0.8.0-rev.20261021',
   protocolVersion: '2026-07-28',
 });
 ```
 
-| Operation                          | `0.8.0-rev.20261021` (default) | `0.8.0` (pin only) | `0.8.0-rc.4` (deprecated) |
-| ---------------------------------- | ------------------------------ | ------------------ | ------------------------- |
-| Effective Protocol View projection | Supported                      | Supported          | Supported                 |
-| Effective Protocol View merge      | Supported                      | Supported          | Supported                 |
-| Declaration selection              | Supported                      | Supported          | Supported                 |
-| Component reference resolution     | Supported                      | Supported          | Supported                 |
-| Migration from 0.7.0               | Supported                      | Supported          | Supported                 |
+The older `specification` option remains a deprecated alias for `selector`.
+Passing both with different values fails with `conflicting-selector-options`.
+
+| Operation                          | `0.8.0-rev.20261021` (default) | `0.8.0` (deprecated) | `0.8.0-rc.4` (deprecated) |
+| ---------------------------------- | ------------------------------ | -------------------- | ------------------------- |
+| Effective Protocol View projection | Supported                      | Supported            | Supported                 |
+| Effective Protocol View merge      | Supported                      | Supported            | Supported                 |
+| Declaration selection              | Supported                      | Supported            | Supported                 |
+| Component reference resolution     | Supported                      | Supported            | Supported                 |
+| Migration from 0.7.0               | Supported                      | Supported            | Supported                 |
+
+Deprecated selectors still work when pinned and are listed in
+`deprecatedCoreSpecifications`; they may be removed in a later minor release.
 
 Unsupported selectors fail with an `unsupported-specification` diagnostic. A
 document whose selector cannot be determined, such as an unknown `mcpdesc`
@@ -109,16 +115,18 @@ releases.
 ### Upgrading from 0.11
 
 `@mcpdesc/core` 0.11 required `specification`, and most callers passed
-`'0.8.0'`, which pins the original 0.8.0 rules. Version 0.12 uses
-`@mcpdesc/validator` 0.13.1, whose default for 0.8.0 documents is the
+`'0.8.0'`, which pins the original 0.8.0 rules, now deprecated. Version 0.12
+uses `@mcpdesc/validator` 0.13.1, whose default for 0.8.0 documents is the
 `0.8.0-rev.20261021` correction. To adopt it:
 
 - Remove `specification: '0.8.0'` to follow the maintained default. For example,
   a tool `inputSchema` property using `x-mcp-header` in a document that also
   declares MCP `2025-11-25` is rejected by the original rules but valid under
   the revision, which checks `x-mcp-header` only for `2026-07-28`.
-- Keep `specification: '0.8.0'` only if you must reproduce earlier results
-  exactly.
+- To pin instead, prefer `selector: '0.8.0-rev.20261021'`. Keep `'0.8.0'` only
+  if you must reproduce earlier results exactly.
+- Rename `specification` to `selector` when convenient; the old name keeps
+  working.
 
 If you also call `@mcpdesc/validator` directly, apply the same change and see
 its

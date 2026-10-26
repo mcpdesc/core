@@ -22,6 +22,7 @@ export type SupportedCoreSpecification =
 
 export const deprecatedCoreSpecifications = Object.freeze([
   RC_4_SPECIFICATION,
+  V0_8_SPECIFICATION,
 ] as const);
 
 const rc4Provenance = specificationProvenance[RC_4_SPECIFICATION];
@@ -62,6 +63,45 @@ export type CoreSpecificationSelection =
   | { readonly ok: true; readonly specification: SupportedCoreSpecification }
   | { readonly ok: false; readonly diagnostics: readonly CoreDiagnostic[] };
 
+export interface CoreSelectorOptions<
+  Selector extends SupportedCoreSpecification = SupportedCoreSpecification,
+> {
+  /** Exact validation rules; omit to use the validator default for the document. */
+  readonly selector?: Selector;
+  /** @deprecated Use `selector`. */
+  readonly specification?: Selector;
+}
+
+export type RequestedCoreSelector =
+  | { readonly ok: true; readonly requested: unknown }
+  | { readonly ok: false; readonly diagnostics: readonly CoreDiagnostic[] };
+
+export function requestedCoreSelector(
+  options: CoreSelectorOptions,
+): RequestedCoreSelector {
+  const { selector, specification } = options;
+  if (
+    selector !== undefined &&
+    specification !== undefined &&
+    selector !== specification
+  ) {
+    return {
+      ok: false,
+      diagnostics: [
+        {
+          code: 'conflicting-selector-options',
+          severity: 'error',
+          message:
+            'options.selector and options.specification must identify the same selector',
+          path: [],
+          phase: 'operation',
+        },
+      ],
+    };
+  }
+  return { ok: true, requested: selector ?? specification };
+}
+
 function unsupportedSpecification(
   operation: string,
   specification: unknown,
@@ -78,9 +118,12 @@ function unsupportedSpecification(
 // An explicit selector pins; otherwise use the validator default for the document's format.
 export function selectCoreSpecification(
   document: unknown,
-  requested: unknown,
+  options: CoreSelectorOptions,
   operation: string,
 ): CoreSpecificationSelection {
+  const request = requestedCoreSelector(options);
+  if (!request.ok) return request;
+  const { requested } = request;
   if (requested !== undefined) {
     return isSupportedCoreSpecification(requested)
       ? { ok: true, specification: requested }

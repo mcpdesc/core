@@ -14,7 +14,7 @@ import type {
 } from './model.js';
 import {
   selectCoreSpecification,
-  type SupportedCoreSpecification,
+  type CoreSelectorOptions,
 } from './snapshot.js';
 
 const scopedCollections = [
@@ -26,8 +26,7 @@ const scopedCollections = [
   'prompts',
 ] as const;
 
-export interface ProjectEffectiveProtocolViewOptions {
-  readonly specification?: SupportedCoreSpecification;
+export interface ProjectEffectiveProtocolViewOptions extends CoreSelectorOptions {
   readonly protocolVersion: SupportedProtocolVersion;
 }
 
@@ -173,7 +172,7 @@ export function projectEffectiveProtocolView(
 ): OperationResult<McpDescriptionDocument> {
   const selection = selectCoreSpecification(
     document,
-    options.specification,
+    options,
     'Effective Protocol View projection',
   );
   if (!selection.ok) {
