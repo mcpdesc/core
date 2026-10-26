@@ -20,6 +20,7 @@ export interface McpDescriptionDiagnostic {
   readonly severity: McpDescriptionDiagnosticSeverity;
   readonly message: string;
   readonly path: Array<string | number>;
+  readonly rule?: string;
 }
 
 export interface McpDescriptionValidationResult {

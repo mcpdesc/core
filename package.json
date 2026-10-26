@@ -11,7 +11,8 @@
   },
   "scripts": {
     "build": "npm run build --workspaces --if-present",
-    "check": "npm run format:check && npm run typecheck && npm test && npm run build && npm run test:browser --workspace @mcpdesc/core && npm run check:package --workspaces --if-present && npm run check:consumer --workspace @mcpdesc/core",
+    "check": "npm run format:check && npm run typecheck && npm test && npm run build && npm run check:readme && npm run test:browser --workspace @mcpdesc/core && npm run check:package --workspaces --if-present && npm run check:consumer --workspace @mcpdesc/core",
+    "check:readme": "node scripts/check-readme-examples.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "release:assess": "node scripts/assess-release.mjs",

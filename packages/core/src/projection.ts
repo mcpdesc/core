@@ -14,8 +14,10 @@ import type {
 } from './model.js';
 import {
   selectCoreSpecification,
+  V0_9_DRAFT_1_SPECIFICATION,
   type CoreSelectorOptions,
 } from './snapshot.js';
+import { resolveMcpDescriptionComponentReferences } from './components.js';
 
 const scopedCollections = [
   'transports',
@@ -229,4 +231,190 @@ export function projectEffectiveProtocolView(
 
   if (!resultValidation.valid) return { ok: false, diagnostics };
   return { ok: true, value, diagnostics };
+}
+
+const nativeKinds = {
+  tool: { collection: 'tools', identity: 'name' },
+  resource: { collection: 'resources', identity: 'uri' },
+  resourceTemplate: {
+    collection: 'resourceTemplates',
+    identity: 'uriTemplate',
+  },
+  prompt: { collection: 'prompts', identity: 'name' },
+} as const;
+
+export type McpNativeKind = keyof typeof nativeKinds;
+
+export interface ProjectMcpNativeValueOptions extends CoreSelectorOptions<
+  typeof V0_9_DRAFT_1_SPECIFICATION
+> {
+  readonly protocolVersion: SupportedProtocolVersion;
+  readonly kind: McpNativeKind;
+  readonly identifier?: string;
+}
+
+const descriptionOnlyFields = new Set([
+  'protocolVersions',
+  'examples',
+  'interactionExamples',
+  'completionExamples',
+  'tags',
+  'elicitations',
+  'deprecated',
+  'security',
+  'clientRequirements',
+]);
+
+function nativeValue(declaration: JsonObject): JsonObject {
+  const value: JsonObject = {};
+  for (const [key, child] of Object.entries(declaration)) {
+    if (descriptionOnlyFields.has(key) || key.startsWith('x-')) continue;
+    if ((key === 'arguments' || key === 'icons') && Array.isArray(child)) {
+      value[key] = child.map((entry) =>
+        Object.fromEntries(
+          Object.entries(entry as JsonObject).filter(
+            ([field]) => !field.startsWith('x-'),
+          ),
+        ),
+      );
+    } else {
+      value[key] = structuredClone(child);
+    }
+  }
+  return value;
+}
+
+export function projectMcpNativeValue(
+  document: unknown,
+  options: ProjectMcpNativeValueOptions & { readonly identifier: string },
+): OperationResult<JsonObject>;
+export function projectMcpNativeValue(
+  document: unknown,
+  options: ProjectMcpNativeValueOptions & { readonly identifier?: undefined },
+): OperationResult<JsonObject[]>;
+export function projectMcpNativeValue(
+  document: unknown,
+  options: ProjectMcpNativeValueOptions,
+): OperationResult<JsonObject | JsonObject[]>;
+export function projectMcpNativeValue(
+  document: unknown,
+  options: ProjectMcpNativeValueOptions,
+): OperationResult<JsonObject | JsonObject[]> {
+  const failure = (
+    code: string,
+    message: string,
+    path: readonly (number | string)[] = [],
+  ): CoreDiagnostic =>
+    operationDiagnostic(code, message, path, options.protocolVersion);
+  const selection = selectCoreSpecification(
+    document,
+    options,
+    'Native MCP projection',
+  );
+  if (!selection.ok) {
+    return {
+      ok: false,
+      diagnostics: selection.diagnostics.map((diagnostic) => ({
+        ...diagnostic,
+        protocolVersion: options.protocolVersion,
+      })),
+    };
+  }
+  if (selection.specification !== V0_9_DRAFT_1_SPECIFICATION) {
+    return {
+      ok: false,
+      diagnostics: [
+        failure(
+          'unsupported-specification',
+          `Native MCP projection does not support ${JSON.stringify(selection.specification)}`,
+        ),
+      ],
+    };
+  }
+  if (!Object.hasOwn(nativeKinds, options.kind)) {
+    return {
+      ok: false,
+      diagnostics: [
+        failure(
+          'projection-unsupported-kind',
+          `Unsupported MCP kind ${JSON.stringify(options.kind)}`,
+        ),
+      ],
+    };
+  }
+  const selector = V0_9_DRAFT_1_SPECIFICATION;
+  const view = projectEffectiveProtocolView(document, {
+    selector,
+    protocolVersion: options.protocolVersion,
+  });
+  if (!view.ok) {
+    const sourceInvalid = view.diagnostics.some(
+      (diagnostic) =>
+        diagnostic.phase === 'source' && diagnostic.severity === 'error',
+    );
+    return {
+      ok: false,
+      diagnostics: sourceInvalid
+        ? [
+            ...view.diagnostics,
+            failure(
+              'projection-source-invalid',
+              'Native MCP projection requires a valid source document',
+            ),
+          ]
+        : view.diagnostics.map((diagnostic) =>
+            diagnostic.code === 'projection-version-not-declared'
+              ? { ...diagnostic, code: 'projection-revision-not-declared' }
+              : diagnostic,
+          ),
+    };
+  }
+  const resolved = resolveMcpDescriptionComponentReferences(view.value, {
+    selector,
+  });
+  if (!resolved.ok) return resolved;
+  const { collection, identity } = nativeKinds[options.kind];
+  const declarations = (resolved.value[collection] ?? []) as JsonObject[];
+  const selected =
+    options.identifier === undefined
+      ? declarations
+      : declarations.filter(
+          (declaration) => declaration[identity] === options.identifier,
+        );
+  const diagnostics = uniqueDiagnostics(view.diagnostics, resolved.diagnostics);
+  if (options.identifier !== undefined && selected.length === 0) {
+    return {
+      ok: false,
+      diagnostics: [
+        ...diagnostics,
+        failure(
+          'projection-declaration-not-applicable',
+          `No applicable ${options.kind} ${JSON.stringify(options.identifier)}`,
+          [collection],
+        ),
+      ],
+    };
+  }
+  const values = selected.map(nativeValue);
+  const projectedDocument = { ...resolved.value };
+  if (values.length > 0) projectedDocument[collection] = values;
+  else delete projectedDocument[collection];
+  const resultValidation = validateMcpDescription(projectedDocument, {
+    selector,
+  });
+  const resultDiagnostics = uniqueDiagnostics(
+    diagnostics,
+    diagnosticsForPhase(
+      resultValidation.diagnostics,
+      'result',
+      options.protocolVersion,
+    ),
+  );
+  if (!resultValidation.valid)
+    return { ok: false, diagnostics: resultDiagnostics };
+  return {
+    ok: true,
+    value: options.identifier === undefined ? values : values[0]!,
+    diagnostics: resultDiagnostics,
+  };
 }

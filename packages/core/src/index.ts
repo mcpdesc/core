@@ -45,7 +45,10 @@ export {
 } from './documents.js';
 export {
   projectEffectiveProtocolView,
+  projectMcpNativeValue,
+  type McpNativeKind,
   type ProjectEffectiveProtocolViewOptions,
+  type ProjectMcpNativeValueOptions,
 } from './projection.js';
 export {
   areMcpDescriptionDocumentsSemanticallyEquivalent,
@@ -63,9 +66,12 @@ export {
   V0_8_SCHEMA_URI,
   V0_8_SPECIFICATION,
   V0_8_REV_20261021_SPECIFICATION,
+  V0_9_DRAFT_1_SCHEMA_URI,
+  V0_9_DRAFT_1_SPECIFICATION,
   deprecatedCoreSpecifications,
   rc4Snapshot,
   v0_8Snapshot,
+  v0_9Draft1Snapshot,
   type CoreSelectorOptions,
   type SupportedCoreSpecification,
 } from './snapshot.js';

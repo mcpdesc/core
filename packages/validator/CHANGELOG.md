@@ -8,6 +8,22 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ## [Unreleased]
 
+## [0.14.0-rc.1] - 2026-10-26
+
+### Added
+
+- Added explicit selector `0.9.0-draft.1` for MCP Description 0.9 Community
+	Working Draft 1, with frozen conformance and native-projection fixtures. No
+	`0.9.0` default is configured; callers must pin the draft explicitly.
+- Exposed the draft's registered rule identity through optional
+	`diagnostic.rule`. Existing selectors keep their four-field diagnostics.
+
+### Fixed
+
+- Prevented standalone validation from confusing snapshots whose schemas share
+	a description. Runtime, browser, and standalone outcomes and rule identities
+	are checked against the frozen fixtures.
+
 ## [0.13.1] - 2026-10-26
 
 ### Changed

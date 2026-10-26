@@ -55,6 +55,19 @@ test('exports the active validator API', () => {
   assert.deepEqual(Object.keys(specificationProvenance), supportedSpecifications);
 });
 
+test('requires an explicit draft selector and preserves registered rule identities', () => {
+  const document = fixture('expected-valid', 'minimal-zero-primitives.json', '0.9.0-draft.1');
+  const pinned = validateMcpDescription(document, { selector: '0.9.0-draft.1' });
+  assert.equal(pinned.valid, true);
+  assert.equal(pinned.defaulted, false);
+  assert.equal(pinned.selector, '0.9.0-draft.1');
+  assert.equal(validateMcpDescription(document).diagnostics[0].code, 'unsupported-format-version');
+  assert.equal(resolveMcpDescriptionSpecification(document, { selector: '0.9.0-draft.1' }).status, 'resolved');
+  const invalid = validateMcpDescription({ ...document, tools: [{ name: 'missing' }] }, { selector: '0.9.0-draft.1' });
+  assert.equal(invalid.valid, false);
+  assert.ok(invalid.diagnostics.some((diagnostic) => diagnostic.rule === 'mcpdesc.document.schema'));
+});
+
 test('exports configured provenance for each supported schema', () => {
   for (const specification of supportedSpecifications) {
     const metadata = validatorConfiguration.selectors[specification];

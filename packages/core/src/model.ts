@@ -69,6 +69,7 @@ export interface CoreDiagnostic {
   readonly severity: McpDescriptionDiagnosticSeverity;
   readonly message: string;
   readonly path: readonly (number | string)[];
+  readonly rule?: string;
   readonly phase: DiagnosticPhase;
   readonly protocolVersion?: SupportedProtocolVersion;
 }

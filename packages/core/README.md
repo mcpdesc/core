@@ -94,16 +94,19 @@ projectEffectiveProtocolView(document, {
 The older `specification` option remains a deprecated alias for `selector`.
 Passing both with different values fails with `conflicting-selector-options`.
 
-| Operation                          | `0.8.0-rev.20261021` (default) | `0.8.0` (deprecated) | `0.8.0-rc.4` (deprecated) |
-| ---------------------------------- | ------------------------------ | -------------------- | ------------------------- |
-| Effective Protocol View projection | Supported                      | Supported            | Supported                 |
-| Effective Protocol View merge      | Supported                      | Supported            | Supported                 |
-| Declaration selection              | Supported                      | Supported            | Supported                 |
-| Component reference resolution     | Supported                      | Supported            | Supported                 |
-| Migration from 0.7.0               | Supported                      | Supported            | Supported                 |
+| Operation                          | `0.8.0-rev.20261021` (default) | `0.8.0` (deprecated) | `0.8.0-rc.4` (deprecated) | `0.9.0-draft.1` (preview) |
+| ---------------------------------- | ------------------------------ | -------------------- | ------------------------- | ------------------------- |
+| Effective Protocol View projection | Supported                      | Supported            | Supported                 | Supported                 |
+| Effective Protocol View merge      | Supported                      | Supported            | Supported                 | Supported                 |
+| Declaration selection              | Supported                      | Supported            | Supported                 | Supported                 |
+| Component reference resolution     | Supported                      | Supported            | Supported                 | Supported                 |
+| Migration from 0.7.0               | Supported                      | Supported            | Supported                 | Not supported             |
+| Native MCP value projection        | Not supported                  | Not supported        | Not supported             | Supported                 |
 
 Deprecated selectors still work when pinned and are listed in
 `deprecatedCoreSpecifications`; they may be removed in a later minor release.
+Draft selectors are never defaults: pass `selector: '0.9.0-draft.1'` explicitly
+for MCP Description 0.9 Draft 1 documents.
 
 Unsupported selectors fail with an `unsupported-specification` diagnostic. A
 document whose selector cannot be determined, such as an unknown `mcpdesc`
@@ -249,6 +252,48 @@ revision to root `protocolVersions`, wraps server capabilities, omits empty
 optional arrays, and converts inline security schemes into named definitions.
 The report lists every change, applied default, and diagnostic; generated names
 are reported as warnings to review.
+
+### Project native MCP values (0.9 Draft 1 preview)
+
+MCP Description 0.9 Draft 1 defines how a declaration becomes the value an MCP
+server returns, for example a `Tool` in a `tools/list` result:
+
+```ts
+import { projectMcpNativeValue } from '@mcpdesc/core';
+
+const tool = projectMcpNativeValue(draftDocument, {
+  selector: '0.9.0-draft.1',
+  protocolVersion: '2026-07-28',
+  kind: 'tool',
+  identifier: 'search',
+});
+if (tool.ok) console.log(tool.value); // { name: 'search', inputSchema: {...} }
+
+const tools = projectMcpNativeValue(draftDocument, {
+  selector: '0.9.0-draft.1',
+  protocolVersion: '2026-07-28',
+  kind: 'tool',
+});
+if (tools.ok) console.log(tools.value); // every applicable tool, in order
+```
+
+`kind` is `tool`, `resource`, `resourceTemplate`, or `prompt`. The identifier is
+a tool or prompt `name`, resource `uri`, or resource template `uriTemplate`;
+omit it for the ordered list of applicable values, which may be empty.
+
+Projection selects the protocol revision's view, resolves component references,
+and removes MCP Description fields such as `examples`, `tags`, `security`,
+`clientRequirements`, and `x-` extensions, including on icons and prompt
+arguments. Embedded schemas and `_meta` are copied unchanged. The result is the
+MCP value only, not a JSON-RPC message.
+
+| Failure code                            | Cause                                                        |
+| --------------------------------------- | ------------------------------------------------------------ |
+| `projection-source-invalid`             | The document has validation errors.                          |
+| `projection-revision-not-declared`      | `protocolVersion` is not in the root `protocolVersions`.     |
+| `projection-declaration-not-applicable` | No declaration with that identifier applies to the revision. |
+
+This preview tracks a draft specification and may change in later drafts.
 
 ## Entry points
 

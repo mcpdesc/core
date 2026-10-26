@@ -1,5 +1,6 @@
 import { build } from 'esbuild';
 import { readFileSync } from 'node:fs';
+import assert from 'node:assert/strict';
 
 const entries = [
   {
@@ -10,6 +11,8 @@ const entries = [
       'migrateMcpDescription07To08',
       'migrateMcpDescription07ToRc4',
       'serializeMcpDescriptionMigrationReport',
+      'projectMcpNativeValue',
+      'v0_9Draft1Snapshot',
     ],
   },
   {
@@ -125,6 +128,40 @@ try {
     if (!result.ok || result.provenance.length === 0) {
       throw new Error('Component resolution failed under strict CSP');
     }
+  }
+  const draft = JSON.parse(
+    readFileSync(
+      new URL(
+        '../../validator/test/snapshots/0.9.0-draft.1/projection-fixtures/documents/tools.json',
+        import.meta.url,
+      ),
+      'utf8',
+    ),
+  );
+  const expected = JSON.parse(
+    readFileSync(
+      new URL(
+        '../../validator/test/snapshots/0.9.0-draft.1/projection-fixtures/tool-component-input-array-output-2026-07-28.json',
+        import.meta.url,
+      ),
+      'utf8',
+    ),
+  ).expected;
+  const native = root.projectMcpNativeValue(draft, {
+    specification: '0.9.0-draft.1',
+    protocolVersion: '2026-07-28',
+    kind: 'tool',
+    identifier: 'report',
+  });
+  assert.equal(native.ok, true, JSON.stringify(native.diagnostics));
+  assert.deepEqual(native.value, expected);
+  for (const operation of [
+    root.resolveMcpDescriptionComponentReferences,
+    components.resolveMcpDescriptionComponentReferences,
+  ]) {
+    const resolved = operation(draft, { specification: '0.9.0-draft.1' });
+    assert.equal(resolved.ok, true);
+    assert.ok(resolved.provenance.length > 0);
   }
 } finally {
   globalThis.eval = originalEval;

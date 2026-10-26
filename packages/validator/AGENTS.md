@@ -11,8 +11,9 @@ schemas remain in `mcpdesc/mcpdesc-specification`.
 - Preserve the public `.`, `./browser`, and `./standalone` entry points.
 - Keep `./browser` and `./standalone` behavior-identical and strict-CSP safe.
 - Keep Node.js 20 support even when repository-level tooling uses newer Node.js.
-- Diagnostics are deterministic and contain only `code`, `severity`, `message`,
-  and root-relative `path` unless a separately reviewed API change is approved.
+- Diagnostics are deterministic and contain `code`, `severity`, `message`,
+  and root-relative `path`. The approved `0.9.0-draft.1` integration adds an
+  optional `rule` string; existing selectors retain their four-field output.
 - Validation is synchronous, browser-compatible, offline, and performs no file,
   network, or environment access.
 

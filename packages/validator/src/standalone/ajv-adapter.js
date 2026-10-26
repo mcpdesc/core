@@ -1,5 +1,5 @@
 import { Validator } from '@cfworker/json-schema';
-import { validatorsByDescription } from '#standalone-validators';
+import { validatorsBySchema } from '#standalone-validators';
 import validateDraft7Schema from '#standalone-meta-draft7';
 import validateDraft2020Schema from '#standalone-meta-draft2020';
 
@@ -73,7 +73,7 @@ class AjvAdapter {
   }
 
   compile(schema) {
-    const standalone = validatorsByDescription.get(schema?.description);
+    const standalone = validatorsBySchema.get(JSON.stringify(schema));
     if (standalone) return standalone;
     return compileSchema(schema, this.constructor.draft);
   }

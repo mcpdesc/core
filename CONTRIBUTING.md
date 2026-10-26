@@ -17,8 +17,27 @@ npm run check
 ```
 
 `npm run check` runs formatting, type checks, both packages' tests, builds,
-strict-CSP browser bundle checks, tarball content checks, and an isolated
-consumer install of the packed tarballs.
+README example type checks, strict-CSP browser bundle checks, tarball content
+checks, and an isolated consumer install of the packed tarballs.
+
+`npm run check:readme` extracts the TypeScript and JavaScript code blocks from
+the three READMEs and typechecks them against the built packages; it declares
+common placeholders such as `document` and `yamlText`. Keep README examples
+compiling when public APIs change.
+
+To smoke-test real documents, point the opt-in example test at one or more
+folders; it recurses into each and never modifies the files:
+
+```bash
+npm run test:examples --workspace @mcpdesc/core -- path/to/examples/features
+npm run test:examples --workspace @mcpdesc/core -- --as-draft path/to/examples/vendors
+```
+
+It validates every JSON/YAML document with the runtime and standalone validators
+and checks Effective Protocol Views. `--as-draft` also tests an in-memory copy
+with only `mcpdesc` and `$schema` changed to 0.9 Draft 1, including native
+projection of every declaration; it is a compatibility rehearsal, not a
+migration. Routine CI does not depend on external example repositories.
 
 Focused validator checks, from the repository root:
 
