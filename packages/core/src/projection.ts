@@ -13,8 +13,8 @@ import type {
   ProtocolScopedDeclaration,
 } from './model.js';
 import {
-  isSupportedCoreSpecification,
-  type SupportedCoreSpecification,
+  selectCoreSpecification,
+  type CoreSelectorOptions,
 } from './snapshot.js';
 
 const scopedCollections = [
@@ -26,8 +26,7 @@ const scopedCollections = [
   'prompts',
 ] as const;
 
-export interface ProjectEffectiveProtocolViewOptions {
-  readonly specification: SupportedCoreSpecification;
+export interface ProjectEffectiveProtocolViewOptions extends CoreSelectorOptions {
   readonly protocolVersion: SupportedProtocolVersion;
 }
 
@@ -171,22 +170,24 @@ export function projectEffectiveProtocolView(
   document: unknown,
   options: ProjectEffectiveProtocolViewOptions,
 ): OperationResult<McpDescriptionDocument> {
-  if (!isSupportedCoreSpecification(options.specification)) {
+  const selection = selectCoreSpecification(
+    document,
+    options,
+    'Effective Protocol View projection',
+  );
+  if (!selection.ok) {
     return {
       ok: false,
-      diagnostics: [
-        operationDiagnostic(
-          'unsupported-specification',
-          `Effective Protocol View projection does not support ${JSON.stringify(options.specification)}`,
-          [],
-          options.protocolVersion,
-        ),
-      ],
+      diagnostics: selection.diagnostics.map((diagnostic) => ({
+        ...diagnostic,
+        protocolVersion: options.protocolVersion,
+      })),
     };
   }
+  const { specification } = selection;
 
   const sourceValidation = validateMcpDescription(document, {
-    specification: options.specification,
+    specification,
   });
   const sourceDiagnostics = diagnosticsForPhase(
     sourceValidation.diagnostics,
@@ -215,7 +216,7 @@ export function projectEffectiveProtocolView(
 
   const value = projectDocument(source, options.protocolVersion);
   const resultValidation = validateMcpDescription(value, {
-    specification: options.specification,
+    specification,
   });
   const diagnostics = uniqueDiagnostics(
     sourceDiagnostics,

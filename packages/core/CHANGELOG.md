@@ -4,6 +4,40 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-10-26
+
+### Added
+
+- Added `selector` as the canonical option in projection, merge, declaration
+  selection, component reference resolution, and migration, matching
+  `@mcpdesc/validator`. Conflicting `selector` and `specification` values fail
+  with `conflicting-selector-options`.
+
+### Changed
+
+- **Upgrade note:** the selector is now optional in projection, merge,
+  declaration selection, component reference resolution, and 0.8.0 migration.
+  When omitted, operations use the `@mcpdesc/validator` default selector for the
+  document's `mcpdesc` version, `0.8.0-rev.20261021` for 0.8.0 documents.
+  Explicit selectors still pin exact rules; remove `specification: '0.8.0'` to
+  adopt the default. Merge resolves from its first document, and migration
+  validates its result with the default unless pinned.
+- Pinned `@mcpdesc/validator` `0.13.1` and added `0.8.0-rev.20261021` to every
+  selector-sensitive operation, exported as `V0_8_REV_20261021_SPECIFICATION`.
+- Documents whose selector cannot be resolved fail with a `source` diagnostic,
+  such as `unsupported-format-version`, without falling back to older rules.
+- Rewrote the README as a task-oriented guide covering installation, result
+  handling, selector choice and upgrading, each operation, entry points, and
+  limits, with absolute links that work on npmjs.com.
+
+### Deprecated
+
+- Deprecated the `specification` option in favor of `selector`; it remains a
+  working alias.
+- Deprecated selector `0.8.0`, matching `@mcpdesc/validator`. It still works
+  when pinned and is listed in `deprecatedCoreSpecifications`; prefer the
+  default or `0.8.0-rev.20261021`.
+
 ## [0.11.0] - 2026-09-09
 
 ### Changed

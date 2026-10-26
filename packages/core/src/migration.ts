@@ -11,12 +11,16 @@ import type {
   McpDescriptionDocument,
 } from './model.js';
 import {
+  defaultV0_8Specification,
   RC_4_SCHEMA_URI,
   RC_4_SPECIFICATION,
   rc4Snapshot,
+  requestedCoreSelector,
+  V0_8_REV_20261021_SPECIFICATION,
   V0_8_SCHEMA_URI,
   V0_8_SPECIFICATION,
   v0_8Snapshot,
+  type CoreSelectorOptions,
   type SupportedCoreSpecification,
 } from './snapshot.js';
 
@@ -36,15 +40,18 @@ const declarationCollections = [
   'prompts',
 ] as const;
 
-export interface MigrateMcpDescription07ToRc4Options {
-  readonly specification: typeof RC_4_SPECIFICATION;
+export interface MigrateMcpDescription07ToRc4Options extends CoreSelectorOptions<
+  typeof RC_4_SPECIFICATION
+> {
   readonly defaultProtocolVersion?: SupportedProtocolVersion;
   readonly protocolVersion?: SupportedProtocolVersion;
   readonly sourceValidated: true;
 }
 
-export interface MigrateMcpDescription07To08Options {
-  readonly specification: typeof V0_8_SPECIFICATION;
+/** Omit `selector` to validate the result with the validator default for 0.8.0. */
+export interface MigrateMcpDescription07To08Options extends CoreSelectorOptions<
+  typeof V0_8_SPECIFICATION | typeof V0_8_REV_20261021_SPECIFICATION
+> {
   readonly defaultProtocolVersion?: SupportedProtocolVersion;
   readonly protocolVersion?: SupportedProtocolVersion;
   readonly sourceValidated: true;
@@ -321,16 +328,17 @@ function migrateSecurity(
 function migrateMcpDescription07(
   source: unknown,
   options: SupportedMigrationOptions,
+  requested: unknown,
   targetSpecification: SupportedCoreSpecification,
   targetSchemaUri: typeof RC_4_SCHEMA_URI | typeof V0_8_SCHEMA_URI,
   targetProtocolVersions: readonly SupportedProtocolVersion[],
 ): McpDescriptionMigrationResult {
-  if (options.specification !== targetSpecification) {
+  if (requested !== targetSpecification) {
     return failedMigration(targetSpecification, [
       operationDiagnostic(
         'unsupported-specification',
         'error',
-        `MCP Description migration does not support ${JSON.stringify(options.specification)}`,
+        `MCP Description migration does not support ${JSON.stringify(requested)}`,
         [],
       ),
     ]);
@@ -499,9 +507,13 @@ export function migrateMcpDescription07ToRc4(
   source: unknown,
   options: MigrateMcpDescription07ToRc4Options,
 ): McpDescriptionMigrationResult {
+  const request = requestedCoreSelector(options as CoreSelectorOptions);
+  if (!request.ok)
+    return failedMigration(RC_4_SPECIFICATION, request.diagnostics);
   return migrateMcpDescription07(
     source,
     options,
+    request.requested ?? RC_4_SPECIFICATION,
     RC_4_SPECIFICATION,
     RC_4_SCHEMA_URI,
     rc4Snapshot.protocolVersions,
@@ -512,10 +524,19 @@ export function migrateMcpDescription07To08(
   source: unknown,
   options: MigrateMcpDescription07To08Options,
 ): McpDescriptionMigrationResult {
+  const request = requestedCoreSelector(options as CoreSelectorOptions);
+  if (!request.ok)
+    return failedMigration(V0_8_SPECIFICATION, request.diagnostics);
+  const requested = request.requested ?? defaultV0_8Specification;
+  const targetSpecification =
+    requested === V0_8_REV_20261021_SPECIFICATION
+      ? V0_8_REV_20261021_SPECIFICATION
+      : V0_8_SPECIFICATION;
   return migrateMcpDescription07(
     source,
     options,
-    V0_8_SPECIFICATION,
+    requested,
+    targetSpecification,
     V0_8_SCHEMA_URI,
     v0_8Snapshot.protocolVersions,
   );

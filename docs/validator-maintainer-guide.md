@@ -118,3 +118,33 @@ not a validator revision.
 Follow [`RELEASING.md`](../RELEASING.md). Publish `<version>-rc.1` on `next`,
 test it in the editor and the `mcpcontract` CLI, then publish the stable version
 on `latest`.
+
+## Snapshot lifecycle
+
+For each approved selector:
+
+1. Its implementation lives under `src/snapshots/<selector>/` with the embedded
+   schema, schema SHA-256 digest, and semantic rules. Existing non-retired
+   snapshot directories never change.
+2. Its fixtures are frozen under `test/snapshots/<selector>/fixtures/`. Package
+   tests never read mutable specification draft fixtures for a published
+   selector.
+3. Selector configuration, support metadata, declarations, tests, the package
+   changelog, and expected package contents are updated together. Unqualified
+   versions, aliases, ranges, and unpublished selectors remain unsupported.
+
+Test snapshots are repository-only and excluded from the npm tarball. When a
+selector retires, repository history and available validator release tags
+preserve its runtime and fixture trees, while its configuration tombstone keeps
+its tag and schema identity. Only active and deprecated runtime snapshots ship.
+
+npm SemVer tracks implementation releases independently from selectors. Adding a
+snapshot is additive and never changes an existing selector's schema, semantics,
+metadata, fixtures, or results.
+
+Specification approval does not authorize publication. A maintainer decides the
+package version and npm dist-tag, reviews imported source and fixture
+provenance, runs the full checks, and inspects the tarball. The
+trusted-publishing workflow requires an annotated `validator-v<semver>` tag
+matching the package version on the current `origin/main` tip; prereleases
+publish to `next` and stable versions to `latest`.

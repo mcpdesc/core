@@ -12,8 +12,8 @@ import type {
   ProtocolScopedDeclaration,
 } from './model.js';
 import {
-  isSupportedCoreSpecification,
-  type SupportedCoreSpecification,
+  selectCoreSpecification,
+  type CoreSelectorOptions,
 } from './snapshot.js';
 
 const scopedCollections = [
@@ -27,9 +27,7 @@ const scopedCollections = [
 
 type MutableObject = Record<string, unknown>;
 
-export interface MergeEffectiveProtocolViewsOptions {
-  readonly specification: SupportedCoreSpecification;
-}
+export type MergeEffectiveProtocolViewsOptions = CoreSelectorOptions;
 
 function canonicalize(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(canonicalize);
@@ -228,19 +226,30 @@ function uniqueDiagnostics(
 
 export function mergeEffectiveProtocolViews(
   documents: readonly unknown[],
-  options: MergeEffectiveProtocolViewsOptions,
+  options: MergeEffectiveProtocolViewsOptions = {},
 ): OperationResult<McpDescriptionDocument> {
-  if (!isSupportedCoreSpecification(options.specification)) {
+  if (
+    options.selector === undefined &&
+    options.specification === undefined &&
+    documents.length === 0
+  ) {
     return {
       ok: false,
       diagnostics: [
         operationDiagnostic(
-          'unsupported-specification',
-          `Effective Protocol View merge does not support ${JSON.stringify(options.specification)}`,
+          'merge-input-required',
+          'At least one MCP Description document is required for merge',
         ),
       ],
     };
   }
+  const selection = selectCoreSpecification(
+    documents[0],
+    options,
+    'Effective Protocol View merge',
+  );
+  if (!selection.ok) return selection;
+  const { specification } = selection;
   if (documents.length === 0) {
     return {
       ok: false,
@@ -255,7 +264,7 @@ export function mergeEffectiveProtocolViews(
 
   const sourceDiagnostics = documents.flatMap((document) =>
     validateMcpDescription(document, {
-      specification: options.specification,
+      specification,
     }).diagnostics.map((diagnostic) =>
       diagnosticForPhase(diagnostic, 'source'),
     ),
@@ -330,7 +339,7 @@ export function mergeEffectiveProtocolViews(
   }
 
   const resultValidation = validateMcpDescription(value, {
-    specification: options.specification,
+    specification,
   });
   const diagnostics = uniqueDiagnostics([
     ...sourceDiagnostics,

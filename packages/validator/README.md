@@ -1,22 +1,25 @@
 # @mcpdesc/validator
 
-A **selector** names one exact validation contract, such as `0.8.0`. It is
-distinct from the document's `mcpdesc` format version. Callers normally use the
-maintainer-configured default; `options.selector` pins a particular contract.
-See the [terminology guide](../../docs/validator-terminology.md) for details.
+[![npm](https://img.shields.io/npm/v/@mcpdesc/validator.svg)](https://www.npmjs.com/package/@mcpdesc/validator)
+[![mcpdesc: 0.8](https://img.shields.io/badge/mcpdesc-0.8-blue.svg)](https://mcpdesc.org)
+[![Node.js: >=20](https://img.shields.io/badge/Node.js-%3E%3D20-brightgreen.svg)](https://nodejs.org/)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/mcpdesc/core/blob/main/LICENSE)
 
-Validate parsed MCP Description documents against immutable validator snapshots.
-The package:
+Validate [MCP Description](https://mcpdesc.org) documents. Tested for MCP
+Description v0.8.
 
-- checks document structure against the snapshot's embedded JSON Schema;
-- applies semantic rules that JSON Schema alone cannot express;
-- returns deterministic error and warning diagnostics with document paths; and
-- runs synchronously and offline in Node.js 20+ and browser bundles.
+The validator:
 
-Use it when accepting, generating, migrating, or transforming MCP Description
-documents and you need to know whether the result conforms to a specific
-published draft, release candidate, or stable snapshot. It validates MCP Description documents,
-not live MCP servers or MCP protocol messages.
+- checks document structure against the MCP Description JSON Schema;
+- applies semantic rules that JSON Schema cannot express, such as protocol
+  revision applicability, security scheme references, and tool example
+  conformance;
+- returns deterministic errors and warnings, each with a path into the
+  document; and
+- runs synchronously and offline in Node.js 20+ and browsers, including pages
+  with a strict Content Security Policy.
+
+It validates description documents, not live MCP servers or protocol messages.
 
 ## Install
 
@@ -24,215 +27,164 @@ not live MCP servers or MCP protocol messages.
 npm install @mcpdesc/validator
 ```
 
-Upgrading an existing 0.12.x integration? See the
-[validator 0.13.0 migration guide](./MIGRATING-0.13.md).
+Upgrading from 0.12.x? See the
+[0.13.0 migration guide](https://github.com/mcpdesc/core/blob/main/packages/validator/MIGRATING-0.13.md).
 
 ## Quick start
 
 ```js
 import { validateMcpDescription } from '@mcpdesc/validator';
 
-const result = validateMcpDescription(parsedDocument);
+const result = validateMcpDescription(document); // a parsed JavaScript value
 
-for (const diagnostic of result.diagnostics) {
-  console.log(diagnostic.severity, diagnostic.path, diagnostic.message);
+if (result.valid) {
+  console.log('Valid');
 }
-
-if (!result.valid) {
-  // At least one error diagnostic was returned.
+for (const { severity, path, message } of result.diagnostics) {
+  console.log(`${severity} at ${path.join('.') || '(root)'}: ${message}`);
 }
-
-// Pin a selector only when reproducibility is required.
-const pinned = validateMcpDescription(parsedDocument, { selector: '0.8.0' });
 ```
 
-Callers provide an already parsed JavaScript value. JSON and YAML parsing, file
-access, network access, and live-server inspection are outside this package.
-The document's `mcpdesc` field gives its format version; callers normally do
-not need to pass a selector. The validator uses the maintainer-chosen default
-for that format version. Pass `options.selector` only to pin an exact immutable
-validation contract. The result reports the selector used and whether it was
-selected by default. Unsupported format versions fail without falling back to
-an earlier version. The older `options.specification` name remains supported
-as a compatibility alias for `options.selector`.
+The validator accepts an already parsed value. To read JSON or YAML text, use
+`parseMcpDescriptionSource` from
+[`@mcpdesc/core/documents`](https://www.npmjs.com/package/@mcpdesc/core) or any
+JSON/YAML parser.
 
-## Maintainer documentation
+## Understanding results
 
-- [Validator maintainer guide](../../docs/validator-maintainer-guide.md):
-  workflow for importing, testing, and releasing a validator snapshot.
-- [Selector configuration design](../../docs/validator-configuration-design.md):
-  YAML source of truth, validation rules, and generated static runtime data.
-- [Snapshot design record](../../docs/validator-snapshots.md): rationale and
-  decisions for revisions, defaults, and issue #24.
+```ts
+interface McpDescriptionValidationResult {
+  valid: boolean; // false when at least one diagnostic is an error
+  selector: string | null; // the validation rules used, or null if none applied
+  defaulted: boolean; // true when the selector came from the document's format version
+  diagnostics: Array<{
+    code: string; // stable identifier, for example 'schema-validation'
+    severity: 'error' | 'warning';
+    message: string; // human-readable explanation
+    path: Array<string | number>; // location, for example ['tools', 0, 'inputSchema']
+  }>;
+  /** @deprecated Use `selector`. */
+  specification: string | null;
+}
+```
 
-## Supported snapshots
+- **Errors** make a document invalid.
+- **Warnings** leave it valid but point out risks, such as deprecated features
+  or checks that could not be completed offline.
+- Paths are relative to the document root. For a missing or unexpected
+  property, the path ends with that property's name.
+- Diagnostics are deterministic: the same document and selector always produce
+  the same results.
 
-The package supports these immutable selectors, newest first:
+## Choosing validation rules
 
-| Selector | First validator release | Embedded schema SHA-256 |
-|---|---|---|
-| `0.8.0-rev.20261021` | `0.13.0-rc.1` | `36686f92ba0cc98bde2c34eaad31c0304d6e5cebdd2c4d2be1be06aecef41119` |
-| `0.8.0` (deprecated) | `0.12.0-rc.1` | `36686f92ba0cc98bde2c34eaad31c0304d6e5cebdd2c4d2be1be06aecef41119` |
-| `0.8.0-rc.4` (deprecated) | `0.11.0` | `d38e54db859813b63be2a5c91dde91250035f18bcb5910208cf71fa6875d6eef` |
+A **selector** names one exact, immutable set of validation rules. Normally you
+do not pass one: the validator reads the document's `mcpdesc` format version and
+uses the default selector chosen for it.
 
-The validator package embeds the schema and executable behavior for each
-selector. The issue #24 revision is the default for `mcpdesc: "0.8.0"` and
-preserves the stable schema URI and digest while correcting validator behavior.
-Stable `0.8.0` and RC.4 remain available as explicit deprecated pins. Earlier selectors remain available by pinning an older
-immutable validator release. npm integrity and trusted-publishing provenance identify released
-package bytes; specification repository tags and commits are informational.
+| Selector             | Status                   | Use                                      |
+| -------------------- | ------------------------ | ---------------------------------------- |
+| `0.8.0-rev.20261021` | Default for `0.8.0`      | Current rules for MCP Description 0.8.   |
+| `0.8.0`              | Deprecated, pin only     | Original 0.8.0 rules.                    |
+| `0.8.0-rc.4`         | Deprecated, pin only     | Release candidate 4 rules.               |
 
-Component reference resolution is available for RC.4, stable `0.8.0`, and the
-issue #24 revision with
-terminal-target provenance for each authored reference.
+The default may move to a corrected revision in a later minor release. Pin a
+selector when results must stay identical across upgrades, for example in CI:
 
-## Usage
+```js
+validateMcpDescription(document, { selector: '0.8.0-rev.20261021' });
+```
 
-The `options` argument is optional. Pass `options.selector` to pin an exact
-immutable validation contract; otherwise, the validator uses the
-maintainer-selected default for the document's format version.
+A document whose format version has no default, such as an unknown future
+version, is reported as invalid with `unsupported-format-version`; the validator
+never falls back to older rules. Passing an unsupported selector throws a
+`RangeError`. Earlier drafts and release candidates are available from older
+package releases.
 
-### Entry points
+To find out which selector a document would use, without validating it:
 
-| Entry | Strict CSP without `unsafe-eval` | Fixed MCP Description schemas | Document-provided schemas |
-|---|---|---|---|
-| `@mcpdesc/validator` | No | Compiled by AJV at runtime | Compiled or interpreted at runtime |
-| `@mcpdesc/validator/browser` | Yes | Precompiled during package development | Interpreted at runtime |
-| `@mcpdesc/validator/standalone` | Yes | Precompiled during package development | Interpreted at runtime |
+```js
+import { resolveMcpDescriptionSpecification } from '@mcpdesc/validator';
 
-Browser applications that prohibit dynamic code generation should use the descriptive CSP-safe browser entry:
+const resolution = resolveMcpDescriptionSpecification(document);
+if (resolution.status === 'resolved') {
+  console.log(resolution.selector, resolution.defaulted, resolution.schemaUri);
+} else {
+  console.error(resolution.diagnostics); // e.g. contradictory $schema and mcpdesc
+}
+```
+
+The format version comes from `mcpdesc`. A `$schema` value must agree with it;
+for 0.8.0, the schema URI does not pin a particular selector.
+
+## Browser and strict CSP use
+
+| Import                          | Strict CSP (no `unsafe-eval`) | Notes                                        |
+| ------------------------------- | ----------------------------- | -------------------------------------------- |
+| `@mcpdesc/validator`            | No                            | Fastest; compiles schemas at runtime.        |
+| `@mcpdesc/validator/browser`    | Yes                           | Precompiled schemas; recommended for browsers. |
+| `@mcpdesc/validator/standalone` | Yes                           | Same as `/browser`; kept for compatibility.  |
 
 ```js
 import { validateMcpDescription } from '@mcpdesc/validator/browser';
 ```
 
-The `/browser` entry is a public alias for the existing `/standalone` implementation. `/standalone` remains supported for backward compatibility. Both have the same synchronous API, selectors, diagnostics, and offline external-reference behavior as the default entry. Fixed MCP Description schemas and JSON Schema meta-schemas are precompiled during package development; document-provided Tool and Elicitation schemas use the package's interpreted JSON Schema dependency, so neither entry uses `eval` or `new Function` or requires `unsafe-eval`. These entries are larger and slower than the default AJV-based entry and are JavaScript, not WASM.
+All entry points have the same API and produce the same results. The CSP-safe
+entries are larger and slower: they precompile the MCP Description schemas and
+interpret schemas embedded in documents, such as tool input schemas, instead of
+compiling them. Choose the entry point explicitly; the package does not switch
+implementations automatically.
 
-The default entry remains unchanged and uses AJV runtime compilation. Applications that need dynamic schema compilation can use it where their runtime policy permits dynamic code generation. Importing it may fail when a browser enforces strict CSP. The package intentionally does not select a different implementation through conditional exports; consumers choose the required behavior explicitly.
-
-## Snapshot resolution
-
-`resolveMcpDescriptionSpecification` resolves a selector from the document's
-`$schema`, the maintainer default for its `mcpdesc` format version, or a
-caller-supplied selector. Pass `options.selector` to pin; `options.specification`
-is retained as a compatibility alias:
+## Resolve component references
 
 ```js
-import { resolveMcpDescriptionSpecification } from '@mcpdesc/validator';
+import { resolveMcpDescriptionComponentReferences } from '@mcpdesc/validator';
 
-const resolution = resolveMcpDescriptionSpecification(parsedDocument);
-if (resolution.status === 'resolved') {
-  console.log(resolution.selector, resolution.provenance);
-} else {
-  console.error(resolution.diagnostics);
-}
+const { document: resolved, provenance, diagnostics } =
+  resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-rev.20261021' });
 ```
 
-Resolution is pure and performs no network retrieval. It does not validate the
-document. A caller-supplied selector always pins that selector. Without one, a
-recognized schema URI selects its exact selector when `schemaPins` is true; if
-false, it selects the format version's default. If `$schema` is absent, the
-`mcpdesc` field selects the default. A format version with no configured default
-returns `unsupported-format-version`; the validator never downgrades to an
-earlier format version.
-
-Unresolved results distinguish missing, invalid, unknown, and
-contradictory identity, as well as unsupported caller selectors. A supplied
-selector can resolve a document with no `$schema`. When `$schema` is present,
-its URI must identify the selected format; it must identify the exact selector
-when that format's `schemaPins` setting is true.
-
-## Result
-
-`validateMcpDescription` returns the validation result and records which
-selector was used:
-
-```ts
-interface McpDescriptionValidationResult {
-  valid: boolean;
-  selector: McpDescriptionSelector | null;
-  /** @deprecated Use `selector`. */
-  specification: McpDescriptionSpecification | null;
-  defaulted: boolean;
-  diagnostics: Array<{
-    code: string;
-    severity: 'error' | 'warning';
-    message: string;
-    path: Array<string | number>;
-  }>;
-}
-```
-
-`valid` is false when at least one error diagnostic exists. `selector` is
-`null` when no supported selector could be resolved. The legacy `specification`
-result field aliases `selector`. `defaulted` is true when the selector came
-from `defaultSpecifications`; it is false for a caller-pinned selector.
-Structural JSON Schema failures are emitted as individual
-diagnostics. Semantic diagnostics are deterministic and receive root-relative
-paths at their rule sites.
-
-Structural paths start with AJV's instance path. A `required` error appends its `missingProperty`; an `additionalProperties` error appends its `additionalProperty`. This lets callers identify the absent or unexpected property directly.
+Each `$componentRef` is replaced by a copy of its target, and `provenance`
+maps each authored reference path to its final component path. For validated,
+non-mutating resolution with an `ok` result, use
+[`@mcpdesc/core`](https://www.npmjs.com/package/@mcpdesc/core).
 
 ## Support metadata
 
-The package exports frozen `supportedSpecifications`, `deprecatedSpecifications`,
-`defaultSpecifications`, `supportedProtocolVersions`, and
-`specificationProvenance` values. These historical export names use
-"specification", but they list or describe validator selectors. New code should
-use `result.selector` and `options.selector`. Each default maps a format version
-to a selector and indicates whether `$schema` pins that selector. Provenance records
-include the snapshot tag, recorded schema URI, and embedded schema SHA-256
-digest. Public validation dispatches through a registry keyed by exact selector.
-The supported selector set is `0.8.0-rc.4`, `0.8.0`, and
-`0.8.0-rev.20261021`; `deprecatedSpecifications` contains RC.4 and stable
-`0.8.0`. The current default for `mcpdesc: "0.8.0"` is the revision. The
-protocol-version export is the deduplicated union supported by active snapshots.
+The package also exports frozen metadata:
 
-The package also exports the frozen `mcpExtensionCatalogue` and
-`mcpExtensionMaturity` classifier pinned by the stable snapshot. The catalogue
-records its authoritative source, effective date, and official or experimental
-identifier assignments. Catalogue recognition establishes authority and
-maturity only; it does not validate extension-specific settings.
+| Export                      | Contents                                                     |
+| --------------------------- | ------------------------------------------------------------ |
+| `supportedSpecifications`   | Supported selectors.                                         |
+| `deprecatedSpecifications`  | Supported selectors that are deprecated.                     |
+| `defaultSpecifications`     | Default selector for each format version.                    |
+| `supportedProtocolVersions` | MCP protocol revisions the supported selectors understand.   |
+| `specificationProvenance`   | Each selector's source tag, schema URI, and schema SHA-256.  |
+| `mcpExtensionCatalogue`     | Known official MCP extension identifiers and their source.   |
+| `mcpExtensionMaturity()`    | Classifies an extension identifier.                          |
 
-npm package SemVer tracks implementation releases independently from specification snapshot identity. Adding a later snapshot is additive: it must use a sibling implementation and selector rather than changing an existing snapshot's schema, semantics, metadata, fixtures, or results.
+Names containing "specification" are historical; they list or describe
+selectors.
 
-All three supported component resolvers report authored and terminal target
-paths for successful substitutions. The imported revision already preserves
-that public result contract, so it requires no integrity exception.
+## Troubleshooting
 
-The runtime bundles its schema, performs no network fetches for external schema references, and imports no Node.js built-ins. Unresolved external Tool-schema references produce incomplete-validation warnings and are preserved. All three ESM entry points support Node.js 20 or later and browser bundlers.
+| Symptom                                       | Cause and fix                                                                                                    |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `unsupported-format-version`                  | The document's `mcpdesc` has no supported rules. Check the value, or use a package release supporting it.        |
+| `contradictory-format-version` or `-snapshot-identity` | `$schema`, `mcpdesc`, or the requested selector disagree. Make them consistent.                        |
+| Error importing the package in a browser      | The page blocks `eval`. Import `@mcpdesc/validator/browser`.                                                    |
+| Warning about an unresolved external reference | External `$ref` targets are never fetched. The reference is kept and that part is not validated.               |
 
-## Snapshot lifecycle
+## More information
 
-For each approved specification snapshot, maintainers import artifacts from an
-exact specification repository tag or commit and then:
+- [Changelog](https://github.com/mcpdesc/core/blob/main/packages/validator/CHANGELOG.md)
+- [Terminology guide](https://github.com/mcpdesc/core/blob/main/docs/validator-terminology.md):
+  format versions, selectors, schema URIs, and protocol revisions
+- [MCP Description specification](https://github.com/mcpdesc/mcpdesc-specification)
+- [Contributing](https://github.com/mcpdesc/core/blob/main/CONTRIBUTING.md) and
+  [maintainer guide](https://github.com/mcpdesc/core/blob/main/docs/validator-maintainer-guide.md)
+- [Issues](https://github.com/mcpdesc/core/issues)
 
-1. Add a versioned implementation under `src/snapshots/<selector>/` with its exact selector, snapshot tag, embedded schema, schema SHA-256 digest, and semantic rules. Existing non-retired snapshot directories remain unchanged.
-2. Freeze the matching fixture corpus under `test/snapshots/<selector>/fixtures/`. Package tests must not read mutable `spec/draft/fixtures/` for an already published selector.
-3. Add the exact selector to the runtime registry and update support metadata, TypeScript declarations, tests, the package changelog, and expected package contents. Unqualified versions, aliases, ranges, and not-yet-published selectors remain unsupported.
-4. Run the package and repository validation suites. The schema digest, immutable metadata, fixture behavior, browser bundle, declarations, and tarball contents must all pass.
+## License
 
-The test snapshots are repository-only development assets and are excluded from the npm tarball. When a selector retires, repository history and available validator release tags preserve its complete runtime and fixture tree, while its configuration tombstone retains tag and schema identity metadata in `HEAD`. Only active and deprecated runtime snapshots ship, so installed packages and the current source tree do not accumulate retired selectors.
-
-Specification approval and imported supporting code do not authorize package
-publication. During release review, a maintainer explicitly decides the
-validator package version and npm dist-tag, reviews the exact imported source
-and frozen fixture provenance, runs the full checks, and inspects the tarball.
-The trusted-publishing workflow requires an annotated
-`validator-v<semver>` tag whose version matches this package and whose commit is
-the current `origin/main` tip. It publishes SemVer prereleases with npm `next`
-and stable versions with `latest`. Scripts and other CI workflows do not choose
-versions, create tags, or publish packages.
-
-## Development checks
-
-From the repository root:
-
-```bash
-npm test --workspace @mcpdesc/validator
-npm run test:types --workspace @mcpdesc/validator
-npm run test:browser --workspace @mcpdesc/validator
-npm run test:package --workspace @mcpdesc/validator
-```
-
-The package test runs each active snapshot against its own frozen valid, invalid, and warning fixture corpus and verifies historical artifact integrity separately. YAML source fixtures are decoded by the test harness before validation; the public API continues to accept parsed JavaScript values only. The other checks compile the declarations, bundle the public browser entry with esbuild and Vite, reject runtime AJV compiler inputs and dynamic code generation in those bundles, and inspect `npm pack --dry-run --json` against the intended tarball contents and declared export targets.
+[Apache-2.0](https://github.com/mcpdesc/core/blob/main/LICENSE)

@@ -5,7 +5,10 @@ import {
 } from '@mcpdesc/validator/standalone';
 
 import type { CoreDiagnostic, McpDescriptionDocument } from './model.js';
-import { RC_4_SPECIFICATION, V0_8_SPECIFICATION } from './snapshot.js';
+import {
+  selectCoreSpecification,
+  type CoreSelectorOptions,
+} from './snapshot.js';
 
 export type {
   McpDescComponentNamespace,
@@ -18,14 +21,8 @@ export type {
   McpDescToolExampleComponentMap,
 } from './model.js';
 
-export interface ResolveMcpDescriptionComponentReferencesOptions {
-  readonly specification: typeof RC_4_SPECIFICATION | typeof V0_8_SPECIFICATION;
-}
-
-const componentReferenceSpecifications = new Set<string>([
-  RC_4_SPECIFICATION,
-  V0_8_SPECIFICATION,
-]);
+export type ResolveMcpDescriptionComponentReferencesOptions =
+  CoreSelectorOptions;
 
 export interface McpDescriptionComponentReferenceProvenance {
   readonly referencePath: readonly (number | string)[];
@@ -73,24 +70,17 @@ function uniqueDiagnostics(
 
 export function resolveMcpDescriptionComponentReferences(
   document: unknown,
-  options: ResolveMcpDescriptionComponentReferencesOptions,
+  options: ResolveMcpDescriptionComponentReferencesOptions = {},
 ): ResolveMcpDescriptionComponentReferencesResult {
-  if (!componentReferenceSpecifications.has(options.specification)) {
-    return {
-      ok: false,
-      diagnostics: [
-        {
-          code: 'unsupported-specification',
-          severity: 'error',
-          message: `Component reference resolution does not support ${JSON.stringify(options.specification)}`,
-          path: [],
-          phase: 'operation',
-        },
-      ],
-    };
-  }
+  const selection = selectCoreSpecification(
+    document,
+    options,
+    'Component reference resolution',
+  );
+  if (!selection.ok) return selection;
+  const selected = { specification: selection.specification };
 
-  const sourceValidation = validateMcpDescription(document, options);
+  const sourceValidation = validateMcpDescription(document, selected);
   const sourceDiagnostics = diagnosticsForPhase(
     sourceValidation.diagnostics,
     'source',
@@ -99,9 +89,9 @@ export function resolveMcpDescriptionComponentReferences(
     return { ok: false, diagnostics: sourceDiagnostics };
   }
 
-  const resolution = resolveValidatorComponentReferences(document, options);
+  const resolution = resolveValidatorComponentReferences(document, selected);
   const value = resolution.document as McpDescriptionDocument;
-  const resultValidation = validateMcpDescription(value, options);
+  const resultValidation = validateMcpDescription(value, selected);
   const diagnostics = uniqueDiagnostics(
     sourceDiagnostics,
     diagnosticsForPhase(resultValidation.diagnostics, 'result'),
