@@ -11,9 +11,11 @@ import type {
   McpDescriptionDocument,
 } from './model.js';
 import {
+  defaultV0_8Specification,
   RC_4_SCHEMA_URI,
   RC_4_SPECIFICATION,
   rc4Snapshot,
+  V0_8_REV_20261021_SPECIFICATION,
   V0_8_SCHEMA_URI,
   V0_8_SPECIFICATION,
   v0_8Snapshot,
@@ -44,7 +46,9 @@ export interface MigrateMcpDescription07ToRc4Options {
 }
 
 export interface MigrateMcpDescription07To08Options {
-  readonly specification: typeof V0_8_SPECIFICATION;
+  /** Validation rules for the result; defaults to the validator default for 0.8.0. */
+  readonly specification?:
+    typeof V0_8_SPECIFICATION | typeof V0_8_REV_20261021_SPECIFICATION;
   readonly defaultProtocolVersion?: SupportedProtocolVersion;
   readonly protocolVersion?: SupportedProtocolVersion;
   readonly sourceValidated: true;
@@ -512,10 +516,15 @@ export function migrateMcpDescription07To08(
   source: unknown,
   options: MigrateMcpDescription07To08Options,
 ): McpDescriptionMigrationResult {
+  const specification = options.specification ?? defaultV0_8Specification;
+  const targetSpecification =
+    specification === V0_8_REV_20261021_SPECIFICATION
+      ? V0_8_REV_20261021_SPECIFICATION
+      : V0_8_SPECIFICATION;
   return migrateMcpDescription07(
     source,
-    options,
-    V0_8_SPECIFICATION,
+    { ...options, specification } as MigrateMcpDescription07To08Options,
+    targetSpecification,
     V0_8_SCHEMA_URI,
     v0_8Snapshot.protocolVersions,
   );

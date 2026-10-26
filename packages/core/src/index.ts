@@ -62,6 +62,7 @@ export {
   RC_4_SPECIFICATION,
   V0_8_SCHEMA_URI,
   V0_8_SPECIFICATION,
+  V0_8_REV_20261021_SPECIFICATION,
   deprecatedCoreSpecifications,
   rc4Snapshot,
   v0_8Snapshot,

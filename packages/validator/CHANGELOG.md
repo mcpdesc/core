@@ -8,6 +8,8 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ## [Unreleased]
 
+## [0.13.1] - 2026-10-26
+
 ### Changed
 
 - Rewrote the README as a task-oriented guide covering results, selector

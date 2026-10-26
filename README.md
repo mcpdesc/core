@@ -59,7 +59,6 @@ const validation = validateMcpDescription(parsed.value);
 console.log(validation.valid, validation.diagnostics);
 
 const view = projectEffectiveProtocolView(parsed.value, {
-  specification: '0.8.0',
   protocolVersion: '2026-07-28',
 });
 if (view.ok) console.log(view.value.tools);
@@ -74,11 +73,11 @@ Several independent version numbers appear in these libraries:
 | MCP Description format version | `mcpdesc: "0.8.0"`            | The document format, declared in the document.                     |
 | Selector                       | `0.8.0`, `0.8.0-rev.20261021` | One exact, immutable set of validation rules for a format version. |
 | MCP protocol revision          | `2025-11-25`, `2026-07-28`    | An MCP protocol version that the described server supports.        |
-| npm package version            | `@mcpdesc/validator@0.13.0`   | A library release; it may support several selectors.               |
+| npm package version            | `@mcpdesc/validator@0.13.1`   | A library release; it may support several selectors.               |
 
-The validator chooses a default selector from the document's `mcpdesc` value.
-`@mcpdesc/core` operations take an explicit `specification` selector so their
-results never change silently. See the
+Both packages choose the default selector for the document's `mcpdesc` value, so
+documents benefit from validator corrections when you upgrade. Pass a selector
+explicitly to pin exact rules. See the
 [terminology guide](docs/validator-terminology.md) for details.
 
 ## Compatibility
@@ -86,7 +85,7 @@ results never change silently. See the
 | Package                       | Supported selectors                                                            | Runtime     |
 | ----------------------------- | ------------------------------------------------------------------------------ | ----------- |
 | `@mcpdesc/validator` `0.13.x` | `0.8.0-rev.20261021` (default for `0.8.0`), `0.8.0`, `0.8.0-rc.4` (deprecated) | Node.js 20+ |
-| `@mcpdesc/core` `0.11.x`      | `0.8.0`, `0.8.0-rc.4` (deprecated); pins `@mcpdesc/validator` `0.12.0`         | Node.js 22+ |
+| `@mcpdesc/core` `0.12.x`      | Same selectors and defaults; pins `@mcpdesc/validator` `0.13.1`                | Node.js 22+ |
 
 Older drafts and release candidates remain available from earlier package
 releases. npm versions are below `1.0.0`: a minor release may contain breaking

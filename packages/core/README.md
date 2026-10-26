@@ -41,7 +41,6 @@ const parsed = parseMcpDescriptionSource(yamlText);
 if (!parsed.ok) throw new Error(parsed.diagnostics[0].message);
 
 const view = projectEffectiveProtocolView(parsed.value, {
-  specification: '0.8.0',
   protocolVersion: '2026-07-28',
 });
 
@@ -77,20 +76,52 @@ human-readable `message`, and a `path` into the document, such as
 
 ## Choosing a selector
 
-Semantic operations take a `specification` option naming the exact validation
-rules to apply. Use `'0.8.0'` for MCP Description 0.8 documents. An explicit
-selector guarantees that upgrading the package never silently changes results.
+A selector names one exact set of validation rules. Normally you omit the
+`specification` option: each operation uses the validator's default selector for
+the document's `mcpdesc` format version, currently `0.8.0-rev.20261021` for
+`0.8.0` documents. Upgrading the package can then deliver validator corrections.
 
-| Operation                          | `0.8.0`   | `0.8.0-rc.4` (deprecated) |
-| ---------------------------------- | --------- | ------------------------- |
-| Effective Protocol View projection | Supported | Supported                 |
-| Effective Protocol View merge      | Supported | Supported                 |
-| Declaration selection              | Supported | Supported                 |
-| Component reference resolution     | Supported | Supported                 |
-| Migration from 0.7.0               | Supported | Supported                 |
+Pass `specification` to pin exact rules, for example in CI that must produce
+identical results across upgrades:
 
-Unsupported selectors fail with an `unsupported-specification` diagnostic.
-Earlier drafts and release candidates are available from older package releases.
+```ts
+projectEffectiveProtocolView(document, {
+  specification: '0.8.0-rev.20261021',
+  protocolVersion: '2026-07-28',
+});
+```
+
+| Operation                          | `0.8.0-rev.20261021` (default) | `0.8.0` (pin only) | `0.8.0-rc.4` (deprecated) |
+| ---------------------------------- | ------------------------------ | ------------------ | ------------------------- |
+| Effective Protocol View projection | Supported                      | Supported          | Supported                 |
+| Effective Protocol View merge      | Supported                      | Supported          | Supported                 |
+| Declaration selection              | Supported                      | Supported          | Supported                 |
+| Component reference resolution     | Supported                      | Supported          | Supported                 |
+| Migration from 0.7.0               | Supported                      | Supported          | Supported                 |
+
+Unsupported selectors fail with an `unsupported-specification` diagnostic. A
+document whose selector cannot be determined, such as an unknown `mcpdesc`
+version, fails with a `source` diagnostic like `unsupported-format-version`;
+core never falls back to older rules. Merge resolves the default from its first
+document. Earlier drafts and release candidates are available from older package
+releases.
+
+### Upgrading from 0.11
+
+`@mcpdesc/core` 0.11 required `specification`, and most callers passed
+`'0.8.0'`, which pins the original 0.8.0 rules. Version 0.12 uses
+`@mcpdesc/validator` 0.13.1, whose default for 0.8.0 documents is the
+`0.8.0-rev.20261021` correction. To adopt it:
+
+- Remove `specification: '0.8.0'` to follow the maintained default. Documents
+  with custom Tool-schema keywords, or with `x-mcp-header` under protocol
+  revisions other than `2026-07-28`, become valid.
+- Keep `specification: '0.8.0'` only if you must reproduce earlier results
+  exactly.
+
+If you also call `@mcpdesc/validator` directly, apply the same change and see
+its
+[0.13 migration guide](https://github.com/mcpdesc/core/blob/main/packages/validator/MIGRATING-0.13.md).
 
 ## Tasks
 
@@ -126,7 +157,6 @@ revision:
 
 ```ts
 const view = projectEffectiveProtocolView(document, {
-  specification: '0.8.0',
   protocolVersion: '2025-11-25',
 });
 ```
@@ -142,9 +172,7 @@ missing from the document's root `protocolVersions` fails with
 ```ts
 import { mergeEffectiveProtocolViews } from '@mcpdesc/core';
 
-const merged = mergeEffectiveProtocolViews([view2025, view2026], {
-  specification: '0.8.0',
-});
+const merged = mergeEffectiveProtocolViews([view2025, view2026]);
 ```
 
 Merging combines documents into one multi-revision document. A declaration
@@ -160,7 +188,6 @@ returned in a canonical order, not input order.
 import { selectMcpDescriptionDeclarations } from '@mcpdesc/core/selection';
 
 const subset = selectMcpDescriptionDeclarations(document, {
-  specification: '0.8.0',
   selections: {
     tools: ['search'],
     resources: ['docs://index'],
@@ -177,9 +204,7 @@ declaration is kept; unselected and empty collections are omitted.
 ```ts
 import { resolveMcpDescriptionComponentReferences } from '@mcpdesc/core/components';
 
-const resolved = resolveMcpDescriptionComponentReferences(document, {
-  specification: '0.8.0',
-});
+const resolved = resolveMcpDescriptionComponentReferences(document);
 if (resolved.ok) {
   console.log(resolved.value); // references replaced by their targets
   console.log(resolved.provenance);
@@ -201,7 +226,6 @@ import {
 } from '@mcpdesc/core';
 
 const migrated = migrateMcpDescription07To08(legacyDocument, {
-  specification: '0.8.0',
   sourceValidated: true,
   defaultProtocolVersion: '2025-11-25', // used only if the source has none
 });

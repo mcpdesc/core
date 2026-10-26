@@ -11,7 +11,7 @@ import type {
   OperationResult,
 } from './model.js';
 import {
-  isSupportedCoreSpecification,
+  selectCoreSpecification,
   type SupportedCoreSpecification,
 } from './snapshot.js';
 
@@ -30,7 +30,7 @@ export interface DeclarationSelections {
 }
 
 export interface SelectMcpDescriptionDeclarationsOptions {
-  readonly specification: SupportedCoreSpecification;
+  readonly specification?: SupportedCoreSpecification;
   readonly selections: DeclarationSelections;
 }
 
@@ -105,23 +105,16 @@ export function selectMcpDescriptionDeclarations(
   document: unknown,
   options: SelectMcpDescriptionDeclarationsOptions,
 ): OperationResult<McpDescriptionDocument> {
-  if (!isSupportedCoreSpecification(options.specification)) {
-    return {
-      ok: false,
-      diagnostics: [
-        {
-          code: 'unsupported-specification',
-          severity: 'error',
-          message: `Declaration selection does not support ${JSON.stringify(options.specification)}`,
-          path: [],
-          phase: 'operation',
-        },
-      ],
-    };
-  }
+  const selection = selectCoreSpecification(
+    document,
+    options.specification,
+    'Declaration selection',
+  );
+  if (!selection.ok) return selection;
+  const { specification } = selection;
 
   const sourceValidation = validateMcpDescription(document, {
-    specification: options.specification,
+    specification,
   });
   const sourceDiagnostics = diagnosticsForPhase(
     sourceValidation.diagnostics,
@@ -136,7 +129,7 @@ export function selectMcpDescriptionDeclarations(
     options.selections,
   );
   const resultValidation = validateMcpDescription(value, {
-    specification: options.specification,
+    specification,
   });
   const diagnostics = uniqueDiagnostics(
     sourceDiagnostics,

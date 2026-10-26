@@ -4,11 +4,24 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-10-26
+
 ### Changed
 
+- **Upgrade note:** `specification` is now optional in projection, merge,
+  declaration selection, component reference resolution, and 0.8.0 migration.
+  When omitted, operations use the `@mcpdesc/validator` default selector for the
+  document's `mcpdesc` version, `0.8.0-rev.20261021` for 0.8.0 documents.
+  Explicit selectors still pin exact rules; remove `specification: '0.8.0'` to
+  adopt the default. Merge resolves from its first document, and migration
+  validates its result with the default unless pinned.
+- Pinned `@mcpdesc/validator` `0.13.1` and added `0.8.0-rev.20261021` to every
+  selector-sensitive operation, exported as `V0_8_REV_20261021_SPECIFICATION`.
+- Documents whose selector cannot be resolved fail with a `source` diagnostic,
+  such as `unsupported-format-version`, without falling back to older rules.
 - Rewrote the README as a task-oriented guide covering installation, result
-  handling, selector choice, each operation, entry points, and limits, with
-  absolute links that work on npmjs.com. No API or behavior changes.
+  handling, selector choice and upgrading, each operation, entry points, and
+  limits, with absolute links that work on npmjs.com.
 
 ## [0.11.0] - 2026-09-09
 

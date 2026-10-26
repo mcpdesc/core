@@ -141,7 +141,7 @@ implementations automatically.
 import { resolveMcpDescriptionComponentReferences } from '@mcpdesc/validator';
 
 const { document: resolved, provenance, diagnostics } =
-  resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0' });
+  resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-rev.20261021' });
 ```
 
 Each `$componentRef` is replaced by a copy of its target, and `provenance`
