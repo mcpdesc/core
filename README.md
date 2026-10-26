@@ -91,9 +91,10 @@ Older drafts and release candidates remain available from earlier package
 releases. npm versions are below `1.0.0`: a minor release may contain breaking
 changes, which the package changelogs describe together with upgrade guidance.
 
-**Preview:** releases on the npm `next` tag add MCP Description 0.9 Community
-Working Draft 1 (`0.9.0-draft.1`) as an explicit, never-default selector,
-including native MCP value projection in `@mcpdesc/core`.
+**Preview:** `@mcpdesc/validator@0.14.0-rc.1` and `@mcpdesc/core@0.13.0-rc.1` on
+the npm `next` tag add MCP Description 0.9 Community Working Draft 1
+(`0.9.0-draft.1`) as an explicit, never-default selector, including native MCP
+value projection in `@mcpdesc/core`.
 
 ## Documentation
 

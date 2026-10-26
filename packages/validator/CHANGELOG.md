@@ -8,6 +8,8 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ## [Unreleased]
 
+## [0.14.0-rc.1] - 2026-10-26
+
 ### Added
 
 - Added explicit selector `0.9.0-draft.1` for MCP Description 0.9 Community

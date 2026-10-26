@@ -4,6 +4,8 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 
 ## [Unreleased]
 
+## [0.13.0-rc.1] - 2026-10-26
+
 ### Added
 
 - Added `0.9.0-draft.1` support for Effective Protocol View projection and
@@ -19,6 +21,7 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 
 ### Changed
 
+- Pinned `@mcpdesc/validator` `0.14.0-rc.1`.
 - Migration from 0.7.0 to 0.9.0 is intentionally unsupported until a conversion
   contract is approved; 0.8.0 migrations are unchanged.
 

@@ -13,11 +13,10 @@ scripts, and release infrastructure.
 
 ### Added
 
-- Integrated MCP Description `0.9.0-draft.1` from specification PR #81. The
-  imported artifacts were exported at commit
-  `23472dc956a03793dd5582f7e38520e0113bd021`, whose tree is identical to merge
-  commit `7227e7695e9b97227391e5530963432bfa7d8839`; the deployed schema matches
-  the imported SHA-256 digest.
+- Integrated MCP Description `0.9.0-draft.1` from specification tag
+  `v0.9.0-draft.1` (commit `7227e7695e9b97227391e5530963432bfa7d8839`, PR #81).
+  A re-export from the tag matches all 178 imported files byte for byte, and the
+  deployed schema matches the imported SHA-256 digest.
 - Extended manifest-verified snapshot intake to preserve optional native
   projection fixtures alongside their referenced conformance fixtures.
 - Added frozen native-projection coverage and Draft 1 checks in strict-CSP and
