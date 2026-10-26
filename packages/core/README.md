@@ -1,46 +1,163 @@
-# `@mcpdesc/core`
+# @mcpdesc/core
 
-Experimental, side-effect-free source and semantic operations for MCP
-Description documents.
+[![npm](https://img.shields.io/npm/v/@mcpdesc/core.svg)](https://www.npmjs.com/package/@mcpdesc/core)
+[![mcpdesc: 0.8](https://img.shields.io/badge/mcpdesc-0.8-blue.svg)](https://mcpdesc.org)
+[![Node.js: >=22](https://img.shields.io/badge/Node.js-%3E%3D22-brightgreen.svg)](https://nodejs.org/)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/mcpdesc/core/blob/main/LICENSE)
 
-The package API remains experimental and may change while MCP Description 0.8
-remains pre-1.0.
+Read, write, and transform [MCP Description](https://mcpdesc.org) documents.
+Tested for MCP Description v0.8.
 
-See [CHANGELOG.md](CHANGELOG.md) for package release history.
+`@mcpdesc/core` provides pure functions to:
+
+- parse JSON or YAML text and serialize documents deterministically;
+- project the view of a document for one MCP protocol revision, and merge views
+  back together;
+- select a subset of tools, resources, resource templates, and prompts;
+- resolve reusable component references; and
+- migrate MCP Description 0.7.0 documents to 0.8.0.
+
+Every operation validates its input and output with
+[`@mcpdesc/validator`](https://www.npmjs.com/package/@mcpdesc/validator), never
+mutates its arguments, and performs no file or network access. It runs in
+Node.js 22+ and in browser bundles, including strict Content Security Policy
+pages.
+
+## Install
+
+```bash
+npm install @mcpdesc/core
+```
+
+`@mcpdesc/validator` is installed as a dependency.
+
+## Quick start
 
 ```ts
-import {
-  migrateMcpDescription07To08,
-  mergeEffectiveProtocolViews,
-  projectEffectiveProtocolView,
-  serializeMcpDescriptionMigrationReport,
-} from '@mcpdesc/core';
-import {
-  parseMcpDescriptionSource,
-  serializeMcpDescription,
-} from '@mcpdesc/core/documents';
-import { selectMcpDescriptionDeclarations } from '@mcpdesc/core/selection';
-import { resolveMcpDescriptionComponentReferences } from '@mcpdesc/core/components';
+import { parseMcpDescriptionSource } from '@mcpdesc/core/documents';
+import { projectEffectiveProtocolView } from '@mcpdesc/core';
 
-const parsed = parseMcpDescriptionSource(sourceText);
-if (!parsed.ok) {
-  console.error(parsed.diagnostics);
-}
+const parsed = parseMcpDescriptionSource(yamlText);
+if (!parsed.ok) throw new Error(parsed.diagnostics[0].message);
 
-const result = projectEffectiveProtocolView(document, {
+const view = projectEffectiveProtocolView(parsed.value, {
   specification: '0.8.0',
   protocolVersion: '2026-07-28',
 });
 
-if (result.ok) {
-  console.log(result.value);
+if (view.ok) {
+  console.log(view.value.tools); // tools available to a 2026-07-28 client
 } else {
-  console.error(result.diagnostics);
+  console.error(view.diagnostics);
+}
+```
+
+## Working with results
+
+Operations return an `ok` flag instead of throwing:
+
+```ts
+const result = projectEffectiveProtocolView(document, options);
+if (result.ok) {
+  use(result.value); // diagnostics may still contain warnings
+} else {
+  report(result.diagnostics); // at least one error
+}
+```
+
+Each diagnostic has a `code`, a `severity` (`error` or `warning`), a
+human-readable `message`, and a `path` into the document, such as
+`['tools', 0, 'inputSchema']`. Its `phase` says where it came from:
+
+| `phase`     | Meaning                                                                            |
+| ----------- | ---------------------------------------------------------------------------------- |
+| `source`    | The input document failed validation; the operation did not run.                   |
+| `operation` | The request could not be carried out, for example an undeclared protocol revision. |
+| `result`    | The produced document failed validation and was not returned.                      |
+
+## Choosing a selector
+
+Semantic operations take a `specification` option naming the exact validation
+rules to apply. Use `'0.8.0'` for MCP Description 0.8 documents. An explicit
+selector guarantees that upgrading the package never silently changes results.
+
+| Operation                          | `0.8.0`   | `0.8.0-rc.4` (deprecated) |
+| ---------------------------------- | --------- | ------------------------- |
+| Effective Protocol View projection | Supported | Supported                 |
+| Effective Protocol View merge      | Supported | Supported                 |
+| Declaration selection              | Supported | Supported                 |
+| Component reference resolution     | Supported | Supported                 |
+| Migration from 0.7.0               | Supported | Supported                 |
+
+Unsupported selectors fail with an `unsupported-specification` diagnostic.
+Earlier drafts and release candidates are available from older package releases.
+
+## Tasks
+
+### Parse and serialize JSON or YAML
+
+```ts
+import {
+  parseMcpDescriptionSource,
+  serializeMcpDescription,
+} from '@mcpdesc/core/documents';
+
+const parsed = parseMcpDescriptionSource(text); // detects JSON or YAML
+const yaml = parseMcpDescriptionSource(text, { format: 'yaml' }); // explicit
+
+if (!parsed.ok) {
+  const [{ message, location }] = parsed.diagnostics;
+  console.error(`${location?.line}:${location?.column} ${message}`);
 }
 
-const merged = mergeEffectiveProtocolViews(protocolViews, {
+const json = serializeMcpDescription(document, { format: 'json' });
+```
+
+Parsing returns a plain JSON-compatible value and rejects YAML that cannot be
+represented as JSON. Serialization sorts object keys, so equal documents always
+produce identical text. Parsing does not validate the document; use the
+validator or any semantic operation for that.
+
+### Project an Effective Protocol View
+
+A document can describe several MCP protocol revisions, with some declarations
+scoped to particular revisions. Projection returns the document as seen by one
+revision:
+
+```ts
+const view = projectEffectiveProtocolView(document, {
+  specification: '0.8.0',
+  protocolVersion: '2025-11-25',
+});
+```
+
+The result keeps only applicable transports, capabilities, tools, resources,
+resource templates, prompts, and elicitations; removes their `protocolVersions`
+scopes; and sets root `protocolVersions` to the requested revision. A revision
+missing from the document's root `protocolVersions` fails with
+`projection-version-not-declared`.
+
+### Merge protocol views
+
+```ts
+import { mergeEffectiveProtocolViews } from '@mcpdesc/core';
+
+const merged = mergeEffectiveProtocolViews([view2025, view2026], {
   specification: '0.8.0',
 });
+```
+
+Merging combines documents into one multi-revision document. A declaration
+present in every revision is left unscoped; one present in only some revisions
+gets a `protocolVersions` scope listing them. Inputs that describe the same
+revision differently fail with `conflicting-protocol-view`, and differing root
+metadata fails with `conflicting-unscoped-metadata`. Merged declarations are
+returned in a canonical order, not input order.
+
+### Select declarations
+
+```ts
+import { selectMcpDescriptionDeclarations } from '@mcpdesc/core/selection';
 
 const subset = selectMcpDescriptionDeclarations(document, {
   specification: '0.8.0',
@@ -49,92 +166,82 @@ const subset = selectMcpDescriptionDeclarations(document, {
     resources: ['docs://index'],
   },
 });
+```
 
-const migrated = migrateMcpDescription07To08(validatedLegacyDocument, {
-  specification: '0.8.0',
-  defaultProtocolVersion: '2026-07-28',
-  sourceValidated: true,
-});
+Declarations are identified by tool and prompt `name`, resource `uri`, and
+resource template `uriTemplate`. Every protocol-scoped variant of a selected
+declaration is kept; unselected and empty collections are omitted.
+
+### Resolve component references
+
+```ts
+import { resolveMcpDescriptionComponentReferences } from '@mcpdesc/core/components';
 
 const resolved = resolveMcpDescriptionComponentReferences(document, {
   specification: '0.8.0',
 });
-
 if (resolved.ok) {
-  console.log(resolved.value, resolved.provenance);
+  console.log(resolved.value); // references replaced by their targets
+  console.log(resolved.provenance);
+  // [{ referencePath: ['tools', 0, 'inputSchema'],
+  //    targetPath: ['components', 'schemas', 'SearchRequest'] }]
 }
+```
 
+Each `$componentRef` is replaced by a copy of its final target. `components` is
+retained, and `provenance` maps each authored reference to the component it
+resolved to.
+
+### Migrate from MCP Description 0.7.0
+
+```ts
+import {
+  migrateMcpDescription07To08,
+  serializeMcpDescriptionMigrationReport,
+} from '@mcpdesc/core';
+
+const migrated = migrateMcpDescription07To08(legacyDocument, {
+  specification: '0.8.0',
+  sourceValidated: true,
+  defaultProtocolVersion: '2025-11-25', // used only if the source has none
+});
+
+console.log(migrated.report.status); // 'success' | 'success-with-warnings' | 'failed'
 console.log(serializeMcpDescriptionMigrationReport(migrated.report));
 ```
 
-Semantic operations require an exact immutable selector and support `0.8.0-rc.4`
-and stable `0.8.0`. RC.4 remains operational but is deprecated; new integrations
-should select stable `0.8.0`. The operations validate their source and result
-with `@mcpdesc/validator`. Declaration selection uses MCP Description
-identities: tool and prompt `name`, resource `uri`, and resource template
-`uriTemplate`. It preserves all selected protocol-scoped variants and omits
-empty declaration collections.
+This package does not include the 0.7.0 schema. Validate the source with a 0.7.0
+validator first, then set `sourceValidated: true`. Migration moves the protocol
+revision to root `protocolVersions`, wraps server capabilities, omits empty
+optional arrays, and converts inline security schemes into named definitions.
+The report lists every change, applied default, and diagnostic; generated names
+are reported as warnings to review.
 
-| Operation                          | RC.4                  | Stable 0.8.0 |
-| ---------------------------------- | --------------------- | ------------ |
-| Effective Protocol View projection | Supported, deprecated | Supported    |
-| Effective Protocol View merge      | Supported, deprecated | Supported    |
-| Declaration selection              | Supported, deprecated | Supported    |
-| Migration from 0.7.0               | Supported, deprecated | Supported    |
-| Component reference resolution     | Supported, deprecated | Supported    |
+## Entry points
 
-| Specification selector | First validator release | First core release |
-| ---------------------- | ----------------------- | ------------------ |
-| `0.8.0`                | `0.12.0-rc.1`           | `0.11.0-rc.1`      |
-| `0.8.0-rc.4`           | `0.11.0`                | `0.10.0`           |
+| Import                     | Contents                                         | Bundles the validator |
+| -------------------------- | ------------------------------------------------ | --------------------- |
+| `@mcpdesc/core`            | All operations                                   | Yes                   |
+| `@mcpdesc/core/documents`  | Parsing and serialization only                   | No                    |
+| `@mcpdesc/core/selection`  | Declaration selection                            | Yes                   |
+| `@mcpdesc/core/components` | Component reference resolution and related types | Yes                   |
 
-Consumers that still require Draft 4, RC.1, RC.2, or RC.3 can pin an older
-immutable core and validator release. Those runtime snapshots are retained in
-Git for integrity history but are not part of the current package API or
-tarballs.
+All entry points are safe under a strict Content Security Policy. Use
+`/documents` when you only need parsing, to keep your bundle small.
 
-RC.4 and stable projection preserve pre-standard server extension maps in every
-applicable Effective Protocol View. `mergeEffectiveProtocolViews` combines
-compatible views, retains semantically equivalent declarations across scopes,
-and rejects conflicting views or unscoped metadata without mutating inputs.
+## What this package does not do
 
-Component reference resolution supports RC.4 and stable `0.8.0`. It validates
-before resolving, returns a deep-cloned document with root component registries
-retained, and reports deterministic provenance from each authored reference path
-to its terminal component path. Intermediate chain hops are not exposed. The
-operation uses the resolver exported through `@mcpdesc/validator/standalone`;
-this keeps the snapshot-owned traversal authoritative while avoiding the runtime
-AJV entry and a dependency cycle.
+It does not read files, fetch URLs or external references, select a transport,
+connect to MCP servers, or claim that a description matches a deployed server.
 
-Migration accepts a caller-validated MCP Description 0.7.0 value and validates
-the result against the exact target snapshot. It moves the protocol revision to
-root scope, wraps server capabilities, omits optional empty arrays, and converts
-inline legacy security schemes to deterministic named definitions and
-requirements. Generated names and deduplication are reported as warnings for
-author review. RC.4 and stable callers may opt into `defaultProtocolVersion`
-when the source omits `info.protocolVersion`; the source value always takes
-precedence, and no built-in default is applied. Every migration result includes
-a stable, JSON-compatible report that distinguishes success, success with
-warnings, and failure and records diagnostics, applied defaults, and proven
-conversion changes. The package does not ship or duplicate the frozen 0.7.0
-schema, so callers must validate that source before setting
-`sourceValidated: true`.
+## More information
 
-Source parsing accepts text and returns a JSON-compatible value or structured
-source diagnostics; serialization emits deterministic JSON or YAML. These
-operations do not read files or streams. The package does not retrieve
-references, select a transport, materialize inherited values, or claim that a
-description is complete or faithful to a deployed server.
+- [Changelog](https://github.com/mcpdesc/core/blob/main/packages/core/CHANGELOG.md)
+- [`@mcpdesc/validator`](https://www.npmjs.com/package/@mcpdesc/validator)
+- [Terminology guide](https://github.com/mcpdesc/core/blob/main/docs/validator-terminology.md)
+- [Contributing](https://github.com/mcpdesc/core/blob/main/CONTRIBUTING.md)
+- [Issues](https://github.com/mcpdesc/core/issues)
 
-Strict-CSP browser consumers can import parsing and serialization from
-`@mcpdesc/core/documents` without bundling validator code. Declaration selection
-is available from `@mcpdesc/core/selection` and uses the CSP-safe standalone
-validator entry. Component resolution is available from
-`@mcpdesc/core/components`. The root entry is also CSP-safe.
+## License
 
-## Package verification
-
-The repository verifies the exact tarball contents, installs that tarball into
-an isolated temporary consumer, imports the public package entry points, and
-executes an active-selector projection. Run all checks with `npm run check` from
-the repository root.
+[Apache-2.0](https://github.com/mcpdesc/core/blob/main/LICENSE)

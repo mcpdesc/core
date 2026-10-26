@@ -8,6 +8,13 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ## [Unreleased]
 
+### Changed
+
+- Rewrote the README as a task-oriented guide covering results, selector
+  choice, browser and strict-CSP use, component resolution, support metadata,
+  and troubleshooting, with absolute links that work on npmjs.com. Maintainer
+  material moved to the repository guides. No API or behavior changes.
+
 ## [0.13.0] - 2026-10-22
 
 ### Added

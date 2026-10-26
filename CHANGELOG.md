@@ -9,6 +9,16 @@ scripts, and release infrastructure.
 > - [`@mcpdesc/core`](packages/core/CHANGELOG.md)
 > - [`@mcpdesc/validator`](packages/validator/CHANGELOG.md)
 
+## 2026-10-26
+
+### Changed
+
+- Rewrote the root README as a user entry point with package selection, a quick
+  start, key concepts, compatibility, and an `mcpdesc: 0.8` badge, separating
+  contributor and maintainer links.
+- Moved development checks to `CONTRIBUTING.md` and the validator snapshot
+  lifecycle to the validator maintainer guide.
+
 ## 2026-10-22
 
 ### Added

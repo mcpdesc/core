@@ -4,6 +4,12 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- Rewrote the README as a task-oriented guide covering installation, result
+  handling, selector choice, each operation, entry points, and limits, with
+  absolute links that work on npmjs.com. No API or behavior changes.
+
 ## [0.11.0] - 2026-09-09
 
 ### Changed
