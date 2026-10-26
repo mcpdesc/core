@@ -66,6 +66,15 @@ repository.
 - [x] Adopt validator defaults in `@mcpdesc/core@0.12.0`: make selectors
       optional across selector-sensitive operations, support
       `0.8.0-rev.20261021`, and pin `@mcpdesc/validator@0.13.1`.
+- [x] Integrate `0.9.0-draft.1` from specification PR #81, preserve its
+      conformance and native-projection fixtures, and test the explicit selector
+      across validator and supported core operations.
+- [x] Add Draft 1 native MCP projection for individual declarations and ordered
+      lists, with optional diagnostic rule identities and strict-CSP checks.
+- [ ] Confirm the pushed `v0.9.0-draft.1` specification tag identifies the
+      tested tree, approve prerelease versions, and publish validator then core
+      on `next`. Keep 0.7.0-to-0.9.0 migration intentionally unsupported pending
+      an approved conversion contract.
 - Add normalization or comparison operations only where multiple consumers
   demonstrate the same requirement.
 

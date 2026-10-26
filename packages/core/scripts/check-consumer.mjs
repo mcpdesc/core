@@ -60,9 +60,12 @@ try {
       import {
         RC_4_SCHEMA_URI,
         V0_8_SCHEMA_URI,
+        V0_9_DRAFT_1_SCHEMA_URI,
         migrateMcpDescription07To08,
         migrateMcpDescription07ToRc4,
         projectEffectiveProtocolView,
+        projectMcpNativeValue,
+        mergeEffectiveProtocolViews,
         rc4Snapshot,
         v0_8Snapshot,
         resolveMcpDescriptionComponentReferences,
@@ -220,10 +223,12 @@ try {
       for (const [specification, schemaUri] of [
         ['0.8.0-rc.4', RC_4_SCHEMA_URI],
         ['0.8.0', V0_8_SCHEMA_URI],
+        ['0.9.0-draft.1', V0_9_DRAFT_1_SCHEMA_URI],
       ]) {
         const reusable = {
           ...source,
           $schema: schemaUri,
+          mcpdesc: specification === '0.9.0-draft.1' ? '0.9.0' : '0.8.0',
           components: {
             schemas: {
               Input: { type: 'object', additionalProperties: false },
@@ -246,6 +251,20 @@ try {
             targetPath: ['components', 'schemas', 'Input'],
           }]);
         }
+        if (specification === '0.9.0-draft.1') {
+          const native = projectMcpNativeValue(reusable, {
+            specification,
+            protocolVersion: '2026-07-28',
+            kind: 'tool',
+            identifier: 'referenced',
+          });
+          assert.equal(native.ok, true, JSON.stringify(native.diagnostics));
+          assert.deepEqual(native.value, { name: 'referenced', inputSchema: { type: 'object', additionalProperties: false } });
+          assert.equal(selectMcpDescriptionDeclarations(reusable, { specification, selections: { tools: ['referenced'] } }).ok, true);
+          const view = projectEffectiveProtocolView(reusable, { specification, protocolVersion: '2026-07-28' });
+          assert.equal(view.ok, true);
+          assert.equal(mergeEffectiveProtocolViews([view.value], { specification }).ok, true);
+        }
       }
     `,
   );
@@ -267,9 +286,24 @@ try {
         serializeMcpDescriptionMigrationReport,
         type MigrateMcpDescription07To08Options,
         type MigrateMcpDescription07ToRc4Options,
+        projectMcpNativeValue,
+        v0_9Draft1Snapshot,
+        type JsonObject,
+        type OperationResult,
+        type ProjectMcpNativeValueOptions,
       } from '@mcpdesc/core';
 
       const parsed = parseMcpDescriptionSource('{"mcpdesc":"0.8.0"}');
+      const nativeOptions: ProjectMcpNativeValueOptions = {
+        specification: v0_9Draft1Snapshot.specification,
+        protocolVersion: '2026-07-28',
+        kind: 'tool',
+      };
+      const nativeList: OperationResult<JsonObject[]> = projectMcpNativeValue({}, { ...nativeOptions, identifier: undefined });
+      const nativeSingle: OperationResult<JsonObject> = projectMcpNativeValue({}, { ...nativeOptions, identifier: 'search' });
+      const rule: string | undefined = nativeSingle.diagnostics[0]?.rule;
+      void nativeList;
+      void rule;
       if (parsed.ok) {
         selectMcpDescriptionDeclarations(parsed.value, {
           specification: '0.8.0-rc.4',

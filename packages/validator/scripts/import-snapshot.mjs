@@ -64,7 +64,7 @@ const declaredPaths = new Set();
 for (const file of manifest.files) {
   if (
     typeof file?.path !== 'string' ||
-    !/^(?:runtime|fixtures)\/[A-Za-z0-9._/-]+$/.test(file.path) ||
+    !/^(?:runtime|fixtures|projection-fixtures)\/[A-Za-z0-9._/-]+$/.test(file.path) ||
     file.path.includes('..') ||
     path.posix.normalize(file.path) !== file.path
   ) {
@@ -89,7 +89,8 @@ if (![...declaredPaths].some((file) => file.startsWith('fixtures/'))) {
   fail('at least one frozen fixture is required');
 }
 
-const actualPaths = ['runtime', 'fixtures']
+const actualPaths = ['runtime', 'fixtures', 'projection-fixtures']
+  .filter((directory) => fs.existsSync(path.join(bundleRoot, directory)))
   .flatMap((directory) =>
     filesUnder(path.join(bundleRoot, directory), directory),
   )
@@ -138,6 +139,13 @@ if (!checkOnly) {
     recursive: true,
     errorOnExist: true,
   });
+  if (fs.existsSync(path.join(bundleRoot, 'projection-fixtures'))) {
+    fs.cpSync(
+      path.join(bundleRoot, 'projection-fixtures'),
+      path.join(fixtureTarget, 'projection-fixtures'),
+      { recursive: true, errorOnExist: true },
+    );
+  }
   fs.writeFileSync(
     path.join(fixtureTarget, 'README.md'),
     `# Validator fixture snapshot: ${manifest.selector}\n\nThe \`fixtures/\` tree is frozen for the immutable \`${manifest.selector}\` validator selector.\n`,

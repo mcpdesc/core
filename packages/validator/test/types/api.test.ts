@@ -39,6 +39,7 @@ const browserResult: McpDescriptionValidationResult = validateBrowser(document, 
 });
 const diagnostic: McpDescriptionDiagnostic | undefined = result.diagnostics[0];
 const pathSegment: string | number | undefined = diagnostic?.path[0];
+const diagnosticRule: string | undefined = diagnostic?.rule;
 const configuredSelector: McpDescriptionSelector = supportedSpecifications[0];
 const deprecatedSelector: McpDescriptionSelector = deprecatedSpecifications[0];
 const defaultedStable: McpDescriptionSelector | undefined = defaultSpecifications['0.8.0']?.selector;
@@ -56,6 +57,7 @@ if (resolution.status === 'resolved') {
 }
 
 void pathSegment;
+void diagnosticRule;
 void selector;
 void defaultResult;
 void protocolVersion;

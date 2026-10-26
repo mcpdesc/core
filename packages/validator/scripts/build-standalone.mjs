@@ -27,8 +27,8 @@ for (const [index, schema] of schemas.entries()) {
 }
 const validatorExports = Object.fromEntries(selectors.map((selector, index) => [`snapshot${index + 1}`, selector]));
 const generatedValidators = `${standaloneCode(ajv, validatorExports)}
-export const validatorsByDescription = new Map([
-${schemas.map((schema, index) => `  [${JSON.stringify(schema.description)}, snapshot${index + 1}]`).join(',\n')}
+export const validatorsBySchema = new Map([
+${schemas.map((schema, index) => `  [${JSON.stringify(JSON.stringify(schema))}, snapshot${index + 1}]`).join(',\n')}
 ]);
 `;
 const ajvDraft7 = new Ajv({ allErrors: true, strict: false, code: { source: true, esm: true } });

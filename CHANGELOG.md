@@ -11,6 +11,27 @@ scripts, and release infrastructure.
 
 ## 2026-10-26
 
+### Added
+
+- Integrated MCP Description `0.9.0-draft.1` from specification PR #81. The
+  imported artifacts were exported at commit
+  `23472dc956a03793dd5582f7e38520e0113bd021`, whose tree is identical to merge
+  commit `7227e7695e9b97227391e5530963432bfa7d8839`; the deployed schema matches
+  the imported SHA-256 digest.
+- Extended manifest-verified snapshot intake to preserve optional native
+  projection fixtures alongside their referenced conformance fixtures.
+- Added frozen native-projection coverage and Draft 1 checks in strict-CSP and
+  isolated tarball consumers.
+- Added an opt-in example smoke test that accepts one or more folders, with an
+  in-memory Draft 1 rehearsal and no external checkout dependency in CI.
+- Added `npm run check:readme`, which typechecks README code blocks against the
+  built packages as part of `npm run check`.
+
+### Fixed
+
+- Key standalone structural validators by complete schema content rather than
+  non-unique schema descriptions, preventing cross-snapshot lookup collisions.
+
 ### Changed
 
 - Rewrote the root README as a user entry point with package selection, a quick

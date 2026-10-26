@@ -4,6 +4,24 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Added `0.9.0-draft.1` support for Effective Protocol View projection and
+  merge, declaration selection, and component reference resolution. Draft
+  selectors are never defaults and must be passed explicitly.
+- Added `projectMcpNativeValue` for Draft 1 tool, resource, resource template,
+  and prompt values or ordered lists, tested against the frozen specification
+  projection fixtures. MCP Description fields and `x-` extensions are omitted;
+  embedded schemas and `_meta` are copied unchanged.
+- Added `V0_9_DRAFT_1_SPECIFICATION`, `V0_9_DRAFT_1_SCHEMA_URI`, and
+  `v0_9Draft1Snapshot`, and preserved optional validator `rule` identities in
+  core diagnostics.
+
+### Changed
+
+- Migration from 0.7.0 to 0.9.0 is intentionally unsupported until a conversion
+  contract is approved; 0.8.0 migrations are unchanged.
+
 ## [0.12.0] - 2026-10-26
 
 ### Added

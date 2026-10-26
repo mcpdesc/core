@@ -46,7 +46,12 @@ for (const specification of supportedSpecifications) {
         }
 
         for (const diagnostic of result.diagnostics) {
-          assert.deepEqual(Object.keys(diagnostic).sort(), ['code', 'message', 'path', 'severity']);
+          const keys = ['code', 'message', 'path', 'severity'];
+          if (specification === '0.9.0-draft.1' && diagnostic.rule !== undefined) {
+            assert.match(diagnostic.rule, /^(?:mcp|mcpdesc|json-schema)\.[a-z0-9.-]+$/);
+            keys.push('rule');
+          }
+          assert.deepEqual(Object.keys(diagnostic).sort(), keys.sort());
           assert.ok(diagnostic.path.every((segment) => typeof segment === 'string' || Number.isInteger(segment)));
         }
       });

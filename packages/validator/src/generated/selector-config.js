@@ -1,9 +1,11 @@
-import * as snapshot1 from "../snapshots/0.8.0-rc.4/index.js";
-import * as snapshot2 from "../snapshots/0.8.0/index.js";
-import * as snapshot3 from "../snapshots/0.8.0-rev.20261021/index.js";
-import { resolveComponentReferences as resolveComponentReferences1 } from "../snapshots/0.8.0-rc.4/semantic.js";
-import { resolveComponentReferences as resolveComponentReferences2 } from "../snapshots/0.8.0/semantic.js";
-import { resolveComponentReferences as resolveComponentReferences3 } from "../snapshots/0.8.0-rev.20261021/semantic.js";
+import * as snapshot1 from "../snapshots/0.9.0-draft.1/index.js";
+import * as snapshot2 from "../snapshots/0.8.0-rc.4/index.js";
+import * as snapshot3 from "../snapshots/0.8.0/index.js";
+import * as snapshot4 from "../snapshots/0.8.0-rev.20261021/index.js";
+import { resolveComponentReferences as resolveComponentReferences1 } from "../snapshots/0.9.0-draft.1/semantic.js";
+import { resolveComponentReferences as resolveComponentReferences2 } from "../snapshots/0.8.0-rc.4/semantic.js";
+import { resolveComponentReferences as resolveComponentReferences3 } from "../snapshots/0.8.0/semantic.js";
+import { resolveComponentReferences as resolveComponentReferences4 } from "../snapshots/0.8.0-rev.20261021/semantic.js";
 
 function deepFreeze(value) {
   if (value !== null && typeof value === 'object' && !Object.isFrozen(value)) {
@@ -22,6 +24,13 @@ export const validatorConfiguration = deepFreeze({
     }
   },
   "selectors": {
+    "0.9.0-draft.1": {
+      "formatVersion": "0.9.0",
+      "lifecycle": "active",
+      "specificationTag": "v0.9.0-draft.1",
+      "schemaUri": "https://mcpdesc.org/schema/mcp-description/0.9.0-draft.1.json",
+      "schemaSha256": "058e1fe3c976a41588ec81b9c8c17400f868698d8bd154ef5755cc69a4494c74"
+    },
     "0.8.0-rc.4": {
       "formatVersion": "0.8.0",
       "lifecycle": "deprecated",
@@ -96,13 +105,15 @@ export const validatorConfiguration = deepFreeze({
 });
 
 export const snapshotImplementations = Object.freeze({
-  "0.8.0-rc.4": snapshot1,
-  "0.8.0": snapshot2,
-  "0.8.0-rev.20261021": snapshot3,
+  "0.9.0-draft.1": snapshot1,
+  "0.8.0-rc.4": snapshot2,
+  "0.8.0": snapshot3,
+  "0.8.0-rev.20261021": snapshot4,
 });
 
 export const componentResolvers = Object.freeze({
-  "0.8.0-rc.4": resolveComponentReferences1,
-  "0.8.0": resolveComponentReferences2,
-  "0.8.0-rev.20261021": resolveComponentReferences3,
+  "0.9.0-draft.1": resolveComponentReferences1,
+  "0.8.0-rc.4": resolveComponentReferences2,
+  "0.8.0": resolveComponentReferences3,
+  "0.8.0-rev.20261021": resolveComponentReferences4,
 });

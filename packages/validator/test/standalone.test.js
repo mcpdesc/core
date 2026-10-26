@@ -44,7 +44,7 @@ function parseFixture(filename) {
 }
 
 function diagnosticIdentity(diagnostic) {
-  return JSON.stringify([diagnostic.code, diagnostic.severity, diagnostic.path]);
+  return JSON.stringify([diagnostic.code, diagnostic.severity, diagnostic.path, diagnostic.rule]);
 }
 
 test('standalone bundle contains no dynamic code generation', () => {

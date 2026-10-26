@@ -5,11 +5,13 @@ import { describe, expect, it } from 'vitest';
 import {
   RC_4_SCHEMA_URI,
   V0_8_SCHEMA_URI,
+  V0_9_DRAFT_1_SCHEMA_URI,
   deprecatedCoreSpecifications,
   mergeEffectiveProtocolViews,
   migrateMcpDescription07ToRc4,
   migrateMcpDescription07To08,
   projectEffectiveProtocolView,
+  projectMcpNativeValue,
   resolveMcpDescriptionComponentReferences,
   selectMcpDescriptionDeclarations,
   type ResolveMcpDescriptionComponentReferencesOptions,
@@ -20,15 +22,22 @@ type SelectorSensitiveOperation =
   | 'componentResolution'
   | 'merge'
   | 'migrationFrom07'
+  | 'nativeProjection'
   | 'projection'
   | 'selection';
-type SupportDisposition = 'supported';
+type SupportDisposition =
+  | 'supported'
+  | 'unsupported: no approved 0.7.0-to-0.9.0 migration'
+  | 'unsupported: native projection requires 0.9.0-draft.1';
+const nativeUnsupported =
+  'unsupported: native projection requires 0.9.0-draft.1' as const;
 
 const supportBySpecification = {
   '0.8.0-rc.4': {
     componentResolution: 'supported',
     merge: 'supported',
     migrationFrom07: 'supported',
+    nativeProjection: nativeUnsupported,
     projection: 'supported',
     selection: 'supported',
   },
@@ -36,6 +45,7 @@ const supportBySpecification = {
     componentResolution: 'supported',
     merge: 'supported',
     migrationFrom07: 'supported',
+    nativeProjection: nativeUnsupported,
     projection: 'supported',
     selection: 'supported',
   },
@@ -43,6 +53,15 @@ const supportBySpecification = {
     componentResolution: 'supported',
     merge: 'supported',
     migrationFrom07: 'supported',
+    nativeProjection: nativeUnsupported,
+    projection: 'supported',
+    selection: 'supported',
+  },
+  '0.9.0-draft.1': {
+    componentResolution: 'supported',
+    merge: 'supported',
+    migrationFrom07: 'unsupported: no approved 0.7.0-to-0.9.0 migration',
+    nativeProjection: 'supported',
     projection: 'supported',
     selection: 'supported',
   },
@@ -55,6 +74,7 @@ const schemaBySpecification = {
   '0.8.0-rc.4': RC_4_SCHEMA_URI,
   '0.8.0': V0_8_SCHEMA_URI,
   '0.8.0-rev.20261021': V0_8_SCHEMA_URI,
+  '0.9.0-draft.1': V0_9_DRAFT_1_SCHEMA_URI,
 } as const satisfies Record<SupportedCoreSpecification, string>;
 
 const migrateBySpecification = {
@@ -74,7 +94,7 @@ const migrateBySpecification = {
       sourceValidated: true,
     }),
 } satisfies Record<
-  SupportedCoreSpecification,
+  Exclude<SupportedCoreSpecification, '0.9.0-draft.1'>,
   (source: unknown) => { readonly ok: boolean }
 >;
 
@@ -99,40 +119,111 @@ describe('selector-sensitive operation support', () => {
     supportBySpecification,
   ) as SupportedCoreSpecification[]) {
     it(`records and verifies ${specification}`, () => {
+      const support = supportBySpecification[specification];
       const document = {
         $schema: schemaBySpecification[specification],
-        mcpdesc: '0.8.0',
+        mcpdesc: specification === '0.9.0-draft.1' ? '0.9.0' : '0.8.0',
         info: { name: 'support-matrix', version: '1.0.0' },
         protocolVersions: ['2025-11-25'],
         transports: [{ type: 'stdio', command: 'server' }],
-        tools: [{ name: 'search', inputSchema: { type: 'object' } }],
+        components: { schemas: { Input: { type: 'object' } } },
+        tools: [
+          {
+            name: 'search',
+            inputSchema: { $componentRef: '#/components/schemas/Input' },
+          },
+        ],
       };
 
       expect(
         projectEffectiveProtocolView(document, {
-          specification,
+          selector: specification,
           protocolVersion: '2025-11-25',
         }).ok,
       ).toBe(true);
       expect(
         selectMcpDescriptionDeclarations(document, {
-          specification,
+          selector: specification,
           selections: { tools: ['search'] },
         }).ok,
       ).toBe(true);
       expect(
-        mergeEffectiveProtocolViews([document], { specification }).ok,
+        mergeEffectiveProtocolViews([document], { selector: specification }).ok,
       ).toBe(true);
-      expect(migrateBySpecification[specification](legacyDocument).ok).toBe(
-        true,
-      );
+      if (support.migrationFrom07 === 'supported') {
+        expect(
+          migrateBySpecification[
+            specification as keyof typeof migrateBySpecification
+          ](legacyDocument).ok,
+        ).toBe(true);
+      } else {
+        const unsupported = migrateMcpDescription07To08(legacyDocument, {
+          selector: specification as '0.8.0',
+          sourceValidated: true,
+        });
+        expect(unsupported.ok).toBe(false);
+        expect(unsupported.diagnostics[0]?.code).toBe(
+          'unsupported-specification',
+        );
+      }
+
+      const native = projectMcpNativeValue(document, {
+        selector: specification as '0.9.0-draft.1',
+        protocolVersion: '2025-11-25',
+        kind: 'tool',
+        identifier: 'search',
+      });
+      if (support.nativeProjection === 'supported') {
+        expect(native.ok, JSON.stringify(native.diagnostics)).toBe(true);
+        if (native.ok) {
+          expect(native.value).toEqual({
+            name: 'search',
+            inputSchema: { type: 'object' },
+          });
+        }
+      } else {
+        expect(native.ok).toBe(false);
+        expect(native.diagnostics[0]?.code).toBe('unsupported-specification');
+      }
 
       const resolution = resolveMcpDescriptionComponentReferences(document, {
-        specification,
+        selector: specification,
       } as ResolveMcpDescriptionComponentReferencesOptions);
       expect(resolution.ok).toBe(true);
+      if (resolution.ok) {
+        expect(resolution.provenance).toContainEqual({
+          referencePath: ['tools', 0, 'inputSchema'],
+          targetPath: ['components', 'schemas', 'Input'],
+        });
+      }
     });
   }
+
+  it('requires an explicit selector for draft documents', () => {
+    const draft = {
+      $schema: V0_9_DRAFT_1_SCHEMA_URI,
+      mcpdesc: '0.9.0',
+      info: { name: 'draft', version: '1.0.0' },
+      protocolVersions: ['2025-11-25'],
+      tools: [{ name: 'search', inputSchema: { type: 'object' } }],
+    };
+    const unpinned = projectMcpNativeValue(draft, {
+      protocolVersion: '2025-11-25',
+      kind: 'tool',
+    });
+    expect(unpinned.ok).toBe(false);
+    expect(unpinned.diagnostics[0]).toMatchObject({
+      code: 'unsupported-format-version',
+      phase: 'source',
+    });
+    expect(
+      projectMcpNativeValue(draft, {
+        specification: '0.9.0-draft.1',
+        protocolVersion: '2025-11-25',
+        kind: 'tool',
+      }).ok,
+    ).toBe(true);
+  });
 });
 
 // Valid under the 0.8.0-rev.20261021 default, invalid under the original 0.8.0 rules.
