@@ -113,9 +113,10 @@ releases.
 `@mcpdesc/validator` 0.13.1, whose default for 0.8.0 documents is the
 `0.8.0-rev.20261021` correction. To adopt it:
 
-- Remove `specification: '0.8.0'` to follow the maintained default. Documents
-  with custom Tool-schema keywords, or with `x-mcp-header` under protocol
-  revisions other than `2026-07-28`, become valid.
+- Remove `specification: '0.8.0'` to follow the maintained default. For example,
+  a tool `inputSchema` property using `x-mcp-header` in a document that also
+  declares MCP `2025-11-25` is rejected by the original rules but valid under
+  the revision, which checks `x-mcp-header` only for `2026-07-28`.
 - Keep `specification: '0.8.0'` only if you must reproduce earlier results
   exactly.
 
