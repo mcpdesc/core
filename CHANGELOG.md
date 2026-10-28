@@ -9,6 +9,21 @@ scripts, and release infrastructure.
 > - [`@mcpdesc/core`](packages/core/CHANGELOG.md)
 > - [`@mcpdesc/validator`](packages/validator/CHANGELOG.md)
 
+## 2026-10-28
+
+### Added
+
+- Imported the immutable `0.9.0-draft.2` validator snapshot and its frozen
+  conformance, projection, and version-conversion profile artifacts.
+- Added the explicit 0.8.0-to-0.9.0 converter in core and extended native
+  projection to Draft 2; conversion remains a separate caller-controlled step.
+- Prepared validator `0.14.0-rc.2` and core `0.13.0-rc.2` package metadata.
+
+### Changed
+
+- Extended snapshot intake integrity checks to include optional conversion
+  profile artifacts.
+
 ## 2026-10-26
 
 ### Added

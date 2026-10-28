@@ -6,7 +6,7 @@
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/mcpdesc/core/blob/main/LICENSE)
 
 Read, write, and transform [MCP Description](https://mcpdesc.org) documents.
-Tested for MCP Description v0.8.
+Stable support covers v0.8, with explicit preview support for v0.9 drafts.
 
 `@mcpdesc/core` provides pure functions to:
 
@@ -15,7 +15,8 @@ Tested for MCP Description v0.8.
   back together;
 - select a subset of tools, resources, resource templates, and prompts;
 - resolve reusable component references; and
-- migrate MCP Description 0.7.0 documents to 0.8.0.
+- migrate MCP Description 0.7.0 documents to 0.8.0; and
+- convert 0.8.0 documents to 0.9.0 before native MCP projection.
 
 Every operation validates its input and output with
 [`@mcpdesc/validator`](https://www.npmjs.com/package/@mcpdesc/validator), never
@@ -94,19 +95,19 @@ projectEffectiveProtocolView(document, {
 The older `specification` option remains a deprecated alias for `selector`.
 Passing both with different values fails with `conflicting-selector-options`.
 
-| Operation                          | `0.8.0-rev.20261021` (default) | `0.8.0` (deprecated) | `0.8.0-rc.4` (deprecated) | `0.9.0-draft.1` (preview) |
-| ---------------------------------- | ------------------------------ | -------------------- | ------------------------- | ------------------------- |
-| Effective Protocol View projection | Supported                      | Supported            | Supported                 | Supported                 |
-| Effective Protocol View merge      | Supported                      | Supported            | Supported                 | Supported                 |
-| Declaration selection              | Supported                      | Supported            | Supported                 | Supported                 |
-| Component reference resolution     | Supported                      | Supported            | Supported                 | Supported                 |
-| Migration from 0.7.0               | Supported                      | Supported            | Supported                 | Not supported             |
-| Native MCP value projection        | Not supported                  | Not supported        | Not supported             | Supported                 |
+| Operation                          | `0.8.0-rev.20261021` (default) | `0.8.0` (deprecated) | `0.8.0-rc.4` (deprecated) | `0.9.0-draft.1` (preview) | `0.9.0-draft.2` (preview) |
+| ---------------------------------- | ------------------------------ | -------------------- | ------------------------- | ------------------------- | ------------------------- |
+| Effective Protocol View projection | Supported                      | Supported            | Supported                 | Supported                 | Supported                 |
+| Effective Protocol View merge      | Supported                      | Supported            | Supported                 | Supported                 | Supported                 |
+| Declaration selection              | Supported                      | Supported            | Supported                 | Supported                 | Supported                 |
+| Component reference resolution     | Supported                      | Supported            | Supported                 | Supported                 | Supported                 |
+| Migration from 0.7.0               | Supported                      | Supported            | Supported                 | Not supported             | Not supported             |
+| Native MCP value projection        | Not supported                  | Not supported        | Not supported             | Supported                 | Supported                 |
 
 Deprecated selectors still work when pinned and are listed in
 `deprecatedCoreSpecifications`; they may be removed in a later minor release.
-Draft selectors are never defaults: pass `selector: '0.9.0-draft.1'` explicitly
-for MCP Description 0.9 Draft 1 documents.
+Draft selectors are never defaults: pass the exact selector explicitly for MCP
+Description 0.9 draft documents.
 
 Unsupported selectors fail with an `unsupported-specification` diagnostic. A
 document whose selector cannot be determined, such as an unknown `mcpdesc`
@@ -253,16 +254,54 @@ optional arrays, and converts inline security schemes into named definitions.
 The report lists every change, applied default, and diagnostic; generated names
 are reported as warnings to review.
 
-### Project native MCP values (0.9 Draft 1 preview)
+### Convert MCP Description 0.8.0 to 0.9.0
 
-MCP Description 0.9 Draft 1 defines how a declaration becomes the value an MCP
-server returns, for example a `Tool` in a `tools/list` result:
+Conversion follows the Draft 2 Proposal 0028 tooling profile. It validates the
+0.8.0 source, applies only the profile's version and schema rewrites, reports
+incompatibilities, and applies a fix only when requested at its blocker path.
+The result includes an RFC 6902 patch; the input is never mutated. The profile
+does not convert 0.7.0 documents directly.
+
+```ts
+import {
+  convertMcpDescriptionVersion,
+  projectMcpNativeValue,
+} from '@mcpdesc/core';
+
+const converted = convertMcpDescriptionVersion(document, {
+  from: '0.8.0',
+  to: '0.9.0',
+  fixes: [
+    {
+      fix: 'remove-property',
+      path: ['tools', 0, 'annotations', 'futureHint'],
+    },
+  ],
+});
+
+if (converted.ok) {
+  const tool = projectMcpNativeValue(converted.value, {
+    selector: '0.9.0-draft.2',
+    protocolVersion: '2026-07-28',
+    kind: 'tool',
+    identifier: 'search',
+  });
+}
+```
+
+Without a requested fix, incompatible values are reported as blockers and no
+converted document is returned. Native projection never converts implicitly.
+
+### Project native MCP values (0.9 draft preview)
+
+MCP Description 0.9 Drafts 1 and 2 define how a declaration becomes the value an
+MCP server returns, for example a `Tool` in a `tools/list` result:
 
 ```ts
 import { projectMcpNativeValue } from '@mcpdesc/core';
 
 const tool = projectMcpNativeValue(draftDocument, {
-  selector: '0.9.0-draft.1',
+  selector: '0.9.0-draft.2',
   protocolVersion: '2026-07-28',
   kind: 'tool',
   identifier: 'search',
@@ -270,7 +309,7 @@ const tool = projectMcpNativeValue(draftDocument, {
 if (tool.ok) console.log(tool.value); // { name: 'search', inputSchema: {...} }
 
 const tools = projectMcpNativeValue(draftDocument, {
-  selector: '0.9.0-draft.1',
+  selector: '0.9.0-draft.2',
   protocolVersion: '2026-07-28',
   kind: 'tool',
 });

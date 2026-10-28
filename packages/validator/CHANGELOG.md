@@ -8,6 +8,15 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ## [Unreleased]
 
+## [0.14.0-rc.2] - 2026-10-28
+
+### Added
+
+- Added explicit selector `0.9.0-draft.2` from specification tag
+	`v0.9.0-draft.2` with its frozen conformance,
+  projection, and conversion profile fixtures. Draft selectors remain
+  never-default; callers must pin the exact draft.
+
 ## [0.14.0-rc.1] - 2026-10-26
 
 ### Added

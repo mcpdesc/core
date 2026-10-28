@@ -25,15 +25,16 @@ The manifest uses `formatVersion: 1`, an exact `selector`, matching
 `snapshotTag` (`v<selector>`), and a complete sorted-capable `files` array.
 Revision selectors use the date format `x.y.z-rev.YYYYMMDD`. Every file entry
 contains a bundle-relative path under `runtime/`, `fixtures/`, or optional
-`projection-fixtures/` and its lowercase SHA-256 digest. Source repository and
-commit metadata are optional and informational.
+`projection-fixtures/` and `conversion/` trees, with its lowercase SHA-256
+digest. Source repository and commit metadata are optional and informational.
 
 Preserve projection fixtures beside conformance fixtures so their relative
-`../fixtures/` references remain valid. Verify every declared byte and reject
-undeclared projection files just as for runtime and conformance inputs.
-Pre-publication rehearsal tags stay local. Before publication, export again from
-the final approved specification tag and compare runtime and fixture bytes; do
-not silently overwrite an imported selector with changed artifacts.
+`../fixtures/` references remain valid. Preserve conversion profiles and their
+fixtures as supplied. Verify every declared byte and reject undeclared files
+under all bundle trees. Pre-publication rehearsal tags stay local. Before
+publication, export again from the final approved specification tag and compare
+runtime and fixture bytes; do not silently overwrite an imported selector with
+changed artifacts.
 
 ## Workflow
 

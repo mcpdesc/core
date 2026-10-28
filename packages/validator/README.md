@@ -76,7 +76,7 @@ interface McpDescriptionValidationResult {
   property, the path ends with that property's name.
 - Diagnostics are deterministic: the same document and selector always produce
   the same results.
-- From MCP Description 0.9 Draft 1, many diagnostics also name the
+- From MCP Description 0.9 Draft 1 and Draft 2, many diagnostics also name the
   specification `rule` they enforce, so tools can link to or group by rule.
   Earlier selectors omit `rule`.
 
@@ -91,6 +91,7 @@ uses the default selector chosen for it.
 | `0.8.0-rev.20261021` | Default for `0.8.0`      | Current rules for MCP Description 0.8.   |
 | `0.8.0`              | Deprecated, pin only     | Original 0.8.0 rules.                    |
 | `0.8.0-rc.4`         | Deprecated, pin only     | Release candidate 4 rules.               |
+| `0.9.0-draft.2`      | Preview, pin only        | MCP Description 0.9 Community Working Draft 2. |
 | `0.9.0-draft.1`      | Preview, pin only        | MCP Description 0.9 Community Working Draft 1. |
 
 The default may move to a corrected revision in a later minor release. Pin a
@@ -100,12 +101,12 @@ selector when results must stay identical across upgrades, for example in CI:
 validateMcpDescription(document, { selector: '0.8.0-rev.20261021' });
 ```
 
-Draft selectors are never defaults. Validate a 0.9 Draft 1 document by pinning
-its selector; without it, `mcpdesc: "0.9.0"` is reported as
+Draft selectors are never defaults. Validate a 0.9 draft document by pinning
+its exact selector; without it, `mcpdesc: "0.9.0"` is reported as
 `unsupported-format-version`:
 
 ```js
-validateMcpDescription(draftDocument, { selector: '0.9.0-draft.1' });
+validateMcpDescription(draftDocument, { selector: '0.9.0-draft.2' });
 ```
 
 A document whose format version has no default, such as an unknown future

@@ -71,10 +71,14 @@ repository.
       across validator and supported core operations.
 - [x] Add Draft 1 native MCP projection for individual declarations and ordered
       lists, with optional diagnostic rule identities and strict-CSP checks.
-- [ ] Confirm the pushed `v0.9.0-draft.1` specification tag identifies the
-      tested tree, approve prerelease versions, and publish validator then core
-      on `next`. Keep 0.7.0-to-0.9.0 migration intentionally unsupported pending
-      an approved conversion contract.
+- [x] Integrate the published `v0.9.0-draft.2` selector, frozen fixtures, and
+      native-projection fixtures without making a draft selector the default.
+- [x] Implement the separate 0.8.0-to-0.9.0 conversion profile with explicit
+      author-requested fixes and JSON Patch output; native projection remains a
+      second explicit step. The profile and Proposal 0028 remain under review.
+- [ ] Complete review and publish validator `0.14.0-rc.2` then core
+      `0.13.0-rc.2` on `next`; specification publication does not authorize npm
+      publication.
 - Add normalization or comparison operations only where multiple consumers
   demonstrate the same requirement.
 

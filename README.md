@@ -14,11 +14,11 @@ browser bundles, including pages with a strict Content Security Policy.
 
 ## Which package do I need?
 
-| I want to…                                                                      | Use                                                             |
-| ------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| Check that a document is valid and get errors and warnings with document paths  | [`@mcpdesc/validator`](packages/validator/README.md)            |
-| Parse or write JSON/YAML, project a protocol view, select, merge, migrate 0.7.0 | [`@mcpdesc/core`](packages/core/README.md)                      |
-| Both                                                                            | `@mcpdesc/core`; it depends on and validates with the validator |
+| I want to…                                                                     | Use                                                             |
+| ------------------------------------------------------------------------------ | --------------------------------------------------------------- |
+| Check that a document is valid and get errors and warnings with document paths | [`@mcpdesc/validator`](packages/validator/README.md)            |
+| Parse or write JSON/YAML, project, select, merge, migrate or convert documents | [`@mcpdesc/core`](packages/core/README.md)                      |
+| Both                                                                           | `@mcpdesc/core`; it depends on and validates with the validator |
 
 ```bash
 npm install @mcpdesc/validator   # validation only
@@ -68,33 +68,34 @@ if (view.ok) console.log(view.value.tools);
 
 Several independent version numbers appear in these libraries:
 
-| Concept                        | Example                       | Meaning                                                            |
-| ------------------------------ | ----------------------------- | ------------------------------------------------------------------ |
-| MCP Description format version | `mcpdesc: "0.8.0"`            | The document format, declared in the document.                     |
-| Selector                       | `0.8.0`, `0.8.0-rev.20261021` | One exact, immutable set of validation rules for a format version. |
-| MCP protocol revision          | `2025-11-25`, `2026-07-28`    | An MCP protocol version that the described server supports.        |
-| npm package version            | `@mcpdesc/validator@0.13.1`   | A library release; it may support several selectors.               |
+| Concept                        | Example                          | Meaning                                                            |
+| ------------------------------ | -------------------------------- | ------------------------------------------------------------------ |
+| MCP Description format version | `mcpdesc: "0.8.0"`               | The document format, declared in the document.                     |
+| Selector                       | `0.8.0`, `0.8.0-rev.20261021`    | One exact, immutable set of validation rules for a format version. |
+| MCP protocol revision          | `2025-11-25`, `2026-07-28`       | An MCP protocol version that the described server supports.        |
+| npm package version            | `@mcpdesc/validator@0.14.0-rc.2` | A library release; it may support several selectors.               |
 
-Both packages choose the default selector for the document's `mcpdesc` value, so
-documents benefit from validator corrections when you upgrade. Pass a selector
-explicitly to pin exact rules. See the
+For formats with a configured default, both packages select it from the
+document's `mcpdesc` value, so documents benefit from validator corrections when
+you upgrade. Draft selectors have no default and must be passed explicitly. Pass
+a selector to pin exact rules. See the
 [terminology guide](docs/validator-terminology.md) for details.
 
 ## Compatibility
 
-| Package                       | Supported selectors                                                               | Runtime     |
-| ----------------------------- | --------------------------------------------------------------------------------- | ----------- |
-| `@mcpdesc/validator` `0.13.x` | `0.8.0-rev.20261021` (default for `0.8.0`); `0.8.0` and `0.8.0-rc.4` (deprecated) | Node.js 20+ |
-| `@mcpdesc/core` `0.12.x`      | Same selectors and defaults; pins `@mcpdesc/validator` `0.13.1`                   | Node.js 22+ |
+| Package                            | Supported selectors                                                                                                           | Runtime     |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `@mcpdesc/validator` `0.14.0-rc.2` | `0.8.0-rev.20261021` (default for `0.8.0`); deprecated `0.8.0` and `0.8.0-rc.4`; explicit `0.9.0-draft.1` and `0.9.0-draft.2` | Node.js 20+ |
+| `@mcpdesc/core` `0.13.0-rc.2`      | Same selectors; explicit 0.8.0-to-0.9.0 conversion and Draft 2 native projection; pins validator `0.14.0-rc.2`                | Node.js 22+ |
 
 Older drafts and release candidates remain available from earlier package
 releases. npm versions are below `1.0.0`: a minor release may contain breaking
 changes, which the package changelogs describe together with upgrade guidance.
 
-**Preview:** `@mcpdesc/validator@0.14.0-rc.1` and `@mcpdesc/core@0.13.0-rc.1` on
-the npm `next` tag add MCP Description 0.9 Community Working Draft 1
-(`0.9.0-draft.1`) as an explicit, never-default selector, including native MCP
-value projection in `@mcpdesc/core`.
+**Preview:** Draft selectors are explicit and never defaults. The current RC.2
+work adds MCP Description 0.9 Draft 2 (`0.9.0-draft.2`), the Proposal 0028
+0.8.0-to-0.9.0 conversion profile, and native MCP value projection after
+conversion. Proposal 0028 remains under review in the specification project.
 
 ## Documentation
 

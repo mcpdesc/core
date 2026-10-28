@@ -14,6 +14,7 @@ import type {
 } from './model.js';
 import {
   selectCoreSpecification,
+  V0_9_DRAFT_2_SPECIFICATION,
   V0_9_DRAFT_1_SPECIFICATION,
   type CoreSelectorOptions,
 } from './snapshot.js';
@@ -246,7 +247,7 @@ const nativeKinds = {
 export type McpNativeKind = keyof typeof nativeKinds;
 
 export interface ProjectMcpNativeValueOptions extends CoreSelectorOptions<
-  typeof V0_9_DRAFT_1_SPECIFICATION
+  typeof V0_9_DRAFT_1_SPECIFICATION | typeof V0_9_DRAFT_2_SPECIFICATION
 > {
   readonly protocolVersion: SupportedProtocolVersion;
   readonly kind: McpNativeKind;
@@ -320,7 +321,10 @@ export function projectMcpNativeValue(
       })),
     };
   }
-  if (selection.specification !== V0_9_DRAFT_1_SPECIFICATION) {
+  if (
+    selection.specification !== V0_9_DRAFT_1_SPECIFICATION &&
+    selection.specification !== V0_9_DRAFT_2_SPECIFICATION
+  ) {
     return {
       ok: false,
       diagnostics: [
@@ -342,7 +346,7 @@ export function projectMcpNativeValue(
       ],
     };
   }
-  const selector = V0_9_DRAFT_1_SPECIFICATION;
+  const selector = selection.specification;
   const view = projectEffectiveProtocolView(document, {
     selector,
     protocolVersion: options.protocolVersion,

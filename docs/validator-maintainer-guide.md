@@ -129,7 +129,9 @@ For each approved selector:
 2. Its fixtures are frozen under `test/snapshots/<selector>/fixtures/`. Package
    tests never read mutable specification draft fixtures for a published
    selector.
-3. Selector configuration, support metadata, declarations, tests, the package
+3. Optional projection fixtures and conversion profiles are frozen beside the
+   conformance fixtures under `projection-fixtures/` and `conversion/`.
+4. Selector configuration, support metadata, declarations, tests, the package
    changelog, and expected package contents are updated together. Unqualified
    versions, aliases, ranges, and unpublished selectors remain unsupported.
 
