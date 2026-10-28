@@ -4,6 +4,22 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 
 ## [Unreleased]
 
+## [0.13.0-rc.2] - 2026-10-28
+
+### Added
+
+- Added explicit `0.9.0-draft.2` support across the selector-sensitive core
+  operations and extended native MCP projection to Draft 2.
+- Added `convertMcpDescriptionVersion` for the Draft 2 0.8.0-to-0.9.0 profile,
+  including explicit blocker fixes and RFC 6902 patch output. Conversion and
+  native projection remain separate steps.
+- Added `V0_9_DRAFT_2_SPECIFICATION`, `V0_9_DRAFT_2_SCHEMA_URI`, and
+  `v0_9Draft2Snapshot`.
+
+### Changed
+
+- Pinned `@mcpdesc/validator` `0.14.0-rc.2`.
+
 ## [0.13.0-rc.1] - 2026-10-26
 
 ### Added

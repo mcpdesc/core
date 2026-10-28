@@ -17,6 +17,14 @@ export type {
   ProtocolScopedDeclaration,
 } from './model.js';
 export {
+  convertMcpDescriptionVersion,
+  type McpDescriptionConversionFix,
+  type McpDescriptionConversionFixKind,
+  type McpDescriptionConversionOptions,
+  type McpDescriptionConversionResult,
+  type McpDescriptionJsonPatchOperation,
+} from './conversion.js';
+export {
   resolveMcpDescriptionComponentReferences,
   type McpDescriptionComponentReferenceProvenance,
   type ResolveMcpDescriptionComponentReferencesOptions,
@@ -68,10 +76,13 @@ export {
   V0_8_REV_20261021_SPECIFICATION,
   V0_9_DRAFT_1_SCHEMA_URI,
   V0_9_DRAFT_1_SPECIFICATION,
+  V0_9_DRAFT_2_SCHEMA_URI,
+  V0_9_DRAFT_2_SPECIFICATION,
   deprecatedCoreSpecifications,
   rc4Snapshot,
   v0_8Snapshot,
   v0_9Draft1Snapshot,
+  v0_9Draft2Snapshot,
   type CoreSelectorOptions,
   type SupportedCoreSpecification,
 } from './snapshot.js';

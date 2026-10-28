@@ -13,6 +13,8 @@ const entries = [
       'serializeMcpDescriptionMigrationReport',
       'projectMcpNativeValue',
       'v0_9Draft1Snapshot',
+      'v0_9Draft2Snapshot',
+      'convertMcpDescriptionVersion',
     ],
   },
   {
@@ -163,6 +165,32 @@ try {
     assert.equal(resolved.ok, true);
     assert.ok(resolved.provenance.length > 0);
   }
+  const converted = root.convertMcpDescriptionVersion(
+    {
+      mcpdesc: '0.8.0',
+      info: { name: 'csp-conversion', version: '1.0.0' },
+      protocolVersions: ['2026-07-28'],
+      transports: [{ type: 'stdio', command: 'server' }],
+      tools: [{ name: 'lookup', inputSchema: { type: 'object' } }],
+    },
+    { from: '0.8.0', to: '0.9.0' },
+  );
+  assert.equal(converted.ok, true, JSON.stringify(converted.diagnostics));
+  const projectedDraft2 = root.projectMcpNativeValue(converted.value, {
+    specification: '0.9.0-draft.2',
+    protocolVersion: '2026-07-28',
+    kind: 'tool',
+    identifier: 'lookup',
+  });
+  assert.equal(
+    projectedDraft2.ok,
+    true,
+    JSON.stringify(projectedDraft2.diagnostics),
+  );
+  assert.deepEqual(projectedDraft2.value, {
+    name: 'lookup',
+    inputSchema: { type: 'object' },
+  });
 } finally {
   globalThis.eval = originalEval;
   globalThis.Function = OriginalFunction;

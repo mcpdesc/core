@@ -47,7 +47,7 @@ for (const specification of supportedSpecifications) {
 
         for (const diagnostic of result.diagnostics) {
           const keys = ['code', 'message', 'path', 'severity'];
-          if (specification === '0.9.0-draft.1' && diagnostic.rule !== undefined) {
+          if (specification.startsWith('0.9.0-draft.') && diagnostic.rule !== undefined) {
             assert.match(diagnostic.rule, /^(?:mcp|mcpdesc|json-schema)\.[a-z0-9.-]+$/);
             keys.push('rule');
           }

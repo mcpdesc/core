@@ -6,6 +6,8 @@ import {
   RC_4_SCHEMA_URI,
   V0_8_SCHEMA_URI,
   V0_9_DRAFT_1_SCHEMA_URI,
+  V0_9_DRAFT_2_SCHEMA_URI,
+  V0_9_DRAFT_2_SPECIFICATION,
   deprecatedCoreSpecifications,
   mergeEffectiveProtocolViews,
   migrateMcpDescription07ToRc4,
@@ -27,10 +29,12 @@ type SelectorSensitiveOperation =
   | 'selection';
 type SupportDisposition =
   | 'supported'
-  | 'unsupported: no approved 0.7.0-to-0.9.0 migration'
-  | 'unsupported: native projection requires 0.9.0-draft.1';
+  | 'unsupported: no supported 0.7.0-to-0.9.0 migration'
+  | 'unsupported: native projection requires a 0.9.0 draft selector';
 const nativeUnsupported =
-  'unsupported: native projection requires 0.9.0-draft.1' as const;
+  'unsupported: native projection requires a 0.9.0 draft selector' as const;
+const migrationUnsupported =
+  'unsupported: no supported 0.7.0-to-0.9.0 migration' as const;
 
 const supportBySpecification = {
   '0.8.0-rc.4': {
@@ -60,7 +64,15 @@ const supportBySpecification = {
   '0.9.0-draft.1': {
     componentResolution: 'supported',
     merge: 'supported',
-    migrationFrom07: 'unsupported: no approved 0.7.0-to-0.9.0 migration',
+    migrationFrom07: migrationUnsupported,
+    nativeProjection: 'supported',
+    projection: 'supported',
+    selection: 'supported',
+  },
+  '0.9.0-draft.2': {
+    componentResolution: 'supported',
+    merge: 'supported',
+    migrationFrom07: migrationUnsupported,
     nativeProjection: 'supported',
     projection: 'supported',
     selection: 'supported',
@@ -75,6 +87,7 @@ const schemaBySpecification = {
   '0.8.0': V0_8_SCHEMA_URI,
   '0.8.0-rev.20261021': V0_8_SCHEMA_URI,
   '0.9.0-draft.1': V0_9_DRAFT_1_SCHEMA_URI,
+  '0.9.0-draft.2': V0_9_DRAFT_2_SCHEMA_URI,
 } as const satisfies Record<SupportedCoreSpecification, string>;
 
 const migrateBySpecification = {
@@ -94,7 +107,7 @@ const migrateBySpecification = {
       sourceValidated: true,
     }),
 } satisfies Record<
-  Exclude<SupportedCoreSpecification, '0.9.0-draft.1'>,
+  Exclude<SupportedCoreSpecification, '0.9.0-draft.1' | '0.9.0-draft.2'>,
   (source: unknown) => { readonly ok: boolean }
 >;
 
@@ -122,7 +135,7 @@ describe('selector-sensitive operation support', () => {
       const support = supportBySpecification[specification];
       const document = {
         $schema: schemaBySpecification[specification],
-        mcpdesc: specification === '0.9.0-draft.1' ? '0.9.0' : '0.8.0',
+        mcpdesc: specification.startsWith('0.9.0-') ? '0.9.0' : '0.8.0',
         info: { name: 'support-matrix', version: '1.0.0' },
         protocolVersions: ['2025-11-25'],
         transports: [{ type: 'stdio', command: 'server' }],
@@ -168,7 +181,8 @@ describe('selector-sensitive operation support', () => {
       }
 
       const native = projectMcpNativeValue(document, {
-        selector: specification as '0.9.0-draft.1',
+        selector: specification as
+          '0.9.0-draft.1' | typeof V0_9_DRAFT_2_SPECIFICATION,
         protocolVersion: '2025-11-25',
         kind: 'tool',
         identifier: 'search',
