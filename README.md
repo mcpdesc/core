@@ -73,7 +73,7 @@ Several independent version numbers appear in these libraries:
 | MCP Description format version | `mcpdesc: "0.8.0"`               | The document format, declared in the document.                     |
 | Selector                       | `0.8.0`, `0.8.0-rev.20261021`    | One exact, immutable set of validation rules for a format version. |
 | MCP protocol revision          | `2025-11-25`, `2026-07-28`       | An MCP protocol version that the described server supports.        |
-| npm package version            | `@mcpdesc/validator@0.14.0-rc.2` | A library release; it may support several selectors.               |
+| npm package version            | `@mcpdesc/validator@0.14.0-rc.3` | A library release; it may support several selectors.               |
 
 For formats with a configured default, both packages select it from the
 document's `mcpdesc` value, so documents benefit from validator corrections when
@@ -83,19 +83,20 @@ a selector to pin exact rules. See the
 
 ## Compatibility
 
-| Package                            | Supported selectors                                                                                                           | Runtime     |
-| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| `@mcpdesc/validator` `0.14.0-rc.2` | `0.8.0-rev.20261021` (default for `0.8.0`); deprecated `0.8.0` and `0.8.0-rc.4`; explicit `0.9.0-draft.1` and `0.9.0-draft.2` | Node.js 20+ |
-| `@mcpdesc/core` `0.13.0-rc.2`      | Same selectors; explicit 0.8.0-to-0.9.0 conversion and Draft 2 native projection; pins validator `0.14.0-rc.2`                | Node.js 22+ |
+| Package                            | Supported selectors                                                                                                       | Runtime     |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `@mcpdesc/validator` `0.14.0-rc.3` | `0.8.0-rev.20261021` (default for `0.8.0`); deprecated `0.8.0` and `0.8.0-rc.4`; explicit `0.9.0-draft.1`, `.2`, and `.3` | Node.js 20+ |
+| `@mcpdesc/core` `0.13.0-rc.3`      | Same selectors; explicit 0.8.0-to-0.9.0 conversion and native projection postconditions; pins validator `0.14.0-rc.3`     | Node.js 22+ |
 
 Older drafts and release candidates remain available from earlier package
 releases. npm versions are below `1.0.0`: a minor release may contain breaking
 changes, which the package changelogs describe together with upgrade guidance.
 
-**Preview:** Draft selectors are explicit and never defaults. The current RC.2
-work adds MCP Description 0.9 Draft 2 (`0.9.0-draft.2`), the Proposal 0028
-0.8.0-to-0.9.0 conversion profile, and native MCP value projection after
-conversion. Proposal 0028 remains under review in the specification project.
+**Preview:** Draft selectors are explicit and never defaults. RC.3 adds MCP
+Description 0.9 Draft 3 (`0.9.0-draft.3`), the Proposal 0028 0.8.0-to-0.9.0
+conversion target, and native MCP projection postcondition checks against the
+pinned protocol schemas. Proposal 0028 remains under review in the specification
+project.
 
 ## Documentation
 

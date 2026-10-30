@@ -4,6 +4,24 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 
 ## [Unreleased]
 
+## [0.13.0-rc.3] - 2026-10-29
+
+### Added
+
+- Added explicit `0.9.0-draft.3` selector support across selector-sensitive
+  operations, with native MCP projection postcondition validation against the
+  pinned protocol revision schemas. Postcondition failures report
+  `projection-postcondition-failed` and return no partial list or value.
+- Added `V0_9_DRAFT_3_SPECIFICATION`, `V0_9_DRAFT_3_SCHEMA_URI`, and
+  `v0_9Draft3Snapshot`; extended 0.8.0-to-0.9.0 conversion to accept an explicit
+  Draft 3 target selector while retaining Draft 2 as the default.
+- Pinned MCP protocol schemas and their upstream license for offline native
+  postcondition validation.
+
+### Changed
+
+- Pinned `@mcpdesc/validator` `0.14.0-rc.3`.
+
 ## [0.13.0-rc.2] - 2026-10-28
 
 ### Added

@@ -20,13 +20,17 @@ export const V0_9_DRAFT_1_SCHEMA_URI =
 export const V0_9_DRAFT_2_SPECIFICATION = '0.9.0-draft.2' as const;
 export const V0_9_DRAFT_2_SCHEMA_URI =
   'https://mcpdesc.org/schema/mcp-description/0.9.0-draft.2.json' as const;
+export const V0_9_DRAFT_3_SPECIFICATION = '0.9.0-draft.3' as const;
+export const V0_9_DRAFT_3_SCHEMA_URI =
+  'https://mcpdesc.org/schema/mcp-description/0.9.0-draft.3.json' as const;
 
 export type SupportedCoreSpecification =
   | typeof RC_4_SPECIFICATION
   | typeof V0_8_SPECIFICATION
   | typeof V0_8_REV_20261021_SPECIFICATION
   | typeof V0_9_DRAFT_1_SPECIFICATION
-  | typeof V0_9_DRAFT_2_SPECIFICATION;
+  | typeof V0_9_DRAFT_2_SPECIFICATION
+  | typeof V0_9_DRAFT_3_SPECIFICATION;
 
 export const deprecatedCoreSpecifications = Object.freeze([
   RC_4_SPECIFICATION,
@@ -39,6 +43,8 @@ const v0_9Draft1Provenance =
   specificationProvenance[V0_9_DRAFT_1_SPECIFICATION];
 const v0_9Draft2Provenance =
   specificationProvenance[V0_9_DRAFT_2_SPECIFICATION];
+const v0_9Draft3Provenance =
+  specificationProvenance[V0_9_DRAFT_3_SPECIFICATION];
 
 export const rc4Snapshot = Object.freeze({
   specification: RC_4_SPECIFICATION,
@@ -72,6 +78,14 @@ export const v0_9Draft2Snapshot = Object.freeze({
   protocolVersions: supportedProtocolVersions,
 });
 
+export const v0_9Draft3Snapshot = Object.freeze({
+  specification: V0_9_DRAFT_3_SPECIFICATION,
+  schemaUri: V0_9_DRAFT_3_SCHEMA_URI,
+  snapshotTag: v0_9Draft3Provenance.snapshotTag,
+  schemaSha256: v0_9Draft3Provenance.schemaSha256,
+  protocolVersions: supportedProtocolVersions,
+});
+
 export function isSupportedCoreSpecification(
   specification: unknown,
 ): specification is SupportedCoreSpecification {
@@ -80,7 +94,8 @@ export function isSupportedCoreSpecification(
     specification === V0_8_SPECIFICATION ||
     specification === V0_8_REV_20261021_SPECIFICATION ||
     specification === V0_9_DRAFT_1_SPECIFICATION ||
-    specification === V0_9_DRAFT_2_SPECIFICATION
+    specification === V0_9_DRAFT_2_SPECIFICATION ||
+    specification === V0_9_DRAFT_3_SPECIFICATION
   );
 }
 

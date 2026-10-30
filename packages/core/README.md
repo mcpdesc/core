@@ -95,14 +95,14 @@ projectEffectiveProtocolView(document, {
 The older `specification` option remains a deprecated alias for `selector`.
 Passing both with different values fails with `conflicting-selector-options`.
 
-| Operation                          | `0.8.0-rev.20261021` (default) | `0.8.0` (deprecated) | `0.8.0-rc.4` (deprecated) | `0.9.0-draft.1` (preview) | `0.9.0-draft.2` (preview) |
-| ---------------------------------- | ------------------------------ | -------------------- | ------------------------- | ------------------------- | ------------------------- |
-| Effective Protocol View projection | Supported                      | Supported            | Supported                 | Supported                 | Supported                 |
-| Effective Protocol View merge      | Supported                      | Supported            | Supported                 | Supported                 | Supported                 |
-| Declaration selection              | Supported                      | Supported            | Supported                 | Supported                 | Supported                 |
-| Component reference resolution     | Supported                      | Supported            | Supported                 | Supported                 | Supported                 |
-| Migration from 0.7.0               | Supported                      | Supported            | Supported                 | Not supported             | Not supported             |
-| Native MCP value projection        | Not supported                  | Not supported        | Not supported             | Supported                 | Supported                 |
+| Operation                          | `0.8.0-rev.20261021` (default) | `0.8.0` (deprecated) | `0.8.0-rc.4` (deprecated) | `0.9.0-draft.1` (preview) | `0.9.0-draft.2` (preview) | `0.9.0-draft.3` (preview) |
+| ---------------------------------- | ------------------------------ | -------------------- | ------------------------- | ------------------------- | ------------------------- | ------------------------- |
+| Effective Protocol View projection | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 |
+| Effective Protocol View merge      | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 |
+| Declaration selection              | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 |
+| Component reference resolution     | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 |
+| Migration from 0.7.0               | Supported                      | Supported            | Supported                 | Not supported             | Not supported             | Not supported             |
+| Native MCP value projection        | Not supported                  | Not supported        | Not supported             | Supported                 | Supported                 | Supported                 |
 
 Deprecated selectors still work when pinned and are listed in
 `deprecatedCoreSpecifications`; they may be removed in a later minor release.
@@ -256,11 +256,12 @@ are reported as warnings to review.
 
 ### Convert MCP Description 0.8.0 to 0.9.0
 
-Conversion follows the Draft 2 Proposal 0028 tooling profile. It validates the
-0.8.0 source, applies only the profile's version and schema rewrites, reports
+Conversion follows the Proposal 0028 tooling profile. It validates the 0.8.0
+source, applies only the profile's version and schema rewrites, reports
 incompatibilities, and applies a fix only when requested at its blocker path.
 The result includes an RFC 6902 patch; the input is never mutated. The profile
-does not convert 0.7.0 documents directly.
+does not convert 0.7.0 documents directly. `selector` chooses the exact 0.9
+draft schema for output and defaults to Draft 2 for compatibility.
 
 ```ts
 import {
@@ -271,6 +272,7 @@ import {
 const converted = convertMcpDescriptionVersion(document, {
   from: '0.8.0',
   to: '0.9.0',
+  selector: '0.9.0-draft.3',
   fixes: [
     {
       fix: 'remove-property',
@@ -281,7 +283,7 @@ const converted = convertMcpDescriptionVersion(document, {
 
 if (converted.ok) {
   const tool = projectMcpNativeValue(converted.value, {
-    selector: '0.9.0-draft.2',
+    selector: '0.9.0-draft.3',
     protocolVersion: '2026-07-28',
     kind: 'tool',
     identifier: 'search',
@@ -294,14 +296,14 @@ converted document is returned. Native projection never converts implicitly.
 
 ### Project native MCP values (0.9 draft preview)
 
-MCP Description 0.9 Drafts 1 and 2 define how a declaration becomes the value an
-MCP server returns, for example a `Tool` in a `tools/list` result:
+MCP Description 0.9 Drafts 1, 2, and 3 define how a declaration becomes the
+value an MCP server returns, for example a `Tool` in a `tools/list` result:
 
 ```ts
 import { projectMcpNativeValue } from '@mcpdesc/core';
 
 const tool = projectMcpNativeValue(draftDocument, {
-  selector: '0.9.0-draft.2',
+  selector: '0.9.0-draft.3',
   protocolVersion: '2026-07-28',
   kind: 'tool',
   identifier: 'search',
@@ -309,7 +311,7 @@ const tool = projectMcpNativeValue(draftDocument, {
 if (tool.ok) console.log(tool.value); // { name: 'search', inputSchema: {...} }
 
 const tools = projectMcpNativeValue(draftDocument, {
-  selector: '0.9.0-draft.2',
+  selector: '0.9.0-draft.3',
   protocolVersion: '2026-07-28',
   kind: 'tool',
 });
@@ -326,11 +328,12 @@ and removes MCP Description fields such as `examples`, `tags`, `security`,
 arguments. Embedded schemas and `_meta` are copied unchanged. The result is the
 MCP value only, not a JSON-RPC message.
 
-| Failure code                            | Cause                                                        |
-| --------------------------------------- | ------------------------------------------------------------ |
-| `projection-source-invalid`             | The document has validation errors.                          |
-| `projection-revision-not-declared`      | `protocolVersion` is not in the root `protocolVersions`.     |
-| `projection-declaration-not-applicable` | No declaration with that identifier applies to the revision. |
+| Failure code                            | Cause                                                                       |
+| --------------------------------------- | --------------------------------------------------------------------------- |
+| `projection-source-invalid`             | The document has validation errors.                                         |
+| `projection-revision-not-declared`      | `protocolVersion` is not in the root `protocolVersions`.                    |
+| `projection-declaration-not-applicable` | No declaration with that identifier applies to the revision.                |
+| `projection-postcondition-failed`       | The projected MCP value fails the pinned schema for that protocol revision. |
 
 This preview tracks a draft specification and may change in later drafts.
 

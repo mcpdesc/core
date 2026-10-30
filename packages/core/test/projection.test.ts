@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -8,6 +9,7 @@ import {
   V0_8_SCHEMA_URI,
   V0_9_DRAFT_1_SPECIFICATION,
   V0_9_DRAFT_2_SPECIFICATION,
+  V0_9_DRAFT_3_SPECIFICATION,
   projectEffectiveProtocolView,
   projectMcpNativeValue,
   parseMcpDescriptionSource,
@@ -16,9 +18,35 @@ import {
   v0_8Snapshot,
 } from '../src/index.js';
 
+describe('pinned MCP postcondition schemas', () => {
+  it('matches the Draft 3 upstream schema manifest digests', () => {
+    const schemaDigests = {
+      '2024-11-05':
+        '61cea2392d4f284092d09bc84b9ac488c0d5618ac2b38a56942fc5b99fd960ce',
+      '2025-03-26':
+        'e720669548c8100a4282c49e580efd6ddf7f28899ea786fc8db251dbdb356131',
+      '2025-06-18':
+        'af845e7e5b9d27107d1690f0936022546177a1403e63ffb11470135b296a2e01',
+      '2025-11-25':
+        '268a5f82ba70fd7e4b6dc4aa1e64f116f74b4d0edcb69dc046829c79dd4e97e7',
+      '2026-07-28':
+        'ef70b61f99b6d2e5e3b46863822eab08dff6a45bedc7a08914e0e5b133f40203',
+    } as const;
+    for (const [revision, expectedDigest] of Object.entries(schemaDigests)) {
+      const bytes = readFileSync(
+        new URL(`../src/mcp-schemas/${revision}/schema.json`, import.meta.url),
+      );
+      expect(createHash('sha256').update(bytes).digest('hex')).toBe(
+        expectedDigest,
+      );
+    }
+  });
+});
+
 for (const specification of [
   V0_9_DRAFT_1_SPECIFICATION,
   V0_9_DRAFT_2_SPECIFICATION,
+  V0_9_DRAFT_3_SPECIFICATION,
 ] as const) {
   const projectionFixtureRoot = fileURLToPath(
     new URL(
@@ -97,6 +125,16 @@ for (const specification of [
           expect(result.diagnostics).toContainEqual(
             expect.objectContaining({ code: fixture.expectedError }),
           );
+          expect('value' in result).toBe(false);
+          if (fixture.expectedError === 'projection-postcondition-failed') {
+            expect(result.diagnostics).toContainEqual(
+              expect.objectContaining({
+                rule: 'mcpdesc.projection.native-schema',
+                phase: 'operation',
+                path: ['tools', 1, 'inputSchema', 'properties', 'enabled'],
+              }),
+            );
+          }
         } else {
           expect(result.ok, JSON.stringify(result.diagnostics)).toBe(true);
           if (result.ok) expect(result.value).toEqual(fixture.expected);

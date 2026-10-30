@@ -9,6 +9,20 @@ scripts, and release infrastructure.
 > - [`@mcpdesc/core`](packages/core/CHANGELOG.md)
 > - [`@mcpdesc/validator`](packages/validator/CHANGELOG.md)
 
+## 2026-10-29
+
+### Added
+
+- Imported the immutable `0.9.0-draft.3` validator snapshot and its frozen
+  conformance, projection, and conversion profile fixtures.
+- Added core native projection postcondition validation against the pinned MCP
+  schemas for each protocol revision.
+
+### Changed
+
+- Prepared validator `0.14.0-rc.3` and core `0.13.0-rc.3`, with core pinned to
+  the matching validator prerelease.
+
 ## 2026-10-28
 
 ### Added

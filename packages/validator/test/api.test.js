@@ -73,6 +73,17 @@ test('requires an explicit draft selector and preserves registered rule identiti
   assert.equal(draft2.valid, true);
   assert.equal(draft2.selector, '0.9.0-draft.2');
   assert.equal(validateMcpDescription(draft2Document).diagnostics[0].code, 'unsupported-format-version');
+  const draft3Document = fixture(
+    'expected-valid',
+    'minimal-zero-primitives.json',
+    '0.9.0-draft.3',
+  );
+  const draft3 = validateMcpDescription(draft3Document, {
+    selector: '0.9.0-draft.3',
+  });
+  assert.equal(draft3.valid, true);
+  assert.equal(draft3.selector, '0.9.0-draft.3');
+  assert.equal(validateMcpDescription(draft3Document).diagnostics[0].code, 'unsupported-format-version');
   assert.equal(resolveMcpDescriptionSpecification(document, { selector: '0.9.0-draft.1' }).status, 'resolved');
   const invalid = validateMcpDescription({ ...document, tools: [{ name: 'missing' }] }, { selector: '0.9.0-draft.1' });
   assert.equal(invalid.valid, false);

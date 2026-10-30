@@ -7,7 +7,9 @@ import {
   V0_8_SCHEMA_URI,
   V0_9_DRAFT_1_SCHEMA_URI,
   V0_9_DRAFT_2_SCHEMA_URI,
+  V0_9_DRAFT_3_SCHEMA_URI,
   V0_9_DRAFT_2_SPECIFICATION,
+  V0_9_DRAFT_3_SPECIFICATION,
   deprecatedCoreSpecifications,
   mergeEffectiveProtocolViews,
   migrateMcpDescription07ToRc4,
@@ -77,6 +79,14 @@ const supportBySpecification = {
     projection: 'supported',
     selection: 'supported',
   },
+  '0.9.0-draft.3': {
+    componentResolution: 'supported',
+    merge: 'supported',
+    migrationFrom07: migrationUnsupported,
+    nativeProjection: 'supported',
+    projection: 'supported',
+    selection: 'supported',
+  },
 } as const satisfies Record<
   SupportedCoreSpecification,
   Record<SelectorSensitiveOperation, SupportDisposition>
@@ -88,6 +98,7 @@ const schemaBySpecification = {
   '0.8.0-rev.20261021': V0_8_SCHEMA_URI,
   '0.9.0-draft.1': V0_9_DRAFT_1_SCHEMA_URI,
   '0.9.0-draft.2': V0_9_DRAFT_2_SCHEMA_URI,
+  '0.9.0-draft.3': V0_9_DRAFT_3_SCHEMA_URI,
 } as const satisfies Record<SupportedCoreSpecification, string>;
 
 const migrateBySpecification = {
@@ -107,7 +118,10 @@ const migrateBySpecification = {
       sourceValidated: true,
     }),
 } satisfies Record<
-  Exclude<SupportedCoreSpecification, '0.9.0-draft.1' | '0.9.0-draft.2'>,
+  Exclude<
+    SupportedCoreSpecification,
+    '0.9.0-draft.1' | '0.9.0-draft.2' | '0.9.0-draft.3'
+  >,
   (source: unknown) => { readonly ok: boolean }
 >;
 
@@ -182,7 +196,9 @@ describe('selector-sensitive operation support', () => {
 
       const native = projectMcpNativeValue(document, {
         selector: specification as
-          '0.9.0-draft.1' | typeof V0_9_DRAFT_2_SPECIFICATION,
+          | '0.9.0-draft.1'
+          | typeof V0_9_DRAFT_2_SPECIFICATION
+          | typeof V0_9_DRAFT_3_SPECIFICATION,
         protocolVersion: '2025-11-25',
         kind: 'tool',
         identifier: 'search',

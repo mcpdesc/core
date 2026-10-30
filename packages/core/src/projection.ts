@@ -1,8 +1,18 @@
 import {
+  Validator,
+  type Schema,
+  type SchemaDraft,
+} from '@cfworker/json-schema';
+import {
   validateMcpDescription,
   type McpDescriptionDiagnostic,
   type SupportedProtocolVersion,
 } from '@mcpdesc/validator/standalone';
+import schema2024_11_05 from './mcp-schemas/2024-11-05/schema.json' with { type: 'json' };
+import schema2025_03_26 from './mcp-schemas/2025-03-26/schema.json' with { type: 'json' };
+import schema2025_06_18 from './mcp-schemas/2025-06-18/schema.json' with { type: 'json' };
+import schema2025_11_25 from './mcp-schemas/2025-11-25/schema.json' with { type: 'json' };
+import schema2026_07_28 from './mcp-schemas/2026-07-28/schema.json' with { type: 'json' };
 
 import type {
   CoreDiagnostic,
@@ -14,6 +24,7 @@ import type {
 } from './model.js';
 import {
   selectCoreSpecification,
+  V0_9_DRAFT_3_SPECIFICATION,
   V0_9_DRAFT_2_SPECIFICATION,
   V0_9_DRAFT_1_SPECIFICATION,
   type CoreSelectorOptions,
@@ -28,6 +39,95 @@ const scopedCollections = [
   'resourceTemplates',
   'prompts',
 ] as const;
+
+const mcpSchemas: Readonly<Record<SupportedProtocolVersion, Schema>> = {
+  '2024-11-05': schema2024_11_05 as Schema,
+  '2025-03-26': schema2025_03_26 as Schema,
+  '2025-06-18': schema2025_06_18 as Schema,
+  '2025-11-25': schema2025_11_25 as Schema,
+  '2026-07-28': schema2026_07_28 as Schema,
+};
+
+const nativeSchemaValidators = new Map<string, Validator>();
+
+function nativeSchemaValidator(
+  protocolVersion: SupportedProtocolVersion,
+  typeName: string,
+): Validator {
+  const key = `${protocolVersion}/${typeName}`;
+  const cached = nativeSchemaValidators.get(key);
+  if (cached) return cached;
+
+  const schema = structuredClone(mcpSchemas[protocolVersion]);
+  const definitions = schema.$defs ? '$defs' : 'definitions';
+  const draft: SchemaDraft = schema.$schema?.includes('2020-12')
+    ? '2020-12'
+    : '7';
+  const validator = new Validator(
+    { ...schema, $ref: `#/${definitions}/${typeName}` },
+    draft,
+  );
+  nativeSchemaValidators.set(key, validator);
+  return validator;
+}
+
+function instancePath(
+  location: string,
+  value: unknown,
+): readonly (number | string)[] {
+  if (!location.startsWith('#/')) return [];
+  let current = value;
+  return location
+    .slice(2)
+    .split('/')
+    .map((segment) => segment.replaceAll('~1', '/').replaceAll('~0', '~'))
+    .map((segment) => {
+      if (Array.isArray(current) && /^(?:0|[1-9]\d*)$/.test(segment)) {
+        const index = Number(segment);
+        current = current[index];
+        return index;
+      }
+      if (
+        typeof current === 'object' &&
+        current !== null &&
+        !Array.isArray(current)
+      ) {
+        current = (current as Record<string, unknown>)[segment];
+      }
+      return segment;
+    });
+}
+
+function postconditionDiagnostic(
+  value: JsonObject,
+  typeName: string,
+  collection: string,
+  declarationIndex: number,
+  protocolVersion: SupportedProtocolVersion,
+): CoreDiagnostic | undefined {
+  const result = nativeSchemaValidator(protocolVersion, typeName).validate(
+    value,
+  );
+  if (result.valid || result.errors.length === 0) return undefined;
+  const error = result.errors.reduce((deepest, candidate) =>
+    candidate.instanceLocation.length > deepest.instanceLocation.length
+      ? candidate
+      : deepest,
+  );
+  return {
+    code: 'projection-postcondition-failed',
+    severity: 'error',
+    message: `Projected MCP ${typeName} does not validate for protocol revision ${JSON.stringify(protocolVersion)}: ${error.error}`,
+    path: [
+      collection,
+      declarationIndex,
+      ...instancePath(error.instanceLocation, value),
+    ],
+    rule: 'mcpdesc.projection.native-schema',
+    phase: 'operation',
+    protocolVersion,
+  };
+}
 
 export interface ProjectEffectiveProtocolViewOptions extends CoreSelectorOptions {
   readonly protocolVersion: SupportedProtocolVersion;
@@ -235,19 +335,22 @@ export function projectEffectiveProtocolView(
 }
 
 const nativeKinds = {
-  tool: { collection: 'tools', identity: 'name' },
-  resource: { collection: 'resources', identity: 'uri' },
+  tool: { collection: 'tools', identity: 'name', typeName: 'Tool' },
+  resource: { collection: 'resources', identity: 'uri', typeName: 'Resource' },
   resourceTemplate: {
     collection: 'resourceTemplates',
     identity: 'uriTemplate',
+    typeName: 'ResourceTemplate',
   },
-  prompt: { collection: 'prompts', identity: 'name' },
+  prompt: { collection: 'prompts', identity: 'name', typeName: 'Prompt' },
 } as const;
 
 export type McpNativeKind = keyof typeof nativeKinds;
 
 export interface ProjectMcpNativeValueOptions extends CoreSelectorOptions<
-  typeof V0_9_DRAFT_1_SPECIFICATION | typeof V0_9_DRAFT_2_SPECIFICATION
+  | typeof V0_9_DRAFT_1_SPECIFICATION
+  | typeof V0_9_DRAFT_2_SPECIFICATION
+  | typeof V0_9_DRAFT_3_SPECIFICATION
 > {
   readonly protocolVersion: SupportedProtocolVersion;
   readonly kind: McpNativeKind;
@@ -323,7 +426,8 @@ export function projectMcpNativeValue(
   }
   if (
     selection.specification !== V0_9_DRAFT_1_SPECIFICATION &&
-    selection.specification !== V0_9_DRAFT_2_SPECIFICATION
+    selection.specification !== V0_9_DRAFT_2_SPECIFICATION &&
+    selection.specification !== V0_9_DRAFT_3_SPECIFICATION
   ) {
     return {
       ok: false,
@@ -379,12 +483,13 @@ export function projectMcpNativeValue(
   if (!resolved.ok) return resolved;
   const { collection, identity } = nativeKinds[options.kind];
   const declarations = (resolved.value[collection] ?? []) as JsonObject[];
-  const selected =
-    options.identifier === undefined
-      ? declarations
-      : declarations.filter(
-          (declaration) => declaration[identity] === options.identifier,
-        );
+  const selected = declarations
+    .map((declaration, index) => ({ declaration, index }))
+    .filter(
+      ({ declaration }) =>
+        options.identifier === undefined ||
+        declaration[identity] === options.identifier,
+    );
   const diagnostics = uniqueDiagnostics(view.diagnostics, resolved.diagnostics);
   if (options.identifier !== undefined && selected.length === 0) {
     return {
@@ -399,7 +504,23 @@ export function projectMcpNativeValue(
       ],
     };
   }
-  const values = selected.map(nativeValue);
+  const values = selected.map(({ declaration }) => nativeValue(declaration));
+  const postconditionDiagnostics = selected.flatMap(({ index }, valueIndex) => {
+    const failure = postconditionDiagnostic(
+      values[valueIndex]!,
+      nativeKinds[options.kind].typeName,
+      collection,
+      index,
+      options.protocolVersion,
+    );
+    return failure ? [failure] : [];
+  });
+  if (postconditionDiagnostics.length > 0) {
+    return {
+      ok: false,
+      diagnostics: uniqueDiagnostics(diagnostics, postconditionDiagnostics),
+    };
+  }
   const projectedDocument = { ...resolved.value };
   if (values.length > 0) projectedDocument[collection] = values;
   else delete projectedDocument[collection];

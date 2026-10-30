@@ -1,2 +1,4 @@
 .github/workflows/validate.yml
 packages/validator/
+# Pinned upstream protocol schemas must retain their manifest digests.
+packages/core/src/mcp-schemas/**/*.json
