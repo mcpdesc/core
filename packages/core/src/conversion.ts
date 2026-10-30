@@ -4,6 +4,8 @@ import type { CoreDiagnostic, JsonObject, JsonValue } from './model.js';
 import {
   V0_9_DRAFT_2_SCHEMA_URI,
   V0_9_DRAFT_2_SPECIFICATION,
+  V0_9_DRAFT_3_SCHEMA_URI,
+  V0_9_DRAFT_3_SPECIFICATION,
 } from './snapshot.js';
 
 const sourceSelector = '0.8.0-rev.20261021';
@@ -53,6 +55,8 @@ export interface McpDescriptionConversionFix {
 export interface McpDescriptionConversionOptions {
   readonly from: string;
   readonly to: string;
+  readonly selector?:
+    typeof V0_9_DRAFT_2_SPECIFICATION | typeof V0_9_DRAFT_3_SPECIFICATION;
   readonly fixes?: readonly McpDescriptionConversionFix[];
 }
 
@@ -242,6 +246,12 @@ export function convertMcpDescriptionVersion(
     };
   }
 
+  const selector = options.selector ?? V0_9_DRAFT_2_SPECIFICATION;
+  const targetSchemaUri =
+    selector === V0_9_DRAFT_3_SPECIFICATION
+      ? V0_9_DRAFT_3_SCHEMA_URI
+      : V0_9_DRAFT_2_SCHEMA_URI;
+
   const sourceValidation = validateMcpDescription(document, {
     selector: sourceSelector,
   });
@@ -266,16 +276,16 @@ export function convertMcpDescriptionVersion(
   value.mcpdesc = targetVersion;
   patch.push({ op: 'replace', path: '/mcpdesc', value: targetVersion });
   if (Object.hasOwn(value, '$schema')) {
-    value.$schema = V0_9_DRAFT_2_SCHEMA_URI;
+    value.$schema = targetSchemaUri;
     patch.push({
       op: 'replace',
       path: '/$schema',
-      value: V0_9_DRAFT_2_SCHEMA_URI,
+      value: targetSchemaUri,
     });
   }
 
   const beforeFixValidation = validateMcpDescription(value, {
-    selector: V0_9_DRAFT_2_SPECIFICATION,
+    selector,
   });
   const beforeFixDiagnostics = beforeFixValidation.diagnostics.map((item) => ({
     ...item,
@@ -340,7 +350,7 @@ export function convertMcpDescriptionVersion(
   }
 
   const resultValidation = validateMcpDescription(value, {
-    selector: V0_9_DRAFT_2_SPECIFICATION,
+    selector,
   });
   const targetDiagnostics = resultValidation.diagnostics.map((item) => ({
     ...item,

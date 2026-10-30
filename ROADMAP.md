@@ -76,9 +76,13 @@ repository.
 - [x] Implement the separate 0.8.0-to-0.9.0 conversion profile with explicit
       author-requested fixes and JSON Patch output; native projection remains a
       second explicit step. The profile and Proposal 0028 remain under review.
-- [ ] Complete review and publish validator `0.14.0-rc.2` then core
-      `0.13.0-rc.2` on `next`; specification publication does not authorize npm
-      publication.
+- [x] Publish validator `0.14.0-rc.2` then core `0.13.0-rc.2` on `next`.
+- [x] Integrate the published `v0.9.0-draft.3` validator snapshot with frozen
+      conformance, projection postcondition, and conversion fixtures.
+- [x] Implement native MCP schema postcondition validation with deterministic
+      failure diagnostics and no partial projected list results.
+- [ ] Review and publish validator `0.14.0-rc.3` then core `0.13.0-rc.3` on
+      `next`; specification publication does not authorize npm publication.
 - Add normalization or comparison operations only where multiple consumers
   demonstrate the same requirement.
 

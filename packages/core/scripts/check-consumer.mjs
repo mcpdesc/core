@@ -62,6 +62,7 @@ try {
         V0_8_SCHEMA_URI,
         V0_9_DRAFT_1_SCHEMA_URI,
         V0_9_DRAFT_2_SCHEMA_URI,
+        V0_9_DRAFT_3_SCHEMA_URI,
         convertMcpDescriptionVersion,
         migrateMcpDescription07To08,
         migrateMcpDescription07ToRc4,
@@ -71,6 +72,7 @@ try {
         rc4Snapshot,
         v0_8Snapshot,
         v0_9Draft2Snapshot,
+        v0_9Draft3Snapshot,
         resolveMcpDescriptionComponentReferences,
         serializeMcpDescriptionMigrationReport,
       } from '@mcpdesc/core';
@@ -228,6 +230,7 @@ try {
         ['0.8.0', V0_8_SCHEMA_URI],
         ['0.9.0-draft.1', V0_9_DRAFT_1_SCHEMA_URI],
         ['0.9.0-draft.2', V0_9_DRAFT_2_SCHEMA_URI],
+        ['0.9.0-draft.3', V0_9_DRAFT_3_SCHEMA_URI],
       ]) {
         const reusable = {
           ...source,
@@ -289,6 +292,24 @@ try {
       });
       assert.equal(projectedDraft2.ok, true, JSON.stringify(projectedDraft2.diagnostics));
       assert.deepEqual(projectedDraft2.value, { name: 'lookup', inputSchema: { type: 'object' } });
+      const convertedDraft3 = convertMcpDescriptionVersion({
+        $schema: V0_8_SCHEMA_URI,
+        mcpdesc: '0.8.0',
+        info: { name: 'consumer-conversion-d3', version: '1.0.0' },
+        protocolVersions: ['2026-07-28'],
+        transports: [{ type: 'stdio', command: 'server' }],
+        tools: [{ name: 'lookup', inputSchema: { type: 'object' } }],
+      }, { from: '0.8.0', to: '0.9.0', selector: v0_9Draft3Snapshot.specification });
+      assert.equal(convertedDraft3.ok, true, JSON.stringify(convertedDraft3.diagnostics));
+      assert.equal(convertedDraft3.value.$schema, V0_9_DRAFT_3_SCHEMA_URI);
+      const projectedDraft3 = projectMcpNativeValue(convertedDraft3.value, {
+        selector: v0_9Draft3Snapshot.specification,
+        protocolVersion: '2026-07-28',
+        kind: 'tool',
+        identifier: 'lookup',
+      });
+      assert.equal(projectedDraft3.ok, true, JSON.stringify(projectedDraft3.diagnostics));
+      assert.deepEqual(projectedDraft3.value, { name: 'lookup', inputSchema: { type: 'object' } });
     `,
   );
   execFileSync(node, ['smoke.mjs'], { cwd: consumerRoot, stdio: 'pipe' });
@@ -312,6 +333,7 @@ try {
         projectMcpNativeValue,
         v0_9Draft1Snapshot,
         v0_9Draft2Snapshot,
+        v0_9Draft3Snapshot,
         convertMcpDescriptionVersion,
         type McpDescriptionConversionFix,
         type McpDescriptionJsonPatchOperation,
@@ -322,7 +344,7 @@ try {
 
       const parsed = parseMcpDescriptionSource('{"mcpdesc":"0.8.0"}');
       const nativeOptions: ProjectMcpNativeValueOptions = {
-        specification: v0_9Draft2Snapshot.specification,
+        specification: v0_9Draft3Snapshot.specification,
         protocolVersion: '2026-07-28',
         kind: 'tool',
       };
@@ -334,7 +356,7 @@ try {
       const conversionFixes: McpDescriptionConversionFix[] = [];
       const conversion = convertMcpDescriptionVersion(
         { mcpdesc: '0.8.0' },
-        { from: '0.8.0', to: '0.9.0', fixes: conversionFixes },
+        { from: '0.8.0', to: '0.9.0', selector: v0_9Draft3Snapshot.specification, fixes: conversionFixes },
       );
       const patch: readonly McpDescriptionJsonPatchOperation[] = conversion.ok
         ? conversion.patch
