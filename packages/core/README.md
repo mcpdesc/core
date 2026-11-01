@@ -95,14 +95,14 @@ projectEffectiveProtocolView(document, {
 The older `specification` option remains a deprecated alias for `selector`.
 Passing both with different values fails with `conflicting-selector-options`.
 
-| Operation                          | `0.8.0-rev.20261021` (default) | `0.8.0` (deprecated) | `0.8.0-rc.4` (deprecated) | `0.9.0-draft.1` (preview) | `0.9.0-draft.2` (preview) | `0.9.0-draft.3` (preview) |
-| ---------------------------------- | ------------------------------ | -------------------- | ------------------------- | ------------------------- | ------------------------- | ------------------------- |
-| Effective Protocol View projection | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 |
-| Effective Protocol View merge      | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 |
-| Declaration selection              | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 |
-| Component reference resolution     | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 |
-| Migration from 0.7.0               | Supported                      | Supported            | Supported                 | Not supported             | Not supported             | Not supported             |
-| Native MCP value projection        | Not supported                  | Not supported        | Not supported             | Supported                 | Supported                 | Supported                 |
+| Operation                          | `0.8.0-rev.20261021` (default) | `0.8.0` (deprecated) | `0.8.0-rc.4` (deprecated) | `0.9.0-draft.1` (preview) | `0.9.0-draft.2` (preview) | `0.9.0-draft.3` (preview) | `0.9.0-draft.4` (preview) |
+| ---------------------------------- | ------------------------------ | -------------------- | ------------------------- | ------------------------- | ------------------------- | ------------------------- | ------------------------- |
+| Effective Protocol View projection | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 | Supported                 |
+| Effective Protocol View merge      | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 | Supported                 |
+| Declaration selection              | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 | Supported                 |
+| Component reference resolution     | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 | Supported                 |
+| Migration from 0.7.0               | Supported                      | Supported            | Supported                 | Not supported             | Not supported             | Not supported             | Not supported             |
+| Native MCP value projection        | Not supported                  | Not supported        | Not supported             | Supported                 | Supported                 | Supported                 | Supported                 |
 
 Deprecated selectors still work when pinned and are listed in
 `deprecatedCoreSpecifications`; they may be removed in a later minor release.
@@ -272,7 +272,7 @@ import {
 const converted = convertMcpDescriptionVersion(document, {
   from: '0.8.0',
   to: '0.9.0',
-  selector: '0.9.0-draft.3',
+  selector: '0.9.0-draft.4',
   fixes: [
     {
       fix: 'remove-property',
@@ -283,7 +283,7 @@ const converted = convertMcpDescriptionVersion(document, {
 
 if (converted.ok) {
   const tool = projectMcpNativeValue(converted.value, {
-    selector: '0.9.0-draft.3',
+    selector: '0.9.0-draft.4',
     protocolVersion: '2026-07-28',
     kind: 'tool',
     identifier: 'search',
@@ -296,14 +296,14 @@ converted document is returned. Native projection never converts implicitly.
 
 ### Project native MCP values (0.9 draft preview)
 
-MCP Description 0.9 Drafts 1, 2, and 3 define how a declaration becomes the
+MCP Description 0.9 Drafts 1 through 4 define how a declaration becomes the
 value an MCP server returns, for example a `Tool` in a `tools/list` result:
 
 ```ts
 import { projectMcpNativeValue } from '@mcpdesc/core';
 
 const tool = projectMcpNativeValue(draftDocument, {
-  selector: '0.9.0-draft.3',
+  selector: '0.9.0-draft.4',
   protocolVersion: '2026-07-28',
   kind: 'tool',
   identifier: 'search',
@@ -311,7 +311,7 @@ const tool = projectMcpNativeValue(draftDocument, {
 if (tool.ok) console.log(tool.value); // { name: 'search', inputSchema: {...} }
 
 const tools = projectMcpNativeValue(draftDocument, {
-  selector: '0.9.0-draft.3',
+  selector: '0.9.0-draft.4',
   protocolVersion: '2026-07-28',
   kind: 'tool',
 });

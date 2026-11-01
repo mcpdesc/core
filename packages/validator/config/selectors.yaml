@@ -6,6 +6,12 @@ formats:
     schemaPins: false
 
 selectors:
+  '0.9.0-draft.4':
+    formatVersion: '0.9.0'
+    lifecycle: active
+    specificationTag: 'v0.9.0-draft.4'
+    schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.9.0-draft.4.json'
+    schemaSha256: '34dea6d14f72a72de7b6e648f4254a50307d74786843b4c0e3a435e8c10ec14a'
   '0.9.0-draft.3':
     formatVersion: '0.9.0'
     lifecycle: active

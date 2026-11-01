@@ -65,11 +65,12 @@ export type McpDescriptionDocument = JsonObject & {
 export type DiagnosticPhase = 'operation' | 'result' | 'source';
 
 export interface CoreDiagnostic {
-  readonly code: string;
+  readonly code?: string;
   readonly severity: McpDescriptionDiagnosticSeverity;
-  readonly message: string;
+  readonly message?: string;
   readonly path: readonly (number | string)[];
   readonly rule?: string;
+  readonly protocolVersions?: readonly SupportedProtocolVersion[];
   readonly phase: DiagnosticPhase;
   readonly protocolVersion?: SupportedProtocolVersion;
 }

@@ -55,6 +55,7 @@ const expected = [
   'package.json',
   'standalone.js',
   'src/index.js',
+  'src/validation-context.js',
   'src/generated/selector-config.js',
   'src/generated/selector-config.d.ts',
   ...snapshotFiles

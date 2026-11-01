@@ -25,6 +25,7 @@ import type {
 import {
   selectCoreSpecification,
   V0_9_DRAFT_3_SPECIFICATION,
+  V0_9_DRAFT_4_SPECIFICATION,
   V0_9_DRAFT_2_SPECIFICATION,
   V0_9_DRAFT_1_SPECIFICATION,
   type CoreSelectorOptions,
@@ -269,6 +270,70 @@ function projectDocument(
   return result;
 }
 
+const componentNamespaces = [
+  'schemas',
+  'toolExamples',
+  'resourceExamples',
+  'resourceTemplateExamples',
+  'promptExamples',
+] as const;
+
+function pruneUnusedComponents(document: McpDescriptionDocument): void {
+  const components = document.components;
+  if (!components) return;
+  const registries = components as NonNullable<
+    McpDescriptionDocument['components']
+  >;
+
+  const retained = new Set<string>();
+  function collect(value: unknown): void {
+    if (Array.isArray(value)) {
+      value.forEach(collect);
+      return;
+    }
+    if (value === null || typeof value !== 'object') return;
+    const reference = (value as JsonObject).$componentRef;
+    if (typeof reference === 'string') {
+      const match = /^#\/components\/([^/]+)\/([^/]+)$/.exec(reference);
+      if (!match) return;
+      const namespace = match[1]!;
+      const name = match[2]!;
+      if (!(componentNamespaces as readonly string[]).includes(namespace))
+        return;
+      const key = `${namespace}/${name}`;
+      if (retained.has(key)) return;
+      retained.add(key);
+      const registry = registries[namespace];
+      if (
+        registry &&
+        typeof registry === 'object' &&
+        !Array.isArray(registry)
+      ) {
+        collect((registry as JsonObject)[name]);
+      }
+      return;
+    }
+    Object.values(value).forEach(collect);
+  }
+
+  for (const [key, value] of Object.entries(document)) {
+    if (key !== 'components') collect(value);
+  }
+
+  for (const namespace of componentNamespaces) {
+    const registry = registries[namespace];
+    if (!registry || typeof registry !== 'object' || Array.isArray(registry)) {
+      continue;
+    }
+    for (const name of Object.keys(registry)) {
+      if (!retained.has(`${namespace}/${name}`)) delete registry[name];
+    }
+    if (Object.keys(registry).length === 0) delete components[namespace];
+  }
+
+  if (Object.keys(registries).length === 0) delete document.components;
+}
+
 export function projectEffectiveProtocolView(
   document: unknown,
   options: ProjectEffectiveProtocolViewOptions,
@@ -318,6 +383,9 @@ export function projectEffectiveProtocolView(
   }
 
   const value = projectDocument(source, options.protocolVersion);
+  if (specification === V0_9_DRAFT_4_SPECIFICATION) {
+    pruneUnusedComponents(value);
+  }
   const resultValidation = validateMcpDescription(value, {
     specification,
   });
@@ -351,6 +419,7 @@ export interface ProjectMcpNativeValueOptions extends CoreSelectorOptions<
   | typeof V0_9_DRAFT_1_SPECIFICATION
   | typeof V0_9_DRAFT_2_SPECIFICATION
   | typeof V0_9_DRAFT_3_SPECIFICATION
+  | typeof V0_9_DRAFT_4_SPECIFICATION
 > {
   readonly protocolVersion: SupportedProtocolVersion;
   readonly kind: McpNativeKind;
@@ -427,7 +496,8 @@ export function projectMcpNativeValue(
   if (
     selection.specification !== V0_9_DRAFT_1_SPECIFICATION &&
     selection.specification !== V0_9_DRAFT_2_SPECIFICATION &&
-    selection.specification !== V0_9_DRAFT_3_SPECIFICATION
+    selection.specification !== V0_9_DRAFT_3_SPECIFICATION &&
+    selection.specification !== V0_9_DRAFT_4_SPECIFICATION
   ) {
     return {
       ok: false,

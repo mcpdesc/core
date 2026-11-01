@@ -4,6 +4,20 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 
 ## [Unreleased]
 
+## [0.13.0-rc.4] - 2026-11-01
+
+### Added
+
+- Added explicit `0.9.0-draft.4` selector support, per-rule validation results,
+  and the Draft 4 view/merge fixture suite.
+- Added Draft 4 Tool-schema dialect rules, Resource URI conversion blockers, and
+  longest-owner schema diagnostic attribution through validator diagnostics.
+- Updated native projection postconditions for the new Tool-schema behavior.
+
+### Changed
+
+- Pinned `@mcpdesc/validator` `0.14.0-rc.4`.
+
 ## [0.13.0-rc.3] - 2026-10-29
 
 ### Added

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
+import { validateMcpDescription as validateStandard } from '../src/index.js';
 
 const originalEval = globalThis.eval;
 const OriginalFunction = globalThis.Function;
@@ -50,6 +51,19 @@ test('browser entry applies the format default when no selector is passed', () =
   assert.equal(result.valid, true);
   assert.equal(result.specification, '0.8.0-rev.20261021');
   assert.equal(result.defaulted, true);
+});
+
+test('browser Draft 4 results match the standard entry under strict CSP', () => {
+  const document = JSON.parse(fs.readFileSync(
+    new URL('./snapshots/0.9.0-draft.4/fixtures/expected-warning/tool-schema-mcp-type-mismatch.json', import.meta.url),
+    'utf8'
+  ));
+  const options = { selector: '0.9.0-draft.4' };
+  const browserResult = validateUnderCsp(document, options);
+  const standardResult = validateStandard(document, options);
+
+  assert.deepEqual(browserResult.diagnostics, standardResult.diagnostics);
+  assert.deepEqual(browserResult.results, standardResult.results);
 });
 
 test('browser entry remains the standalone implementation', async () => {

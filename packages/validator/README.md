@@ -58,11 +58,18 @@ interface McpDescriptionValidationResult {
   selector: string | null; // the validation rules used, or null if none applied
   defaulted: boolean; // true when the selector came from the document's format version
   diagnostics: Array<{
-    code: string; // stable identifier, for example 'schema-validation'
+    code?: string; // producer-defined category
     severity: 'error' | 'warning';
-    message: string; // human-readable explanation
+    message?: string; // human-readable explanation
     path: Array<string | number>; // location, for example ['tools', 0, 'inputSchema']
-    rule?: string; // registered rule, for example 'mcp.meta.key-format' (0.9 drafts)
+    rule?: string; // registered rule, for example 'mcp.meta.key-format'
+    protocolVersions?: string[]; // revisions the finding concerns, when applicable
+  }>;
+  results?: Array<{
+    rule: string;
+    protocolVersion?: string;
+    status: 'passed' | 'failed' | 'warning' | 'not-applicable' | 'not-evaluated' | 'delegated';
+    reason?: 'earlier-stage-failed' | 'not-implemented' | 'operation';
   }>;
   /** @deprecated Use `selector`. */
   specification: string | null;
@@ -76,9 +83,12 @@ interface McpDescriptionValidationResult {
   property, the path ends with that property's name.
 - Diagnostics are deterministic: the same document and selector always produce
   the same results.
-- From MCP Description 0.9 drafts, many diagnostics also name the
-  specification `rule` they enforce, so tools can link to or group by rule.
-  Earlier selectors omit `rule`.
+- From MCP Description 0.9 drafts, diagnostics identify the specification
+  `rule` they report. In Draft 4, `rule`, `severity`, and `path` are required
+  interoperable fields; `code` and `message` are optional producer output, and
+  `protocolVersions` identifies revision-dependent findings. Draft 4 also
+  returns `results`, one status per rule and declared protocol version. Earlier
+  selectors retain their prior diagnostic shape and do not return rule results.
 
 ## Choosing validation rules
 
@@ -93,6 +103,7 @@ uses the default selector chosen for it.
 | `0.8.0-rc.4`         | Deprecated, pin only     | Release candidate 4 rules.               |
 | `0.9.0-draft.2`      | Preview, pin only        | MCP Description 0.9 Community Working Draft 2. |
 | `0.9.0-draft.3`      | Preview, pin only        | MCP Description 0.9 Community Working Draft 3. |
+| `0.9.0-draft.4`      | Preview, pin only        | MCP Description 0.9 Community Working Draft 4. |
 | `0.9.0-draft.1`      | Preview, pin only        | MCP Description 0.9 Community Working Draft 1. |
 
 The default may move to a corrected revision in a later minor release. Pin a
@@ -107,7 +118,7 @@ its exact selector; without it, `mcpdesc: "0.9.0"` is reported as
 `unsupported-format-version`:
 
 ```js
-validateMcpDescription(draftDocument, { selector: '0.9.0-draft.3' });
+validateMcpDescription(draftDocument, { selector: '0.9.0-draft.4' });
 ```
 
 A document whose format version has no default, such as an unknown future
