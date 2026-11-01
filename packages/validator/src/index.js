@@ -7,6 +7,7 @@ import {
   mcpExtensionCatalogue,
   mcpExtensionMaturity
 } from './snapshots/0.8.0/semantic.js';
+import { withValidationSelector } from './validation-context.js';
 
 export { mcpExtensionCatalogue, mcpExtensionMaturity };
 
@@ -284,7 +285,10 @@ export function validateMcpDescription(document, options = {}) {
   }
 
   return {
-    ...snapshots[resolution.specification].validate(document),
+    ...withValidationSelector(
+      resolution.specification,
+      () => snapshots[resolution.specification].validate(document),
+    ),
     selector: resolution.specification,
     specification: resolution.specification,
     defaulted: resolution.defaulted

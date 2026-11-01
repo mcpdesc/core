@@ -10,6 +10,7 @@ import {
   V0_9_DRAFT_1_SPECIFICATION,
   V0_9_DRAFT_2_SPECIFICATION,
   V0_9_DRAFT_3_SPECIFICATION,
+  V0_9_DRAFT_4_SPECIFICATION,
   projectEffectiveProtocolView,
   projectMcpNativeValue,
   parseMcpDescriptionSource,
@@ -47,6 +48,7 @@ for (const specification of [
   V0_9_DRAFT_1_SPECIFICATION,
   V0_9_DRAFT_2_SPECIFICATION,
   V0_9_DRAFT_3_SPECIFICATION,
+  V0_9_DRAFT_4_SPECIFICATION,
 ] as const) {
   const projectionFixtureRoot = fileURLToPath(
     new URL(
@@ -127,11 +129,16 @@ for (const specification of [
           );
           expect('value' in result).toBe(false);
           if (fixture.expectedError === 'projection-postcondition-failed') {
+            const postconditionPath =
+              specification === V0_9_DRAFT_4_SPECIFICATION &&
+              filename.startsWith('tool-ref-root-')
+                ? ['tools', 0, 'inputSchema']
+                : ['tools', 1, 'inputSchema', 'properties', 'enabled'];
             expect(result.diagnostics).toContainEqual(
               expect.objectContaining({
                 rule: 'mcpdesc.projection.native-schema',
                 phase: 'operation',
-                path: ['tools', 1, 'inputSchema', 'properties', 'enabled'],
+                path: postconditionPath,
               }),
             );
           }

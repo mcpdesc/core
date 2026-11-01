@@ -16,6 +16,7 @@ import {
   validateMcpDescription
 } from '../src/index.js';
 import { validatorConfiguration } from '../src/generated/selector-config.js';
+import { validate as validateDraft4Snapshot } from '../src/snapshots/0.9.0-draft.4/index.js';
 
 const configuredSelectors = Object.entries(validatorConfiguration.selectors);
 const expectedSupportedSpecifications = configuredSelectors
@@ -84,6 +85,19 @@ test('requires an explicit draft selector and preserves registered rule identiti
   assert.equal(draft3.valid, true);
   assert.equal(draft3.selector, '0.9.0-draft.3');
   assert.equal(validateMcpDescription(draft3Document).diagnostics[0].code, 'unsupported-format-version');
+  const draft4Document = fixture(
+    'expected-warning',
+    'tool-schema-mcp-type-mismatch.json',
+    '0.9.0-draft.4',
+  );
+  const draft4 = validateMcpDescription(draft4Document, {
+    selector: '0.9.0-draft.4',
+  });
+  const draft4Reference = validateDraft4Snapshot(draft4Document);
+  assert.equal(draft4.valid, draft4Reference.valid);
+  assert.deepEqual(draft4.diagnostics, draft4Reference.diagnostics);
+  assert.deepEqual(draft4.results, draft4Reference.results);
+  assert.equal(validateMcpDescription(draft4Document).diagnostics[0].code, 'unsupported-format-version');
   assert.equal(resolveMcpDescriptionSpecification(document, { selector: '0.9.0-draft.1' }).status, 'resolved');
   const invalid = validateMcpDescription({ ...document, tools: [{ name: 'missing' }] }, { selector: '0.9.0-draft.1' });
   assert.equal(invalid.valid, false);

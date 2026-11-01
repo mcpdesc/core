@@ -8,6 +8,16 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ## [Unreleased]
 
+## [0.14.0-rc.4] - 2026-11-01
+
+### Added
+
+- Added explicit selector `0.9.0-draft.4` with frozen conformance,
+	projection, conversion, and view fixtures. Draft selectors remain
+	never-default.
+- Added rule-level validation results and version-scoped diagnostics for the
+	Draft 4 validation result format 1.0.0.
+
 ## [0.14.0-rc.3] - 2026-10-29
 
 ### Added

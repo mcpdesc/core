@@ -64,7 +64,7 @@ const declaredPaths = new Set();
 for (const file of manifest.files) {
   if (
     typeof file?.path !== 'string' ||
-    !/^(?:runtime|fixtures|projection-fixtures|conversion)\/[A-Za-z0-9._/-]+$/.test(file.path) ||
+    !/^(?:runtime|fixtures|projection-fixtures|conversion|view-fixtures)\/[A-Za-z0-9._/-]+$/.test(file.path) ||
     file.path.includes('..') ||
     path.posix.normalize(file.path) !== file.path
   ) {
@@ -89,7 +89,13 @@ if (![...declaredPaths].some((file) => file.startsWith('fixtures/'))) {
   fail('at least one frozen fixture is required');
 }
 
-const actualPaths = ['runtime', 'fixtures', 'projection-fixtures', 'conversion']
+const actualPaths = [
+  'runtime',
+  'fixtures',
+  'projection-fixtures',
+  'conversion',
+  'view-fixtures',
+]
   .filter((directory) => fs.existsSync(path.join(bundleRoot, directory)))
   .flatMap((directory) =>
     filesUnder(path.join(bundleRoot, directory), directory),
@@ -150,6 +156,13 @@ if (!checkOnly) {
     fs.cpSync(
       path.join(bundleRoot, 'conversion'),
       path.join(fixtureTarget, 'conversion'),
+      { recursive: true, errorOnExist: true },
+    );
+  }
+  if (fs.existsSync(path.join(bundleRoot, 'view-fixtures'))) {
+    fs.cpSync(
+      path.join(bundleRoot, 'view-fixtures'),
+      path.join(fixtureTarget, 'view-fixtures'),
       { recursive: true, errorOnExist: true },
     );
   }

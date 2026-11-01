@@ -81,8 +81,12 @@ repository.
       conformance, projection postcondition, and conversion fixtures.
 - [x] Implement native MCP schema postcondition validation with deterministic
       failure diagnostics and no partial projected list results.
-- [ ] Review and publish validator `0.14.0-rc.3` then core `0.13.0-rc.3` on
-      `next`; specification publication does not authorize npm publication.
+- [x] Integrate the immutable `0.9.0-draft.4` selector with validator
+      conformance, result-format, conversion, and view/merge fixtures; adopt it
+      across supported core operations without changing earlier selector merge
+      behavior.
+- [ ] Review validator `0.14.0-rc.4` then core `0.13.0-rc.4` for npm publication
+      on `next`; do not publish without maintainer approval.
 - Add normalization or comparison operations only where multiple consumers
   demonstrate the same requirement.
 

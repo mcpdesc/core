@@ -6,6 +6,7 @@ import {
 
 import type {
   CoreDiagnostic,
+  JsonObject,
   JsonValue,
   McpDescriptionDocument,
   OperationResult,
@@ -13,6 +14,7 @@ import type {
 } from './model.js';
 import {
   selectCoreSpecification,
+  V0_9_DRAFT_4_SPECIFICATION,
   type CoreSelectorOptions,
 } from './snapshot.js';
 
@@ -23,6 +25,14 @@ const scopedCollections = [
   'resources',
   'resourceTemplates',
   'prompts',
+] as const;
+
+const componentNamespaces = [
+  'schemas',
+  'toolExamples',
+  'resourceExamples',
+  'resourceTemplateExamples',
+  'promptExamples',
 ] as const;
 
 type MutableObject = Record<string, unknown>;
@@ -144,11 +154,204 @@ function projectUnchecked(
 
 function unscopedDocumentPart(
   document: McpDescriptionDocument,
+  mergeComponents: boolean,
 ): McpDescriptionDocument {
   const result = structuredClone(document) as MutableObject;
   delete result.protocolVersions;
   for (const collection of scopedCollections) delete result[collection];
+  if (mergeComponents) delete result.components;
   return result as McpDescriptionDocument;
+}
+
+function isRecord(value: unknown): value is MutableObject {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function componentReference(
+  value: unknown,
+): { readonly namespace: string; readonly name: string } | undefined {
+  if (!isRecord(value) || typeof value.$componentRef !== 'string') return;
+  const match = /^#\/components\/([^/]+)\/([^/]+)$/.exec(value.$componentRef);
+  if (!match) return;
+  return { namespace: match[1]!, name: match[2]! };
+}
+
+function resolveComponentValue(
+  value: unknown,
+  components: unknown,
+  stack: ReadonlySet<string> = new Set(),
+): unknown {
+  const reference = componentReference(value);
+  if (reference) {
+    const key = `${reference.namespace}/${reference.name}`;
+    const componentsObject = isRecord(components) ? components : undefined;
+    const candidateRegistry = componentsObject?.[reference.namespace];
+    const registry: Record<string, unknown> | undefined = isRecord(
+      candidateRegistry,
+    )
+      ? candidateRegistry
+      : undefined;
+    const target = registry?.[reference.name];
+    if (target === undefined || stack.has(key)) return value;
+    return resolveComponentValue(target, components, new Set([...stack, key]));
+  }
+  if (Array.isArray(value)) {
+    return value.map((child) =>
+      resolveComponentValue(child, components, stack),
+    );
+  }
+  if (isRecord(value)) {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, child]) => [
+        key,
+        resolveComponentValue(child, components, stack),
+      ]),
+    );
+  }
+  return value;
+}
+
+function rewriteComponentReferences(
+  value: unknown,
+  mappings: ReadonlyMap<string, ReadonlyMap<string, string>>,
+): unknown {
+  const reference = componentReference(value);
+  if (reference) {
+    const name = mappings.get(reference.namespace)?.get(reference.name);
+    if (name === undefined || !isRecord(value)) return value;
+    return {
+      ...value,
+      $componentRef: `#/components/${reference.namespace}/${name}`,
+    };
+  }
+  if (Array.isArray(value)) {
+    return value.map((child) => rewriteComponentReferences(child, mappings));
+  }
+  if (isRecord(value)) {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, child]) => [
+        key,
+        rewriteComponentReferences(child, mappings),
+      ]),
+    );
+  }
+  return value;
+}
+
+type ComponentMergeResult =
+  | {
+      readonly ok: true;
+      readonly components: JsonObject | undefined;
+      readonly views: ReadonlyMap<
+        SupportedProtocolVersion,
+        McpDescriptionDocument
+      >;
+    }
+  | { readonly ok: false; readonly diagnostic: CoreDiagnostic };
+
+function mergeComponentViews(
+  views: ReadonlyMap<SupportedProtocolVersion, McpDescriptionDocument>,
+  versions: readonly SupportedProtocolVersion[],
+): ComponentMergeResult {
+  const extensions = new Map<string, { value: unknown; canonical: string }>();
+  const outputNames = new Map<
+    (typeof componentNamespaces)[number],
+    Map<string, { baseName: string; canonical: string }>
+  >(componentNamespaces.map((namespace) => [namespace, new Map()]));
+  const mergedRegistries = new Map<
+    (typeof componentNamespaces)[number],
+    MutableObject
+  >(componentNamespaces.map((namespace) => [namespace, {}]));
+  const normalizedViews = new Map<
+    SupportedProtocolVersion,
+    McpDescriptionDocument
+  >();
+
+  for (const version of versions) {
+    const view = views.get(version)!;
+    const components = isRecord(view.components) ? view.components : {};
+    for (const [key, value] of Object.entries(components)) {
+      if ((componentNamespaces as readonly string[]).includes(key)) continue;
+      const canonical = canonicalString(value);
+      const existing = extensions.get(key);
+      if (existing && existing.canonical !== canonical) {
+        return {
+          ok: false,
+          diagnostic: operationDiagnostic(
+            'conflicting-unscoped-metadata',
+            `Conflicting Components Object extension ${JSON.stringify(key)}`,
+          ),
+        };
+      }
+      extensions.set(key, { value: structuredClone(value), canonical });
+    }
+
+    const mappings = new Map<string, Map<string, string>>(
+      componentNamespaces.map((namespace) => [namespace, new Map()]),
+    );
+    const pending: Array<{
+      namespace: (typeof componentNamespaces)[number];
+      name: string;
+      outputName: string;
+      value: unknown;
+    }> = [];
+
+    for (const namespace of componentNamespaces) {
+      const sourceRegistry: Record<string, unknown> = isRecord(
+        components[namespace],
+      )
+        ? components[namespace]
+        : {};
+      const names = outputNames.get(namespace)!;
+      const destination = mergedRegistries.get(namespace)!;
+      for (const [name, value] of Object.entries(sourceRegistry)) {
+        const canonical = canonicalString(
+          resolveComponentValue(value, components),
+        );
+        const existing = names.get(name);
+        let outputName = name;
+        if (existing) {
+          if (existing.baseName === name && existing.canonical === canonical) {
+            mappings.get(namespace)!.set(name, outputName);
+            continue;
+          }
+          let suffix = 2;
+          while (names.has(`${name}-${suffix}`)) suffix += 1;
+          outputName = `${name}-${suffix}`;
+        }
+        names.set(outputName, { baseName: name, canonical });
+        mappings.get(namespace)!.set(name, outputName);
+        pending.push({ namespace, name, outputName, value });
+        destination[outputName] = structuredClone(value) as JsonValue;
+      }
+    }
+
+    for (const item of pending) {
+      mergedRegistries.get(item.namespace)![item.outputName] =
+        rewriteComponentReferences(item.value, mappings) as JsonValue;
+    }
+    normalizedViews.set(
+      version,
+      rewriteComponentReferences(view, mappings) as McpDescriptionDocument,
+    );
+  }
+
+  const mergedComponents: MutableObject = Object.fromEntries(
+    [...extensions].map(([key, entry]) => [key, entry.value]),
+  );
+  for (const namespace of componentNamespaces) {
+    const registry = mergedRegistries.get(namespace)!;
+    if (Object.keys(registry).length > 0)
+      mergedComponents[namespace] = registry;
+  }
+  return {
+    ok: true,
+    components:
+      Object.keys(mergedComponents).length > 0
+        ? (mergedComponents as JsonObject)
+        : undefined,
+    views: normalizedViews,
+  };
 }
 
 function mergeCollection(
@@ -299,6 +502,7 @@ export function mergeEffectiveProtocolViews(
   }
 
   const versions = [...views.keys()].sort();
+  const mergeComponents = specification === V0_9_DRAFT_4_SPECIFICATION;
   const firstView = views.values().next().value;
   if (firstView === undefined) {
     return {
@@ -312,11 +516,12 @@ export function mergeEffectiveProtocolViews(
     };
   }
   const expectedUnscoped = semanticCanonicalString(
-    unscopedDocumentPart(firstView),
+    unscopedDocumentPart(firstView, mergeComponents),
   );
   for (const [version, view] of views) {
     if (
-      semanticCanonicalString(unscopedDocumentPart(view)) !== expectedUnscoped
+      semanticCanonicalString(unscopedDocumentPart(view, mergeComponents)) !==
+      expectedUnscoped
     ) {
       return {
         ok: false,
@@ -331,10 +536,31 @@ export function mergeEffectiveProtocolViews(
     }
   }
 
-  const value = unscopedDocumentPart(firstView);
+  let collectionViews: ReadonlyMap<
+    SupportedProtocolVersion,
+    McpDescriptionDocument
+  > = views;
+  let mergedComponents: JsonObject | undefined;
+  if (mergeComponents) {
+    const componentMerge = mergeComponentViews(views, versions);
+    if (!componentMerge.ok) {
+      return {
+        ok: false,
+        diagnostics: [
+          ...uniqueDiagnostics(sourceDiagnostics),
+          componentMerge.diagnostic,
+        ],
+      };
+    }
+    collectionViews = componentMerge.views;
+    mergedComponents = componentMerge.components;
+  }
+
+  const value = unscopedDocumentPart(firstView, mergeComponents);
   value.protocolVersions = versions;
+  if (mergedComponents) value.components = mergedComponents;
   for (const collection of scopedCollections) {
-    const merged = mergeCollection(views, collection, versions);
+    const merged = mergeCollection(collectionViews, collection, versions);
     if (merged.length > 0) value[collection] = merged as JsonValue;
   }
 

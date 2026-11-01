@@ -18,7 +18,7 @@ function sha256(value) {
   return createHash('sha256').update(value).digest('hex');
 }
 
-function createBundle(projectionFixtures = false, conversion = false) {
+function createBundle(projectionFixtures = false, conversion = false, viewFixtures = false) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'mcpdesc-snapshot-'));
   const contents = {
     'runtime/base.js': 'export const supportedProtocolVersions = [];\n',
@@ -33,6 +33,9 @@ function createBundle(projectionFixtures = false, conversion = false) {
   }
   if (conversion) {
     contents['conversion/0.8.0-to-0.9.0.json'] = '{"from":"0.8.0","to":"0.9.0"}\n';
+  }
+  if (viewFixtures) {
+    contents['view-fixtures/expected/minimal.json'] = '{"protocolVersions":["2025-11-25"]}\n';
   }
   for (const [relativePath, value] of Object.entries(contents)) {
     const filename = path.join(root, relativePath);
@@ -118,6 +121,43 @@ test('imports verified conversion profile artifacts alongside frozen fixtures', 
   } finally {
     fs.rmSync(root, { force: true, recursive: true });
     fs.rmSync(target, { force: true, recursive: true });
+  }
+});
+
+test('imports verified view fixtures alongside frozen fixtures', () => {
+  const root = createBundle(false, false, true);
+  const target = fs.mkdtempSync(path.join(os.tmpdir(), 'mcpdesc-import-'));
+  try {
+    const isolatedScript = path.join(target, 'scripts/import-snapshot.mjs');
+    fs.mkdirSync(path.dirname(isolatedScript), { recursive: true });
+    fs.copyFileSync(script, isolatedScript);
+    execFileSync(process.execPath, [isolatedScript, root], { stdio: 'pipe' });
+    assert.equal(
+      fs.readFileSync(path.join(target, 'test/snapshots/9.9.9-draft.1/view-fixtures/expected/minimal.json'), 'utf8'),
+      fs.readFileSync(path.join(root, 'view-fixtures/expected/minimal.json'), 'utf8'),
+    );
+    assert.ok(fs.existsSync(path.join(target, 'test/snapshots/9.9.9-draft.1/fixtures/expected-valid/minimal.json')));
+  } finally {
+    fs.rmSync(root, { force: true, recursive: true });
+    fs.rmSync(target, { force: true, recursive: true });
+  }
+});
+
+test('rejects modified or undeclared view fixtures', () => {
+  for (const undeclared of [false, true]) {
+    const root = createBundle(false, false, true);
+    try {
+      fs.writeFileSync(
+        path.join(root, `view-fixtures/expected/${undeclared ? 'extra' : 'minimal'}.json`),
+        '{}\n',
+      );
+      assert.throws(
+        () => execFileSync(process.execPath, [script, '--check', root], { stdio: 'pipe' }),
+        undeclared ? /manifest file list does not exactly match/ : /digest mismatch/,
+      );
+    } finally {
+      fs.rmSync(root, { force: true, recursive: true });
+    }
   }
 });
 

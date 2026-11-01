@@ -61,11 +61,16 @@ for (const specification of supportedSpecifications) {
       const standard = validateStandard(document, options);
       const standalone = validateStandaloneUnderCsp(document, options);
       assert.equal(standalone.valid, standard.valid, filename);
-      assert.deepEqual(
-        [...new Set(standalone.diagnostics.map(diagnosticIdentity))].sort(),
-        [...new Set(standard.diagnostics.map(diagnosticIdentity))].sort(),
-        filename
-      );
+      if (specification === '0.9.0-draft.4') {
+        assert.deepEqual(standalone.diagnostics, standard.diagnostics, filename);
+        assert.deepEqual(standalone.results, standard.results, filename);
+      } else {
+        assert.deepEqual(
+          [...new Set(standalone.diagnostics.map(diagnosticIdentity))].sort(),
+          [...new Set(standard.diagnostics.map(diagnosticIdentity))].sort(),
+          filename
+        );
+      }
     }
   });
 }

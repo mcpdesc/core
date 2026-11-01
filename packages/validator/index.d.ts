@@ -15,12 +15,33 @@ export type SupportedProtocolVersion =
 
 export type McpDescriptionDiagnosticSeverity = 'error' | 'warning';
 
+export type McpDescriptionRuleResultStatus =
+  | 'passed'
+  | 'failed'
+  | 'warning'
+  | 'not-applicable'
+  | 'not-evaluated'
+  | 'delegated';
+
+export type McpDescriptionRuleResultReason =
+  | 'earlier-stage-failed'
+  | 'not-implemented'
+  | 'operation';
+
+export interface McpDescriptionRuleResult {
+  readonly rule: string;
+  readonly protocolVersion?: SupportedProtocolVersion;
+  readonly status: McpDescriptionRuleResultStatus;
+  readonly reason?: McpDescriptionRuleResultReason;
+}
+
 export interface McpDescriptionDiagnostic {
-  readonly code: string;
+  readonly code?: string;
   readonly severity: McpDescriptionDiagnosticSeverity;
-  readonly message: string;
+  readonly message?: string;
   readonly path: Array<string | number>;
   readonly rule?: string;
+  readonly protocolVersions?: readonly SupportedProtocolVersion[];
 }
 
 export interface McpDescriptionValidationResult {
@@ -29,6 +50,7 @@ export interface McpDescriptionValidationResult {
   readonly selector: McpDescriptionSelector | null;
   readonly specification: McpDescriptionSpecification | null;
   readonly defaulted: boolean;
+  readonly results?: readonly McpDescriptionRuleResult[];
 }
 
 export interface ValidateMcpDescriptionOptions {

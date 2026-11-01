@@ -11,6 +11,8 @@ import {
   supportedSpecifications,
   validateMcpDescription,
   type McpDescriptionDiagnostic,
+  type McpDescriptionRuleResult,
+  type McpDescriptionRuleResultStatus,
   type McpDescriptionValidationResult
 } from '@mcpdesc/validator';
 import { validateMcpDescription as validateBrowser } from '@mcpdesc/validator/browser';
@@ -22,6 +24,9 @@ const result: McpDescriptionValidationResult = validateMcpDescription(document, 
   selector: '0.8.0'
 });
 const defaultResult: McpDescriptionValidationResult = validateMcpDescription(document);
+const draft4Result: McpDescriptionValidationResult = validateMcpDescription(document, {
+  selector: '0.9.0-draft.4'
+});
 const selector: McpDescriptionSelector = result.selector!;
 const componentResolution = resolveMcpDescriptionComponentReferences(document, {
   specification: '0.8.0'
@@ -40,6 +45,10 @@ const browserResult: McpDescriptionValidationResult = validateBrowser(document, 
 const diagnostic: McpDescriptionDiagnostic | undefined = result.diagnostics[0];
 const pathSegment: string | number | undefined = diagnostic?.path[0];
 const diagnosticRule: string | undefined = diagnostic?.rule;
+const diagnosticCode: string | undefined = diagnostic?.code;
+const diagnosticProtocolVersions: readonly string[] | undefined = diagnostic?.protocolVersions;
+const draft4Records: readonly McpDescriptionRuleResult[] | undefined = draft4Result.results;
+const draft4Status: McpDescriptionRuleResultStatus | undefined = draft4Records?.[0]?.status;
 const configuredSelector: McpDescriptionSelector = supportedSpecifications[0];
 const deprecatedSelector: McpDescriptionSelector = deprecatedSpecifications[0];
 const defaultedStable: McpDescriptionSelector | undefined = defaultSpecifications['0.8.0']?.selector;
@@ -58,6 +67,9 @@ if (resolution.status === 'resolved') {
 
 void pathSegment;
 void diagnosticRule;
+void diagnosticCode;
+void diagnosticProtocolVersions;
+void draft4Status;
 void selector;
 void defaultResult;
 void protocolVersion;
