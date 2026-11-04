@@ -1,17 +1,19 @@
-import * as snapshot1 from "../snapshots/0.9.0-draft.4/index.js";
-import * as snapshot2 from "../snapshots/0.9.0-draft.3/index.js";
-import * as snapshot3 from "../snapshots/0.9.0-draft.2/index.js";
-import * as snapshot4 from "../snapshots/0.9.0-draft.1/index.js";
-import * as snapshot5 from "../snapshots/0.8.0-rc.4/index.js";
-import * as snapshot6 from "../snapshots/0.8.0/index.js";
-import * as snapshot7 from "../snapshots/0.8.0-rev.20261021/index.js";
-import { resolveComponentReferences as resolveComponentReferences1 } from "../snapshots/0.9.0-draft.4/semantic.js";
-import { resolveComponentReferences as resolveComponentReferences2 } from "../snapshots/0.9.0-draft.3/semantic.js";
-import { resolveComponentReferences as resolveComponentReferences3 } from "../snapshots/0.9.0-draft.2/semantic.js";
-import { resolveComponentReferences as resolveComponentReferences4 } from "../snapshots/0.9.0-draft.1/semantic.js";
-import { resolveComponentReferences as resolveComponentReferences5 } from "../snapshots/0.8.0-rc.4/semantic.js";
-import { resolveComponentReferences as resolveComponentReferences6 } from "../snapshots/0.8.0/semantic.js";
-import { resolveComponentReferences as resolveComponentReferences7 } from "../snapshots/0.8.0-rev.20261021/semantic.js";
+import * as snapshot1 from "../snapshots/0.9.0-rc.1/index.js";
+import * as snapshot2 from "../snapshots/0.9.0-draft.4/index.js";
+import * as snapshot3 from "../snapshots/0.9.0-draft.3/index.js";
+import * as snapshot4 from "../snapshots/0.9.0-draft.2/index.js";
+import * as snapshot5 from "../snapshots/0.9.0-draft.1/index.js";
+import * as snapshot6 from "../snapshots/0.8.0-rc.4/index.js";
+import * as snapshot7 from "../snapshots/0.8.0/index.js";
+import * as snapshot8 from "../snapshots/0.8.0-rev.20261021/index.js";
+import { resolveComponentReferences as resolveComponentReferences1 } from "../snapshots/0.9.0-rc.1/semantic.js";
+import { resolveComponentReferences as resolveComponentReferences2 } from "../snapshots/0.9.0-draft.4/semantic.js";
+import { resolveComponentReferences as resolveComponentReferences3 } from "../snapshots/0.9.0-draft.3/semantic.js";
+import { resolveComponentReferences as resolveComponentReferences4 } from "../snapshots/0.9.0-draft.2/semantic.js";
+import { resolveComponentReferences as resolveComponentReferences5 } from "../snapshots/0.9.0-draft.1/semantic.js";
+import { resolveComponentReferences as resolveComponentReferences6 } from "../snapshots/0.8.0-rc.4/semantic.js";
+import { resolveComponentReferences as resolveComponentReferences7 } from "../snapshots/0.8.0/semantic.js";
+import { resolveComponentReferences as resolveComponentReferences8 } from "../snapshots/0.8.0-rev.20261021/semantic.js";
 
 function deepFreeze(value) {
   if (value !== null && typeof value === 'object' && !Object.isFrozen(value)) {
@@ -27,9 +29,20 @@ export const validatorConfiguration = deepFreeze({
     "0.8.0": {
       "defaultSelector": "0.8.0-rev.20261021",
       "schemaPins": false
+    },
+    "0.9.0": {
+      "defaultSelector": "0.9.0-rc.1",
+      "schemaPins": false
     }
   },
   "selectors": {
+    "0.9.0-rc.1": {
+      "formatVersion": "0.9.0",
+      "lifecycle": "active",
+      "specificationTag": "v0.9.0-rc.1",
+      "schemaUri": "https://mcpdesc.org/schema/mcp-description/0.9.0-rc.1.json",
+      "schemaSha256": "18e2349e767879c6ddef547ad93f3620f42d1f2f43e978de2d7cdac31bbe130a"
+    },
     "0.9.0-draft.4": {
       "formatVersion": "0.9.0",
       "lifecycle": "active",
@@ -132,21 +145,23 @@ export const validatorConfiguration = deepFreeze({
 });
 
 export const snapshotImplementations = Object.freeze({
-  "0.9.0-draft.4": snapshot1,
-  "0.9.0-draft.3": snapshot2,
-  "0.9.0-draft.2": snapshot3,
-  "0.9.0-draft.1": snapshot4,
-  "0.8.0-rc.4": snapshot5,
-  "0.8.0": snapshot6,
-  "0.8.0-rev.20261021": snapshot7,
+  "0.9.0-rc.1": snapshot1,
+  "0.9.0-draft.4": snapshot2,
+  "0.9.0-draft.3": snapshot3,
+  "0.9.0-draft.2": snapshot4,
+  "0.9.0-draft.1": snapshot5,
+  "0.8.0-rc.4": snapshot6,
+  "0.8.0": snapshot7,
+  "0.8.0-rev.20261021": snapshot8,
 });
 
 export const componentResolvers = Object.freeze({
-  "0.9.0-draft.4": resolveComponentReferences1,
-  "0.9.0-draft.3": resolveComponentReferences2,
-  "0.9.0-draft.2": resolveComponentReferences3,
-  "0.9.0-draft.1": resolveComponentReferences4,
-  "0.8.0-rc.4": resolveComponentReferences5,
-  "0.8.0": resolveComponentReferences6,
-  "0.8.0-rev.20261021": resolveComponentReferences7,
+  "0.9.0-rc.1": resolveComponentReferences1,
+  "0.9.0-draft.4": resolveComponentReferences2,
+  "0.9.0-draft.3": resolveComponentReferences3,
+  "0.9.0-draft.2": resolveComponentReferences4,
+  "0.9.0-draft.1": resolveComponentReferences5,
+  "0.8.0-rc.4": resolveComponentReferences6,
+  "0.8.0": resolveComponentReferences7,
+  "0.8.0-rev.20261021": resolveComponentReferences8,
 });

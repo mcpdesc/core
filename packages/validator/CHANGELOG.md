@@ -8,6 +8,28 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ## [Unreleased]
 
+## [0.14.0-rc.5] - 2026-11-04
+
+### Added
+
+- Imported immutable `0.9.0-rc.1` from specification tag `v0.9.0-rc.1`
+	(commit `b208a06ef9a947556df0623f5431935681e8716d`), preserving conformance,
+	native-projection, conversion, and view/merge fixtures.
+- Froze the tagged validation result format `1.3.0` schema and checked every
+	RC.1 fixture result against it. Standard and strict-CSP entry points preserve
+	identical RC.1 diagnostics and rule results.
+
+### Changed
+
+- **Upgrade note:** `mcpdesc: "0.9.0"` now defaults to `0.9.0-rc.1` with
+	`schemaPins: false`, including recognized same-format draft schema identities.
+	Callers no longer need a selector for 0.9.0. Pin a draft explicitly to retain
+	its original rule identifiers and results; existing snapshots are unchanged.
+- Allow approved RC defaults, never draft defaults. The 0.9.0 default advances
+	with approved RC intakes on package upgrades and freezes to final `0.9.0`.
+- RC.1 uses protocol-version rule IDs and result format `1.3.0`, including
+	`$defs/protocol-version`; Draft 4 retains its identifiers and format `1.0.0`.
+
 ## [0.14.0-rc.4] - 2026-11-01
 
 ### Added

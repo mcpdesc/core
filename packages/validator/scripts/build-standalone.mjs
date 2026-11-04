@@ -27,11 +27,9 @@ const schemas = selectors.map((selector) => JSON.parse(fs.readFileSync(
 const ajv = new Ajv2020({ allErrors: true, strict: false, verbose: true, code: { source: true, esm: true } });
 addFormats(ajv);
 const validatorExports = Object.fromEntries(selectors.map((selector, index) => [`snapshot${index + 1}`, selector]));
-const draft4Selector = '0.9.0-draft.4';
-let draft4InstrumentedSchema;
-let draft4StandaloneSchema;
-if (selectors.includes(draft4Selector)) {
-  const semanticPath = path.join(packageRoot, 'src/snapshots', draft4Selector, 'semantic.js');
+const instrumentedSchemas = [];
+for (const selector of ['0.9.0-draft.4', '0.9.0-rc.1'].filter((selector) => selectors.includes(selector))) {
+  const semanticPath = path.join(packageRoot, 'src/snapshots', selector, 'semantic.js');
   const semanticSource = fs.readFileSync(semanticPath, 'utf8');
   const semanticFile = ts.createSourceFile(semanticPath, semanticSource, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
   let documentSchemaOwners;
@@ -44,19 +42,19 @@ if (selectors.includes(draft4Selector)) {
     }
   }
   if (!Array.isArray(documentSchemaOwners)) {
-    throw new Error('Draft 4 semantic snapshot does not expose a parseable documentSchemaOwners map');
+    throw new Error(`${selector} semantic snapshot does not expose a parseable documentSchemaOwners map`);
   }
   const ownersByPointer = new Map(documentSchemaOwners);
-  draft4InstrumentedSchema = structuredClone(schemas[selectors.indexOf(draft4Selector)]);
+  const instrumentedSchema = structuredClone(schemas[selectors.indexOf(selector)]);
   for (const [pointer, rule] of documentSchemaOwners) {
     const target = pointer.split('/').slice(1)
       .map((token) => token.replaceAll('~1', '/').replaceAll('~0', '~'))
-      .reduce((node, token) => node?.[token], draft4InstrumentedSchema);
+      .reduce((node, token) => node?.[token], instrumentedSchema);
     if (target && typeof target === 'object' && !Array.isArray(target)) {
       target['x-mcpdesc-rule'] = rule;
     }
   }
-  draft4StandaloneSchema = structuredClone(draft4InstrumentedSchema);
+  const standaloneSchema = structuredClone(instrumentedSchema);
   const escapePointer = (segment) => String(segment).replaceAll('~', '~0').replaceAll('/', '~1');
   function annotateOwners(node, pointer, inheritedOwner) {
     if (!node || typeof node !== 'object') return;
@@ -96,8 +94,8 @@ if (selectors.includes(draft4Selector)) {
       }
     }
   }
-  annotateOwners(draft4StandaloneSchema, '#', undefined);
-  ajv.addKeyword({
+  annotateOwners(standaloneSchema, '#', undefined);
+  if (!ajv.getKeyword('x-mcpdesc-rule')) ajv.addKeyword({
     keyword: 'x-mcpdesc-rule',
     schemaType: 'string',
     errors: false,
@@ -106,9 +104,11 @@ if (selectors.includes(draft4Selector)) {
       gen.code(_`recordDraft4Evaluation(${schemaCode}, ${strConcat(codegenNames.instancePath, it.errorPath)})`);
     },
   });
-  const instrumentedId = 'https://mcpdesc.invalid/standalone/0.9.0-draft.4/document-schema';
-  ajv.addSchema({ ...draft4StandaloneSchema, $id: instrumentedId }, instrumentedId);
-  validatorExports.draft4DocumentSchema = instrumentedId;
+  const instrumentedId = `https://mcpdesc.invalid/standalone/${selector}/document-schema`;
+  ajv.addSchema({ ...standaloneSchema, $id: instrumentedId }, instrumentedId);
+  const exportName = `documentSchema${instrumentedSchemas.length + 1}`;
+  validatorExports[exportName] = instrumentedId;
+  instrumentedSchemas.push({ schema: instrumentedSchema, exportName });
 }
 for (const [index, schema] of schemas.entries()) {
   ajv.addSchema({ ...schema, $id: `urn:mcpdesc:standalone:${selectors[index]}` }, selectors[index]);
@@ -123,7 +123,7 @@ function recordDraft4Evaluation(rule, instancePath) {
 }
 export const validatorsBySchema = new Map([
 ${schemas.map((schema, index) => `  [${JSON.stringify(JSON.stringify(schema))}, snapshot${index + 1}]`).join(',\n')}
-${draft4InstrumentedSchema ? `,  [${JSON.stringify(JSON.stringify(draft4InstrumentedSchema))}, draft4DocumentSchema]` : ''}
+${instrumentedSchemas.map(({ schema, exportName }) => `,  [${JSON.stringify(JSON.stringify(schema))}, ${exportName}]`).join('\n')}
 ]);
 `;
 const ajvDraft7 = new Ajv({ allErrors: true, strict: false, code: { source: true, esm: true } });

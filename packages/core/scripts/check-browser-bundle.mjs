@@ -15,6 +15,9 @@ const entries = [
       'v0_9Draft1Snapshot',
       'v0_9Draft2Snapshot',
       'v0_9Draft3Snapshot',
+      'v0_9Rc1Snapshot',
+      'V0_9_RC_1_SPECIFICATION',
+      'V0_9_RC_1_SCHEMA_URI',
       'convertMcpDescriptionVersion',
     ],
   },
@@ -167,6 +170,7 @@ try {
     assert.ok(resolved.provenance.length > 0);
   }
   const conversionSource = {
+    $schema: root.V0_8_SCHEMA_URI,
     mcpdesc: '0.8.0',
     info: { name: 'csp-conversion', version: '1.0.0' },
     protocolVersions: ['2026-07-28'],
@@ -178,6 +182,25 @@ try {
     to: '0.9.0',
   });
   assert.equal(converted.ok, true, JSON.stringify(converted.diagnostics));
+  assert.equal(converted.value.$schema, root.V0_9_RC_1_SCHEMA_URI);
+  assert.equal(root.v0_9Rc1Snapshot.specification, '0.9.0-rc.1');
+  const defaultNative = root.projectMcpNativeValue(converted.value, {
+    protocolVersion: '2026-07-28',
+    kind: 'tool',
+    identifier: 'lookup',
+  });
+  assert.equal(
+    defaultNative.ok,
+    true,
+    JSON.stringify(defaultNative.diagnostics),
+  );
+  const pinnedRc1 = root.projectMcpNativeValue(converted.value, {
+    selector: root.V0_9_RC_1_SPECIFICATION,
+    protocolVersion: '2026-07-28',
+    kind: 'tool',
+    identifier: 'lookup',
+  });
+  assert.deepEqual(defaultNative, pinnedRc1);
   const projectedDraft2 = root.projectMcpNativeValue(converted.value, {
     specification: '0.9.0-draft.2',
     protocolVersion: '2026-07-28',

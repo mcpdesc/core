@@ -37,7 +37,10 @@ validation without creating a second source of normative specification text.
 ## Snapshot discipline
 
 - Require exact immutable snapshot selectors.
-- Do not infer a draft selector from `mcpdesc: "0.8.0"` alone.
+- Do not infer a draft selector from a format version alone. Unpinned documents
+  use configured defaults. The `0.9.0` default follows approved RC snapshots
+  until the final `0.9.0` selector is adopted, then remains frozen to that
+  release.
 - Do not change behavior captured for a published selector silently.
 - Import a new selector only from approved specification artifacts. Review and
   freeze the exact schema, semantic implementation, and fixtures owned by the

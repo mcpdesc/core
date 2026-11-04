@@ -85,7 +85,13 @@ repository.
       conformance, result-format, conversion, and view/merge fixtures; adopt it
       across supported core operations without changing earlier selector merge
       behavior.
-- [ ] Review validator `0.14.0-rc.4` then core `0.13.0-rc.4` for npm publication
+- [x] Adopt immutable specification `0.9.0-rc.1` across validator and supported
+      core operations, including result format `1.3.0` and renamed identifiers,
+      without changing earlier snapshots.
+- [x] Make RC.1 the configured `0.9.0` default and have conversion follow it;
+      advance through approved RC intakes and freeze to `0.9.0` at final
+      release.
+- [ ] Review validator `0.14.0-rc.5` then core `0.13.0-rc.5` for npm publication
       on `next`; do not publish without maintainer approval.
 - Add normalization or comparison operations only where multiple consumers
   demonstrate the same requirement.

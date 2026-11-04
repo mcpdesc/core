@@ -9,6 +9,24 @@ scripts, and release infrastructure.
 > - [`@mcpdesc/core`](packages/core/CHANGELOG.md)
 > - [`@mcpdesc/validator`](packages/validator/CHANGELOG.md)
 
+## 2026-11-04
+
+### Added
+
+- Imported specification RC.1 as immutable selector `0.9.0-rc.1`, preserving
+  exported artifacts and freezing its tagged validation result schema `1.3.0`.
+- Extended standalone rule-result instrumentation and core frozen-fixture,
+  strict-CSP, type, and isolated-consumer checks to RC.1.
+
+### Changed
+
+- Approved release-candidate defaults: `0.9.0` follows RC.1 and later approved
+  RC intakes, then freezes to final `0.9.0`. Draft defaults remain prohibited;
+  explicit selectors remain immutable pins. Updated configuration validation and
+  maintainer policy accordingly.
+- Prepared validator `0.14.0-rc.5` and core `0.13.0-rc.5` without publication;
+  core pins the matching validator and conversion follows its 0.9.0 default.
+
 ## 2026-11-01
 
 ### Added

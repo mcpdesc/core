@@ -6,7 +6,7 @@
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/mcpdesc/core/blob/main/LICENSE)
 
 Validate [MCP Description](https://mcpdesc.org) documents. Tested for MCP
-Description v0.8.
+Description v0.8 and v0.9 RC.1.
 
 The validator:
 
@@ -84,10 +84,13 @@ interface McpDescriptionValidationResult {
 - Diagnostics are deterministic: the same document and selector always produce
   the same results.
 - From MCP Description 0.9 drafts, diagnostics identify the specification
-  `rule` they report. In Draft 4, `rule`, `severity`, and `path` are required
+  `rule` they report. From Draft 4, `rule`, `severity`, and `path` are required
   interoperable fields; `code` and `message` are optional producer output, and
   `protocolVersions` identifies revision-dependent findings. Draft 4 also
-  returns `results`, one status per rule and declared protocol version. Earlier
+  returns `results`, one status per rule and declared protocol version. RC.1
+  uses result format `1.3.0` and protocol-version rule identifiers; Draft 4
+  keeps format `1.0.0` and its original identifiers. Treat `not-applicable` and
+  `not-evaluated` as unconfirmed, not passed. Earlier
   selectors retain their prior diagnostic shape and do not return rule results.
 
 ## Choosing validation rules
@@ -105,6 +108,7 @@ uses the default selector chosen for it.
 | `0.9.0-draft.3`      | Preview, pin only        | MCP Description 0.9 Community Working Draft 3. |
 | `0.9.0-draft.4`      | Preview, pin only        | MCP Description 0.9 Community Working Draft 4. |
 | `0.9.0-draft.1`      | Preview, pin only        | MCP Description 0.9 Community Working Draft 1. |
+| `0.9.0-rc.1`         | Default for `0.9.0`      | MCP Description 0.9 Release Candidate 1. |
 
 The default may move to a corrected revision in a later minor release. Pin a
 selector when results must stay identical across upgrades, for example in CI:
@@ -113,9 +117,10 @@ selector when results must stay identical across upgrades, for example in CI:
 validateMcpDescription(document, { selector: '0.8.0-rev.20261021' });
 ```
 
-Draft selectors are never defaults. Validate a 0.9 draft document by pinning
-its exact selector; without it, `mcpdesc: "0.9.0"` is reported as
-`unsupported-format-version`:
+`mcpdesc: "0.9.0"` defaults to RC.1, with or without `$schema`. The default
+advances through approved RC snapshots on package upgrades, then freezes to
+`0.9.0` at final release. Draft selectors are never defaults; pin one to retain
+its original validation behavior:
 
 ```js
 validateMcpDescription(draftDocument, { selector: '0.9.0-draft.4' });
@@ -141,7 +146,9 @@ if (resolution.status === 'resolved') {
 ```
 
 The format version comes from `mcpdesc`. A `$schema` value must agree with it;
-for 0.8.0, the schema URI does not pin a particular selector.
+for 0.8.0 and 0.9.0, recognized schema URIs do not pin a particular selector.
+Use `options.selector` for an exact pin, including when `$schema` names an
+earlier draft of the same format.
 
 ## Browser and strict CSP use
 

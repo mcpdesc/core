@@ -1,13 +1,15 @@
-import { validateMcpDescription } from '@mcpdesc/validator/standalone';
+import {
+  defaultSpecifications,
+  specificationProvenance,
+  validateMcpDescription,
+} from '@mcpdesc/validator/standalone';
 
 import type { CoreDiagnostic, JsonObject, JsonValue } from './model.js';
 import {
-  V0_9_DRAFT_2_SCHEMA_URI,
   V0_9_DRAFT_2_SPECIFICATION,
-  V0_9_DRAFT_3_SCHEMA_URI,
   V0_9_DRAFT_3_SPECIFICATION,
-  V0_9_DRAFT_4_SCHEMA_URI,
   V0_9_DRAFT_4_SPECIFICATION,
+  V0_9_RC_1_SPECIFICATION,
 } from './snapshot.js';
 
 const sourceSelector = '0.8.0-rev.20261021';
@@ -65,7 +67,8 @@ export interface McpDescriptionConversionOptions {
   readonly selector?:
     | typeof V0_9_DRAFT_2_SPECIFICATION
     | typeof V0_9_DRAFT_3_SPECIFICATION
-    | typeof V0_9_DRAFT_4_SPECIFICATION;
+    | typeof V0_9_DRAFT_4_SPECIFICATION
+    | typeof V0_9_RC_1_SPECIFICATION;
   readonly fixes?: readonly McpDescriptionConversionFix[];
 }
 
@@ -255,13 +258,9 @@ export function convertMcpDescriptionVersion(
     };
   }
 
-  const selector = options.selector ?? V0_9_DRAFT_2_SPECIFICATION;
-  const targetSchemaUri =
-    selector === V0_9_DRAFT_4_SPECIFICATION
-      ? V0_9_DRAFT_4_SCHEMA_URI
-      : selector === V0_9_DRAFT_3_SPECIFICATION
-        ? V0_9_DRAFT_3_SCHEMA_URI
-        : V0_9_DRAFT_2_SCHEMA_URI;
+  const selector =
+    options.selector ?? defaultSpecifications[targetVersion]!.selector;
+  const targetSchemaUri = specificationProvenance[selector].schemaUri;
 
   const sourceValidation = validateMcpDescription(document, {
     selector: sourceSelector,

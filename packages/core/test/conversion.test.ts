@@ -15,6 +15,8 @@ import {
   V0_9_DRAFT_3_SCHEMA_URI,
   V0_9_DRAFT_4_SPECIFICATION,
   V0_9_DRAFT_4_SCHEMA_URI,
+  V0_9_RC_1_SPECIFICATION,
+  V0_9_RC_1_SCHEMA_URI,
 } from '../src/index.js';
 
 function conversionFixtureDirectory(selector: string): string {
@@ -87,7 +89,8 @@ function testConversionProfile(selector: string): void {
             selector: selector as
               | typeof V0_9_DRAFT_2_SPECIFICATION
               | typeof V0_9_DRAFT_3_SPECIFICATION
-              | typeof V0_9_DRAFT_4_SPECIFICATION,
+              | typeof V0_9_DRAFT_4_SPECIFICATION
+              | typeof V0_9_RC_1_SPECIFICATION,
             fixes: fixture.fixes,
           },
         );
@@ -119,6 +122,7 @@ function testConversionProfile(selector: string): void {
 testConversionProfile(V0_9_DRAFT_2_SPECIFICATION);
 testConversionProfile(V0_9_DRAFT_3_SPECIFICATION);
 testConversionProfile(V0_9_DRAFT_4_SPECIFICATION);
+testConversionProfile(V0_9_RC_1_SPECIFICATION);
 
 describe('convert then project', () => {
   it('targets Draft 3 explicitly and projects the converted value', () => {
@@ -187,7 +191,7 @@ describe('convert then project', () => {
     expect(projected.ok, JSON.stringify(projected.diagnostics)).toBe(true);
   });
 
-  it('requires explicit conversion before Draft 2 native projection', () => {
+  it('defaults conversion and subsequent native projection to RC.1', () => {
     const source = {
       $schema: V0_8_SCHEMA_URI,
       mcpdesc: '0.8.0',
@@ -203,10 +207,9 @@ describe('convert then project', () => {
 
     expect(converted.ok, JSON.stringify(converted.diagnostics)).toBe(true);
     if (!converted.ok) return;
-    expect(converted.value.$schema).toBe(V0_9_DRAFT_2_SCHEMA_URI);
+    expect(converted.value.$schema).toBe(V0_9_RC_1_SCHEMA_URI);
 
     const projected = projectMcpNativeValue(converted.value, {
-      selector: V0_9_DRAFT_2_SPECIFICATION,
       protocolVersion: '2026-07-28',
       kind: 'tool',
       identifier: 'forecast',

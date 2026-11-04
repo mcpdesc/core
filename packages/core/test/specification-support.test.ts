@@ -12,6 +12,8 @@ import {
   V0_9_DRAFT_2_SPECIFICATION,
   V0_9_DRAFT_3_SPECIFICATION,
   V0_9_DRAFT_4_SPECIFICATION,
+  V0_9_RC_1_SCHEMA_URI,
+  V0_9_RC_1_SPECIFICATION,
   deprecatedCoreSpecifications,
   mergeEffectiveProtocolViews,
   migrateMcpDescription07ToRc4,
@@ -97,6 +99,14 @@ const supportBySpecification = {
     projection: 'supported',
     selection: 'supported',
   },
+  '0.9.0-rc.1': {
+    componentResolution: 'supported',
+    merge: 'supported',
+    migrationFrom07: migrationUnsupported,
+    nativeProjection: 'supported',
+    projection: 'supported',
+    selection: 'supported',
+  },
 } as const satisfies Record<
   SupportedCoreSpecification,
   Record<SelectorSensitiveOperation, SupportDisposition>
@@ -110,6 +120,7 @@ const schemaBySpecification = {
   '0.9.0-draft.2': V0_9_DRAFT_2_SCHEMA_URI,
   '0.9.0-draft.3': V0_9_DRAFT_3_SCHEMA_URI,
   '0.9.0-draft.4': V0_9_DRAFT_4_SCHEMA_URI,
+  '0.9.0-rc.1': V0_9_RC_1_SCHEMA_URI,
 } as const satisfies Record<SupportedCoreSpecification, string>;
 
 const migrateBySpecification = {
@@ -131,7 +142,11 @@ const migrateBySpecification = {
 } satisfies Record<
   Exclude<
     SupportedCoreSpecification,
-    '0.9.0-draft.1' | '0.9.0-draft.2' | '0.9.0-draft.3' | '0.9.0-draft.4'
+    | '0.9.0-draft.1'
+    | '0.9.0-draft.2'
+    | '0.9.0-draft.3'
+    | '0.9.0-draft.4'
+    | '0.9.0-rc.1'
   >,
   (source: unknown) => { readonly ok: boolean }
 >;
@@ -210,7 +225,8 @@ describe('selector-sensitive operation support', () => {
           | '0.9.0-draft.1'
           | typeof V0_9_DRAFT_2_SPECIFICATION
           | typeof V0_9_DRAFT_3_SPECIFICATION
-          | typeof V0_9_DRAFT_4_SPECIFICATION,
+          | typeof V0_9_DRAFT_4_SPECIFICATION
+          | typeof V0_9_RC_1_SPECIFICATION,
         protocolVersion: '2025-11-25',
         kind: 'tool',
         identifier: 'search',
@@ -241,7 +257,7 @@ describe('selector-sensitive operation support', () => {
     });
   }
 
-  it('requires an explicit selector for draft documents', () => {
+  it('defaults 0.9.0 documents to RC.1 while preserving explicit draft pins', () => {
     const draft = {
       $schema: V0_9_DRAFT_1_SCHEMA_URI,
       mcpdesc: '0.9.0',
@@ -253,11 +269,28 @@ describe('selector-sensitive operation support', () => {
       protocolVersion: '2025-11-25',
       kind: 'tool',
     });
-    expect(unpinned.ok).toBe(false);
-    expect(unpinned.diagnostics[0]).toMatchObject({
-      code: 'unsupported-format-version',
-      phase: 'source',
-    });
+    expect(unpinned.ok, JSON.stringify(unpinned.diagnostics)).toBe(true);
+    const operations = [
+      (selector?: SupportedCoreSpecification) =>
+        projectEffectiveProtocolView(draft, {
+          selector,
+          protocolVersion: '2025-11-25',
+        }),
+      (selector?: SupportedCoreSpecification) =>
+        mergeEffectiveProtocolViews([draft], { selector }),
+      (selector?: SupportedCoreSpecification) =>
+        selectMcpDescriptionDeclarations(draft, {
+          selector,
+          selections: { tools: ['search'] },
+        }),
+      (selector?: SupportedCoreSpecification) =>
+        resolveMcpDescriptionComponentReferences(draft, { selector }),
+    ];
+    for (const operation of operations) {
+      const defaulted = operation();
+      expect(defaulted.ok, JSON.stringify(defaulted.diagnostics)).toBe(true);
+      expect(defaulted).toEqual(operation(V0_9_RC_1_SPECIFICATION));
+    }
     expect(
       projectMcpNativeValue(draft, {
         specification: '0.9.0-draft.1',
