@@ -26,6 +26,7 @@ import {
   selectCoreSpecification,
   V0_9_DRAFT_3_SPECIFICATION,
   V0_9_DRAFT_4_SPECIFICATION,
+  V0_9_RC_1_SPECIFICATION,
   V0_9_DRAFT_2_SPECIFICATION,
   V0_9_DRAFT_1_SPECIFICATION,
   type CoreSelectorOptions,
@@ -373,7 +374,9 @@ export function projectEffectiveProtocolView(
       diagnostics: [
         ...sourceDiagnostics,
         operationDiagnostic(
-          'projection-version-not-declared',
+          specification === V0_9_RC_1_SPECIFICATION
+            ? 'projection-protocol-version-not-declared'
+            : 'projection-version-not-declared',
           `MCP protocol revision ${JSON.stringify(options.protocolVersion)} is absent from root protocolVersions`,
           ['protocolVersions'],
           options.protocolVersion,
@@ -383,7 +386,10 @@ export function projectEffectiveProtocolView(
   }
 
   const value = projectDocument(source, options.protocolVersion);
-  if (specification === V0_9_DRAFT_4_SPECIFICATION) {
+  if (
+    specification === V0_9_DRAFT_4_SPECIFICATION ||
+    specification === V0_9_RC_1_SPECIFICATION
+  ) {
     pruneUnusedComponents(value);
   }
   const resultValidation = validateMcpDescription(value, {
@@ -420,6 +426,7 @@ export interface ProjectMcpNativeValueOptions extends CoreSelectorOptions<
   | typeof V0_9_DRAFT_2_SPECIFICATION
   | typeof V0_9_DRAFT_3_SPECIFICATION
   | typeof V0_9_DRAFT_4_SPECIFICATION
+  | typeof V0_9_RC_1_SPECIFICATION
 > {
   readonly protocolVersion: SupportedProtocolVersion;
   readonly kind: McpNativeKind;
@@ -497,7 +504,8 @@ export function projectMcpNativeValue(
     selection.specification !== V0_9_DRAFT_1_SPECIFICATION &&
     selection.specification !== V0_9_DRAFT_2_SPECIFICATION &&
     selection.specification !== V0_9_DRAFT_3_SPECIFICATION &&
-    selection.specification !== V0_9_DRAFT_4_SPECIFICATION
+    selection.specification !== V0_9_DRAFT_4_SPECIFICATION &&
+    selection.specification !== V0_9_RC_1_SPECIFICATION
   ) {
     return {
       ok: false,

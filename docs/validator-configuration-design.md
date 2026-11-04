@@ -166,7 +166,7 @@ The build/check script fails with a clear path and reason if:
   bytes or snapshot implementation;
 - a default points to an unknown or retired selector, or to a selector whose
   format version differs from the `formats` key;
-- a default points to a draft or release candidate;
+- a default points to a draft (approved release candidates are allowed);
 - `schemaPins` is missing or not boolean;
 - schema-pinning selectors share an indistinguishable schema identity;
 - an unknown configuration key appears, so typos do not silently change policy;

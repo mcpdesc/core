@@ -44,7 +44,8 @@ test('exports the active validator API', () => {
   assert.deepEqual(supportedSpecifications, expectedSupportedSpecifications);
   assert.deepEqual(deprecatedSpecifications, expectedDeprecatedSpecifications);
   assert.deepEqual(defaultSpecifications, {
-    '0.8.0': { selector: '0.8.0-rev.20261021', schemaPins: false }
+    '0.8.0': { selector: '0.8.0-rev.20261021', schemaPins: false },
+    '0.9.0': { selector: '0.9.0-rc.1', schemaPins: false }
   });
   assert.deepEqual(supportedProtocolVersions, [
     '2024-11-05',
@@ -56,13 +57,13 @@ test('exports the active validator API', () => {
   assert.deepEqual(Object.keys(specificationProvenance), supportedSpecifications);
 });
 
-test('requires an explicit draft selector and preserves registered rule identities', () => {
+test('preserves explicit draft pins while defaulting 0.9.0 documents to RC.1', () => {
   const document = fixture('expected-valid', 'minimal-zero-primitives.json', '0.9.0-draft.1');
   const pinned = validateMcpDescription(document, { selector: '0.9.0-draft.1' });
   assert.equal(pinned.valid, true);
   assert.equal(pinned.defaulted, false);
   assert.equal(pinned.selector, '0.9.0-draft.1');
-  assert.equal(validateMcpDescription(document).diagnostics[0].code, 'unsupported-format-version');
+  assert.equal(validateMcpDescription(document).selector, '0.9.0-rc.1');
   const draft2Document = fixture(
     'expected-valid',
     'minimal-zero-primitives.json',
@@ -73,7 +74,7 @@ test('requires an explicit draft selector and preserves registered rule identiti
   });
   assert.equal(draft2.valid, true);
   assert.equal(draft2.selector, '0.9.0-draft.2');
-  assert.equal(validateMcpDescription(draft2Document).diagnostics[0].code, 'unsupported-format-version');
+  assert.equal(validateMcpDescription(draft2Document).selector, '0.9.0-rc.1');
   const draft3Document = fixture(
     'expected-valid',
     'minimal-zero-primitives.json',
@@ -84,7 +85,7 @@ test('requires an explicit draft selector and preserves registered rule identiti
   });
   assert.equal(draft3.valid, true);
   assert.equal(draft3.selector, '0.9.0-draft.3');
-  assert.equal(validateMcpDescription(draft3Document).diagnostics[0].code, 'unsupported-format-version');
+  assert.equal(validateMcpDescription(draft3Document).selector, '0.9.0-rc.1');
   const draft4Document = fixture(
     'expected-warning',
     'tool-schema-mcp-type-mismatch.json',
@@ -97,11 +98,29 @@ test('requires an explicit draft selector and preserves registered rule identiti
   assert.equal(draft4.valid, draft4Reference.valid);
   assert.deepEqual(draft4.diagnostics, draft4Reference.diagnostics);
   assert.deepEqual(draft4.results, draft4Reference.results);
-  assert.equal(validateMcpDescription(draft4Document).diagnostics[0].code, 'unsupported-format-version');
+  assert.equal(validateMcpDescription(draft4Document).selector, '0.9.0-rc.1');
   assert.equal(resolveMcpDescriptionSpecification(document, { selector: '0.9.0-draft.1' }).status, 'resolved');
   const invalid = validateMcpDescription({ ...document, tools: [{ name: 'missing' }] }, { selector: '0.9.0-draft.1' });
   assert.equal(invalid.valid, false);
   assert.ok(invalid.diagnostics.some((diagnostic) => diagnostic.rule === 'mcpdesc.document.schema'));
+});
+
+test('defaults 0.9.0 with or without a schema identity and preserves exact rule pins', () => {
+  const document = fixture('expected-warning', 'tool-schema-mcp-type-mismatch.json', '0.9.0-rc.1');
+  for (const schema of [undefined, document.$schema, 'https://mcpdesc.org/schema/mcp-description/0.9.0-draft.4.json']) {
+    const source = { ...document, $schema: schema };
+    if (schema === undefined) delete source.$schema;
+    const result = validateMcpDescription(source);
+    assert.equal(result.valid, true);
+    assert.equal(result.selector, '0.9.0-rc.1');
+    assert.equal(result.defaulted, true);
+    assert.ok(result.results.some(({ rule }) => rule === 'mcp.tool.output-schema.protocol-version'));
+    assert.ok(!result.results.some(({ rule }) => rule.includes('revision-availability')));
+    const pinned = validateMcpDescription(source, { selector: '0.9.0-draft.4' });
+    assert.equal(pinned.selector, '0.9.0-draft.4');
+    assert.equal(pinned.defaulted, false);
+    assert.ok(pinned.results.some(({ rule }) => rule === 'mcp.tool.output-schema.revision-availability'));
+  }
 });
 
 test('exports configured provenance for each supported schema', () => {
@@ -229,7 +248,7 @@ test('defaults from the format version unless the caller pins a selector', () =>
   assert.equal(noSchemaResult.specification, '0.8.0-rev.20261021');
   assert.equal(noSchemaResult.defaulted, true);
 
-  const unsupportedDocument = { ...document, mcpdesc: '0.9.0' };
+  const unsupportedDocument = { ...document, mcpdesc: '99.0.0' };
   delete unsupportedDocument.$schema;
   const unsupported = validateMcpDescription(unsupportedDocument);
   assert.equal(unsupported.valid, false);
@@ -277,7 +296,7 @@ test('uses maintainer defaults and fails unsupported format versions without fal
   assert.equal(defaulted.specification, '0.8.0-rev.20261021');
   assert.equal(defaulted.defaulted, true);
 
-  const unsupported = resolveMcpDescriptionSpecification({ mcpdesc: '0.9.0' });
+  const unsupported = resolveMcpDescriptionSpecification({ mcpdesc: '99.0.0' });
   assert.equal(unsupported.status, 'unresolved');
   assert.equal(unsupported.diagnostics[0].code, 'unsupported-format-version');
 

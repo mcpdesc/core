@@ -7,6 +7,8 @@ import validateDraft7Schema from '#standalone-meta-draft7';
 import validateDraft2020Schema from '#standalone-meta-draft2020';
 import { currentValidationSelector } from '../validation-context.js';
 
+const ruleResultSelectors = new Set(['0.9.0-draft.4', '0.9.0-rc.1']);
+
 function pointerToInstancePath(pointer) {
   return pointer === '#' ? '' : pointer.slice(1);
 }
@@ -147,7 +149,7 @@ function assertLocalReferencesResolve(schema) {
   visit(schema);
   for (const reference of references) {
     if (!reference.startsWith('#')) {
-      throw new Error(`can't resolve reference ${reference}${currentValidationSelector() === '0.9.0-draft.4' ? ' from id #' : ''}`);
+      throw new Error(`can't resolve reference ${reference}${ruleResultSelectors.has(currentValidationSelector()) ? ' from id #' : ''}`);
     }
     if (reference === '#' || reference === '#recursive') continue;
     if (!reference.startsWith('#/')) {
@@ -157,7 +159,7 @@ function assertLocalReferencesResolve(schema) {
     let target = schema;
     for (const segment of reference.slice(2).split('/').map((part) => part.replaceAll('~1', '/').replaceAll('~0', '~'))) {
       if (!target || typeof target !== 'object' || !Object.hasOwn(target, segment)) {
-        throw new Error(`can't resolve reference ${reference}${currentValidationSelector() === '0.9.0-draft.4' ? ' from id #' : ''}`);
+        throw new Error(`can't resolve reference ${reference}${ruleResultSelectors.has(currentValidationSelector()) ? ' from id #' : ''}`);
       }
       target = target[segment];
     }
@@ -215,7 +217,7 @@ class AjvAdapter {
     const validate = this.constructor.draft === '7' ? validateDraft7Schema : validateDraft2020Schema;
     const valid = validate(schema);
     this.errors = validate.errors;
-    if (!valid && throwOrLogError && currentValidationSelector() === '0.9.0-draft.4') {
+    if (!valid && throwOrLogError && ruleResultSelectors.has(currentValidationSelector())) {
       const details = (validate.errors ?? [])
         .map((error) => `data${error.instancePath || ''} ${error.message}`)
         .join('; ');

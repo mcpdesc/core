@@ -33,8 +33,8 @@ selectors are immutable, so the fix cannot change `0.8.0` itself.
 4. Validator `0.13.0` adds maintainer-chosen default selectors per format
    version, `defaultSpecifications`, each with a `schemaPins` setting. Callers
    that do not pass a selector get the default; a passed selector is a pin.
-5. A document whose format version has no default, such as `mcpdesc: "0.9.0"`
-   today, fails explicitly. The validator never falls back to an earlier format
+5. A document whose format version has no default, such as an unknown future
+   format, fails explicitly. The validator never falls back to an earlier format
    version.
 6. Validator `0.13.0-rc.1` introduced default selection and the revision as the
    default for `0.8.0`; stable `0.13.0` promotes that tested behavior on npm
@@ -60,6 +60,11 @@ review is approved.
 
 The rest of this document records the terminology, the reasoning, and the
 rejected options.
+
+As of the RC.1 intake, `0.9.0` documents default to `0.9.0-rc.1` with
+`schemaPins: false`. That configured default advances through approved release
+candidates and freezes to `0.9.0` at final release. Draft selectors remain
+explicit pins; the historical 0.13.0 decisions below are otherwise unchanged.
 
 ## Repositories and packages
 

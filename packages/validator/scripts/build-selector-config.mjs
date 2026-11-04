@@ -61,8 +61,8 @@ for (const [formatVersion, value] of Object.entries(formats)) {
     if (defaultMetadata.lifecycle !== 'active') {
       fail(`${location}.defaultSelector`, 'default selector must have active lifecycle');
     }
-    if (/-draft\.|-rc\./.test(format.defaultSelector)) {
-      fail(`${location}.defaultSelector`, 'draft and release-candidate selectors cannot be defaults');
+    if (/-draft\./.test(format.defaultSelector)) {
+      fail(`${location}.defaultSelector`, 'draft selectors cannot be defaults');
     }
   }
 }

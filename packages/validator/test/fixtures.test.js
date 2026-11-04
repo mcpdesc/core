@@ -9,6 +9,19 @@ import YAML from 'yaml';
 
 import { supportedSpecifications, validateMcpDescription } from '../src/index.js';
 import { validate as validateDraft4Snapshot } from '../src/snapshots/0.9.0-draft.4/index.js';
+import { validate as validateRc1Snapshot } from '../src/snapshots/0.9.0-rc.1/index.js';
+
+const rc1ResultSchema = JSON.parse(fs.readFileSync(
+  new URL('./snapshots/0.9.0-rc.1/validation-result.schema.json', import.meta.url),
+  'utf8',
+));
+const validateRc1Result = new Ajv2020({ allErrors: true, strict: false }).compile(rc1ResultSchema);
+
+test('pins validation result format 1.3.0 with protocol-version definitions', () => {
+  assert.equal(rc1ResultSchema.$id, 'https://mcpdesc.org/schema/validation-result/1.3.0.json');
+  assert.ok(rc1ResultSchema.$defs['protocol-version']);
+  assert.equal(rc1ResultSchema.$defs.revision, undefined);
+});
 
 const draft4ResultSchemaBytes = fs.readFileSync(
   new URL('./snapshots/0.9.0-draft.4/validation-result.schema.json', import.meta.url),
@@ -63,12 +76,15 @@ for (const specification of supportedSpecifications) {
           assert.ok(warnings.length > 0);
         }
 
-        if (specification === '0.9.0-draft.4') {
-          const reference = validateDraft4Snapshot(document);
+        if (specification === '0.9.0-draft.4' || specification === '0.9.0-rc.1') {
+          const reference = specification === '0.9.0-rc.1'
+            ? validateRc1Snapshot(document)
+            : validateDraft4Snapshot(document);
+          const validateResult = specification === '0.9.0-rc.1' ? validateRc1Result : validateDraft4Result;
           assert.deepEqual(result.diagnostics, reference.diagnostics);
           assert.deepEqual(result.results, reference.results);
-          assert.equal(validateDraft4Result(reference), true, JSON.stringify(validateDraft4Result.errors));
-          assert.equal(validateDraft4Result(result), true, JSON.stringify(validateDraft4Result.errors));
+          assert.equal(validateResult(reference), true, JSON.stringify(validateResult.errors));
+          assert.equal(validateResult(result), true, JSON.stringify(validateResult.errors));
         }
 
         for (const diagnostic of result.diagnostics) {
@@ -76,7 +92,7 @@ for (const specification of supportedSpecifications) {
           for (const optional of ['code', 'message', 'protocolVersions']) {
             if (diagnostic[optional] !== undefined) keys.push(optional);
           }
-          if (specification.startsWith('0.9.0-draft.') && diagnostic.rule !== undefined) {
+          if (specification.startsWith('0.9.0-') && diagnostic.rule !== undefined) {
             assert.match(diagnostic.rule, /^(?:mcp|mcpdesc|json-schema)\.[a-z0-9.-]+$/);
             keys.push('rule');
           }

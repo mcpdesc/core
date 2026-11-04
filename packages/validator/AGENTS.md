@@ -52,8 +52,11 @@ schemas remain in `mcpdesc/mcpdesc-specification`.
   format default. `mcpdesc` alone does not identify a unique selector; a format
   version without a default fails explicitly. Never choose a selector by
   ordering or downgrade to an earlier format version.
-- Draft and release-candidate selectors are never defaults. Honor each
-  default's `schemaPins` setting when resolving a declared `$schema`.
+- Draft selectors are never defaults. The `0.9.0` default advances through
+  approved release candidates, currently `0.9.0-rc.1`, until it is frozen to
+  stable `0.9.0`. Advance it explicitly in configuration at each intake; never
+  choose the newest selector at runtime. Explicit caller pins remain immutable.
+  Honor each default's `schemaPins` setting when resolving a declared `$schema`.
 
 ## Validation
 

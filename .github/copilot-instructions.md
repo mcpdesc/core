@@ -32,7 +32,9 @@
 ## Constraints
 
 - Never duplicate validator semantic rules in core operations.
-- Never infer a prerelease selector from `mcpdesc: "0.8.0"` alone.
+- Resolve unpinned documents only through configured format defaults, never by
+  sorting selectors. Drafts are never defaults; the `0.9.0` default advances
+  through approved RC snapshots until it is frozen to stable `0.9.0`.
 - Keep published operations deterministic, browser-safe, offline, and free of
   file or network access.
 - Preserve validator Node.js 20 compatibility and strict-CSP entry points.

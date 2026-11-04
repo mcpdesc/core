@@ -61,7 +61,7 @@ for (const specification of supportedSpecifications) {
       const standard = validateStandard(document, options);
       const standalone = validateStandaloneUnderCsp(document, options);
       assert.equal(standalone.valid, standard.valid, filename);
-      if (specification === '0.9.0-draft.4') {
+      if (specification === '0.9.0-draft.4' || specification === '0.9.0-rc.1') {
         assert.deepEqual(standalone.diagnostics, standard.diagnostics, filename);
         assert.deepEqual(standalone.results, standard.results, filename);
       } else {

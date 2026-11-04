@@ -59,8 +59,12 @@ corpus for an existing selector is never edited.
   `draft`, `rc`, or `rev`. A `rev` number is its cut date `YYYYMMDD`; cut at
   most one revision per release per date. Revisions are cumulative.
 - **Defaults are a maintainer decision.** Make a revision the default when its
-  fixes should reach unpinned documents, which is usually the case. Only stable
-  or `rev` selectors can be defaults.
+  fixes should reach unpinned documents, which is usually the case. Stable,
+  `rev`, and approved `rc` selectors can be defaults; drafts cannot. For 0.9.0,
+  advance the configured default at each approved RC intake, starting with
+  `0.9.0-rc.1`, and freeze it to `0.9.0` at final release. Use
+  `schemaPins: false` so recognized same-format schema identities follow that
+  default; caller-supplied selectors continue to pin exact behavior.
 - **Default changes ship in minor releases**, with release notes listing the
   fixes.
 - **No fallback.** A format version without a default fails with

@@ -4,6 +4,31 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 
 ## [Unreleased]
 
+## [0.13.0-rc.5] - 2026-11-04
+
+### Added
+
+- Adopted immutable `0.9.0-rc.1` across projection, merge, declaration
+  selection, component resolution, native projection, and 0.8.0-to-0.9.0
+  conversion, with frozen RC.1 fixtures and strict-CSP and isolated-consumer
+  checks.
+- Exported `V0_9_RC_1_SPECIFICATION`, `V0_9_RC_1_SCHEMA_URI`, and
+  `v0_9Rc1Snapshot`.
+
+### Changed
+
+- **Upgrade note:** unpinned `0.9.0` documents now use RC.1, including documents
+  with a recognized earlier draft `$schema`. Explicit draft pins are unchanged.
+  The configured default advances through approved RCs, then freezes to final
+  `0.9.0`. RC.1 projection uses `projection-protocol-version-not-declared`;
+  earlier selectors retain `projection-version-not-declared`.
+- **Upgrade note:** conversion without `selector` follows the configured 0.9.0
+  default instead of Draft 2. Pass `selector: '0.9.0-draft.2'` to retain the old
+  target. Conversion still preserves omission of `$schema` and never guesses
+  fixes.
+- Pinned `@mcpdesc/validator` `0.14.0-rc.5` with RC.1 protocol-version rule IDs
+  and result format `1.3.0`. Migration from 0.7.0 to 0.9.0 remains unsupported.
+
 ## [0.13.0-rc.4] - 2026-11-01
 
 ### Added

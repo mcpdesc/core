@@ -4,8 +4,17 @@ formats:
   '0.8.0':
     defaultSelector: '0.8.0-rev.20261021'
     schemaPins: false
+  '0.9.0':
+    defaultSelector: '0.9.0-rc.1'
+    schemaPins: false
 
 selectors:
+  '0.9.0-rc.1':
+    formatVersion: '0.9.0'
+    lifecycle: active
+    specificationTag: 'v0.9.0-rc.1'
+    schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.9.0-rc.1.json'
+    schemaSha256: '18e2349e767879c6ddef547ad93f3620f42d1f2f43e978de2d7cdac31bbe130a'
   '0.9.0-draft.4':
     formatVersion: '0.9.0'
     lifecycle: active

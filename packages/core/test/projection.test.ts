@@ -11,6 +11,7 @@ import {
   V0_9_DRAFT_2_SPECIFICATION,
   V0_9_DRAFT_3_SPECIFICATION,
   V0_9_DRAFT_4_SPECIFICATION,
+  V0_9_RC_1_SPECIFICATION,
   projectEffectiveProtocolView,
   projectMcpNativeValue,
   parseMcpDescriptionSource,
@@ -49,6 +50,7 @@ for (const specification of [
   V0_9_DRAFT_2_SPECIFICATION,
   V0_9_DRAFT_3_SPECIFICATION,
   V0_9_DRAFT_4_SPECIFICATION,
+  V0_9_RC_1_SPECIFICATION,
 ] as const) {
   const projectionFixtureRoot = fileURLToPath(
     new URL(
@@ -98,6 +100,7 @@ for (const specification of [
         ) as {
           document: unknown;
           revision: ProjectMcpNativeValueOptions['protocolVersion'];
+          protocolVersion?: ProjectMcpNativeValueOptions['protocolVersion'];
           kind: ProjectMcpNativeValueOptions['kind'];
           identifier?: string;
           expected?: unknown;
@@ -115,7 +118,7 @@ for (const specification of [
         const original = structuredClone(document);
         const result = projectMcpNativeValue(document, {
           specification,
-          protocolVersion: fixture.revision,
+          protocolVersion: fixture.protocolVersion ?? fixture.revision,
           kind: fixture.kind,
           ...(fixture.identifier === undefined
             ? {}
@@ -130,7 +133,8 @@ for (const specification of [
           expect('value' in result).toBe(false);
           if (fixture.expectedError === 'projection-postcondition-failed') {
             const postconditionPath =
-              specification === V0_9_DRAFT_4_SPECIFICATION &&
+              (specification === V0_9_DRAFT_4_SPECIFICATION ||
+                specification === V0_9_RC_1_SPECIFICATION) &&
               filename.startsWith('tool-ref-root-')
                 ? ['tools', 0, 'inputSchema']
                 : ['tools', 1, 'inputSchema', 'properties', 'enabled'];

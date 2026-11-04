@@ -9,8 +9,9 @@ JavaScript and TypeScript libraries for working with
 [MCP Description](https://mcpdesc.org) documents: machine-readable descriptions
 of an MCP server's tools, resources, prompts, transports, and capabilities.
 
-Tested for MCP Description v0.8. Both libraries run offline in Node.js and in
-browser bundles, including pages with a strict Content Security Policy.
+Tested for MCP Description v0.8 and v0.9 RC.1. Both libraries run offline in
+Node.js and in browser bundles, including pages with a strict Content Security
+Policy.
 
 ## Which package do I need?
 
@@ -72,31 +73,31 @@ Several independent version numbers appear in these libraries:
 | ------------------------------ | -------------------------------- | ------------------------------------------------------------------ |
 | MCP Description format version | `mcpdesc: "0.8.0"`               | The document format, declared in the document.                     |
 | Selector                       | `0.8.0`, `0.8.0-rev.20261021`    | One exact, immutable set of validation rules for a format version. |
-| MCP protocol revision          | `2025-11-25`, `2026-07-28`       | An MCP protocol version that the described server supports.        |
-| npm package version            | `@mcpdesc/validator@0.14.0-rc.4` | A library release; it may support several selectors.               |
+| MCP protocol version           | `2025-11-25`, `2026-07-28`       | An MCP protocol version that the described server supports.        |
+| npm package version            | `@mcpdesc/validator@0.14.0-rc.5` | A library release; it may support several selectors.               |
 
 For formats with a configured default, both packages select it from the
 document's `mcpdesc` value, so documents benefit from validator corrections when
-you upgrade. Draft selectors have no default and must be passed explicitly. Pass
-a selector to pin exact rules. See the
-[terminology guide](docs/validator-terminology.md) for details.
+you upgrade. `0.9.0` documents default to `0.9.0-rc.1`; this default advances
+through approved RC snapshots on package upgrades, then freezes to `0.9.0` at
+final release. Pass a selector to pin exact rules, including earlier drafts. See
+the [terminology guide](docs/validator-terminology.md) for details.
 
 ## Compatibility
 
-| Package                            | Supported selectors                                                                                                                  | Runtime     |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
-| `@mcpdesc/validator` `0.14.0-rc.4` | `0.8.0-rev.20261021` (default for `0.8.0`); deprecated `0.8.0` and `0.8.0-rc.4`; explicit `0.9.0-draft.1` through `.4`               | Node.js 20+ |
-| `@mcpdesc/core` `0.13.0-rc.4`      | Same selectors; Draft 4 results, view/merge fixtures, native projection, and 0.8.0-to-0.9.0 conversion; pins validator `0.14.0-rc.4` | Node.js 22+ |
+| Package                            | Supported selectors                                                                                                                                        | Runtime     |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `@mcpdesc/validator` `0.14.0-rc.5` | `0.8.0-rev.20261021` (default for `0.8.0`); `0.9.0-rc.1` (default for `0.9.0`); deprecated `0.8.0` and `0.8.0-rc.4`; explicit `0.9.0-draft.1` through `.4` | Node.js 20+ |
+| `@mcpdesc/core` `0.13.0-rc.5`      | Same selectors; rule-level results, view/merge fixtures, native projection, and 0.8.0-to-0.9.0 conversion; pins validator `0.14.0-rc.5`                    | Node.js 22+ |
 
 Older drafts and release candidates remain available from earlier package
 releases. npm versions are below `1.0.0`: a minor release may contain breaking
 changes, which the package changelogs describe together with upgrade guidance.
 
-**Preview:** Draft selectors are explicit and never defaults. RC.4 adds MCP
-Description 0.9 Draft 4 (`0.9.0-draft.4`), Draft 4 rule-level validation
-results, view/merge fixture support, and core adoption of updated Tool-schema,
-Resource URI, and schema-owner behavior. Proposal 0031's result format remains a
-Draft 4 preview contract.
+**Preview:** MCP Description 0.9 RC.1 uses protocol-version rule identifiers and
+validation result format `1.3.0`. Earlier draft selectors remain unchanged and
+require explicit pins. Recognized same-format `$schema` identities follow the
+configured default; use `selector` to pin validation behavior.
 
 ## Documentation
 

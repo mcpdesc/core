@@ -27,6 +27,10 @@ const defaultResult: McpDescriptionValidationResult = validateMcpDescription(doc
 const draft4Result: McpDescriptionValidationResult = validateMcpDescription(document, {
   selector: '0.9.0-draft.4'
 });
+const rc1Result: McpDescriptionValidationResult = validateBrowser(document, {
+  selector: '0.9.0-rc.1'
+});
+const rc1Records: readonly McpDescriptionRuleResult[] | undefined = rc1Result.results;
 const selector: McpDescriptionSelector = result.selector!;
 const componentResolution = resolveMcpDescriptionComponentReferences(document, {
   specification: '0.8.0'
@@ -70,6 +74,7 @@ void diagnosticRule;
 void diagnosticCode;
 void diagnosticProtocolVersions;
 void draft4Status;
+void rc1Records;
 void selector;
 void defaultResult;
 void protocolVersion;
