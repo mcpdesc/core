@@ -74,21 +74,21 @@ Several independent version numbers appear in these libraries:
 | MCP Description format version | `mcpdesc: "0.8.0"`               | The document format, declared in the document.                     |
 | Selector                       | `0.8.0`, `0.8.0-rev.20261021`    | One exact, immutable set of validation rules for a format version. |
 | MCP protocol version           | `2025-11-25`, `2026-07-28`       | An MCP protocol version that the described server supports.        |
-| npm package version            | `@mcpdesc/validator@0.14.0-rc.5` | A library release; it may support several selectors.               |
+| npm package version            | `@mcpdesc/validator@0.14.0-rc.6` | A library release; it may support several selectors.               |
 
 For formats with a configured default, both packages select it from the
 document's `mcpdesc` value, so documents benefit from validator corrections when
-you upgrade. `0.9.0` documents default to `0.9.0-rc.1`; this default advances
+you upgrade. `0.9.0` documents default to `0.9.0-rc.2`; this default advances
 through approved RC snapshots on package upgrades, then freezes to `0.9.0` at
 final release. Pass a selector to pin exact rules, including earlier drafts. See
 the [terminology guide](docs/validator-terminology.md) for details.
 
 ## Compatibility
 
-| Package                            | Supported selectors                                                                                                                                                      | Runtime     |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
-| `@mcpdesc/validator` `0.14.0-rc.5` | `0.8.0-rev.20261021` (default for `0.8.0`); `0.9.0-rc.1` (default for `0.9.0`); deprecated `0.8.0` and `0.8.0-rc.4`; explicit `0.9.0-draft.1` through `.4`               | Node.js 20+ |
-| `@mcpdesc/core` `0.13.0-rc.6`      | Same selectors; rule-level results, view/merge fixtures, native projection, 0.8.0-to-0.9.0 conversion, and serialization ordering policies; pins validator `0.14.0-rc.5` | Node.js 22+ |
+| Package                            | Supported selectors                                                                                                                                                         | Runtime     |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `@mcpdesc/validator` `0.14.0-rc.6` | `0.8.0-rev.20261021` (default for `0.8.0`); `0.9.0-rc.2` (default for `0.9.0`); explicit `0.9.0-rc.1` and `0.9.0-draft.1` through `.4`; deprecated `0.8.0` and `0.8.0-rc.4` | Node.js 20+ |
+| `@mcpdesc/core` `0.13.0-rc.6`      | Same selectors; rule-level results, view/merge fixtures, native projection, 0.8.0-to-0.9.0 conversion, and serialization ordering policies; pins validator `0.14.0-rc.6`    | Node.js 22+ |
 
 Older drafts and release candidates remain available from earlier package
 releases. npm versions are below `1.0.0`: a minor release may contain breaking

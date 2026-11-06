@@ -16,6 +16,7 @@ import {
   selectCoreSpecification,
   V0_9_DRAFT_4_SPECIFICATION,
   V0_9_RC_1_SPECIFICATION,
+  V0_9_RC_2_SPECIFICATION,
   type CoreSelectorOptions,
 } from './snapshot.js';
 
@@ -505,7 +506,8 @@ export function mergeEffectiveProtocolViews(
   const versions = [...views.keys()].sort();
   const mergeComponents =
     specification === V0_9_DRAFT_4_SPECIFICATION ||
-    specification === V0_9_RC_1_SPECIFICATION;
+    specification === V0_9_RC_1_SPECIFICATION ||
+    specification === V0_9_RC_2_SPECIFICATION;
   const firstView = views.values().next().value;
   if (firstView === undefined) {
     return {

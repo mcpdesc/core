@@ -569,9 +569,16 @@ describe('document ordering schema inventory', () => {
       );
       const covered = new Set<string>();
       for (const testCase of cases) {
-        const pointer = testCase.definition
-          ? `/$defs/${testCase.definition}`
-          : '';
+        const conditionalAlternative =
+          /^(transport|securityScheme|toolResultContent)\/oneOf\/(\d+)$/.exec(
+            testCase.definition,
+          );
+        const pointer =
+          conditionalAlternative && selector === '0.9.0-rc.2'
+            ? `/$defs/${conditionalAlternative[1]}/allOf/${conditionalAlternative[2]}/then`
+            : testCase.definition
+              ? `/$defs/${testCase.definition}`
+              : '';
         const definition = pointer
           .split('/')
           .slice(1)
@@ -588,6 +595,24 @@ describe('document ordering schema inventory', () => {
           expected.sort(),
         );
         covered.add(pointer);
+      }
+      if (selector === '0.9.0-rc.2') {
+        const conditionalRoots = [
+          ['transport', 'type'],
+          ['securityScheme', 'type'],
+          ['toolResultContent', 'type'],
+          ['elicitationInteractionRequest', 'mode'],
+          ['elicitationInteractionResponse', 'action'],
+          ['samplingContentBlock', 'type'],
+          ['toolInteractionStep', 'type'],
+        ] as const;
+        for (const [name, field] of conditionalRoots) {
+          const pointer = `/$defs/${name}`;
+          expect(Object.keys(schema.$defs[name].properties), pointer).toEqual([
+            field,
+          ]);
+          covered.add(pointer);
+        }
       }
       const opaque = [
         '/$defs/elicitationFormSchema',
@@ -606,13 +631,17 @@ describe('document ordering schema inventory', () => {
           return;
         const node = value as Record<string, unknown>;
         if (node.properties && !covered.has(pointer)) {
-          expect(pointer).toMatch(
-            /^\/\$defs\/elicitationDeclaration\/oneOf\/[01]$/,
-          );
+          const elicitationBranch =
+            selector === '0.9.0-rc.2'
+              ? /^\/\$defs\/elicitationDeclaration\/allOf\/[01]\/then$/
+              : /^\/\$defs\/elicitationDeclaration\/oneOf\/[01]$/;
+          expect(pointer).toMatch(elicitationBranch);
           expect(Object.keys(node.properties as object)).toEqual(['mode']);
         }
-        for (const [key, child] of Object.entries(node))
+        for (const [key, child] of Object.entries(node)) {
+          if (key === 'if') continue;
           walk(child, `${pointer}/${key}`);
+        }
       }
       walk(schema, '');
     });

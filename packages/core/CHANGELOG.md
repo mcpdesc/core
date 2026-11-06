@@ -2,8 +2,6 @@
 
 All notable changes to `@mcpdesc/core` are documented in this file.
 
-## [Unreleased]
-
 ## [0.13.0-rc.6] - 2026-11-05
 
 Ordering enhancements when projecting and serializing
@@ -34,7 +32,11 @@ Ordering enhancements when projecting and serializing
   sequences for retained native fields and known nested structures, without
   reordering arrays, embedded schemas, or `_meta` contents. This is a tooling
   presentation convention, not an MCP wire-order requirement or validator rule.
-
+- Adopted immutable `0.9.0-rc.2` across projection, merge, declaration
+  selection, component resolution, native projection, and 0.8.0-to-0.9.0
+  conversion, with frozen RC.2 fixtures and strict-CSP and isolated-consumer
+  coverage. Exported `V0_9_RC_2_SPECIFICATION`, `V0_9_RC_2_SCHEMA_URI`, and
+  `v0_9Rc2Snapshot`.
 
 ### Changed
 
@@ -42,6 +44,8 @@ Ordering enhancements when projecting and serializing
   `keyOrder: 'preserve'` instead of sorting object keys. Pass
   `keyOrder: 'sorted'` to retain the previous output ordering for snapshots,
   comparisons, or generated files.
+- **Upgrade note:** unpinned `0.9.0` documents and conversion now use RC.2.
+  Migration from 0.7.0 remains unsupported for 0.9.0 selectors.
 
 ## [0.13.0-rc.5] - 2026-11-04
 

@@ -5,10 +5,16 @@ formats:
     defaultSelector: '0.8.0-rev.20261021'
     schemaPins: false
   '0.9.0':
-    defaultSelector: '0.9.0-rc.1'
+    defaultSelector: '0.9.0-rc.2'
     schemaPins: false
 
 selectors:
+  '0.9.0-rc.2':
+    formatVersion: '0.9.0'
+    lifecycle: active
+    specificationTag: 'v0.9.0-rc.2'
+    schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.9.0-rc.2.json'
+    schemaSha256: '21c8c4ad5eccc761b91cf5e7d68b989fa10454be7649970bd0f0b0a22553dc29'
   '0.9.0-rc.1':
     formatVersion: '0.9.0'
     lifecycle: active

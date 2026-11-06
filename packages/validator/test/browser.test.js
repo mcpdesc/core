@@ -66,15 +66,15 @@ test('browser Draft 4 results match the standard entry under strict CSP', () => 
   assert.deepEqual(browserResult.results, standardResult.results);
 });
 
-test('browser defaults 0.9.0 to RC.1 and preserves results under strict CSP', () => {
+test('browser defaults 0.9.0 to RC.2 and preserves results under strict CSP', () => {
   const document = JSON.parse(fs.readFileSync(
-    new URL('./snapshots/0.9.0-rc.1/fixtures/expected-warning/tool-schema-mcp-type-mismatch.json', import.meta.url),
+    new URL('./snapshots/0.9.0-rc.2/fixtures/expected-warning/tool-schema-mcp-type-mismatch.json', import.meta.url),
     'utf8'
   ));
   delete document.$schema;
   const browserResult = validateUnderCsp(document, {});
   const standardResult = validateStandard(document);
-  assert.equal(browserResult.selector, '0.9.0-rc.1');
+  assert.equal(browserResult.selector, '0.9.0-rc.2');
   assert.equal(browserResult.defaulted, true);
   assert.deepEqual(browserResult, standardResult);
 });

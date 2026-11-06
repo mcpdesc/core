@@ -12,6 +12,7 @@ import {
   V0_9_DRAFT_3_SPECIFICATION,
   V0_9_DRAFT_4_SPECIFICATION,
   V0_9_RC_1_SPECIFICATION,
+  V0_9_RC_2_SPECIFICATION,
   projectEffectiveProtocolView,
   projectMcpNativeValue,
   parseMcpDescriptionSource,
@@ -51,6 +52,7 @@ for (const specification of [
   V0_9_DRAFT_3_SPECIFICATION,
   V0_9_DRAFT_4_SPECIFICATION,
   V0_9_RC_1_SPECIFICATION,
+  V0_9_RC_2_SPECIFICATION,
 ] as const) {
   const projectionFixtureRoot = fileURLToPath(
     new URL(
@@ -144,7 +146,8 @@ for (const specification of [
             if (fixture.expectedError === 'projection-postcondition-failed') {
               const postconditionPath =
                 (specification === V0_9_DRAFT_4_SPECIFICATION ||
-                  specification === V0_9_RC_1_SPECIFICATION) &&
+                  specification === V0_9_RC_1_SPECIFICATION ||
+                  specification === V0_9_RC_2_SPECIFICATION) &&
                 filename.startsWith('tool-ref-root-')
                   ? ['tools', 0, 'inputSchema']
                   : ['tools', 1, 'inputSchema', 'properties', 'enabled'];

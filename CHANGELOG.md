@@ -13,12 +13,24 @@ scripts, and release infrastructure.
 
 ### Added
 
+- Imported immutable specification RC.2 from tag `v0.9.0-rc.2`, including frozen
+  conformance, projection, conversion, and view/merge fixtures.
+- Added RC.2 selector support across validator and core operations. The
+  discriminator-driven schema reports the transport `arg` typo as one focused
+  diagnostic and suppresses redundant conditional summaries; RC.1 remains
+  unchanged.
 - Documented projection preservation guarantees and the approved native MCP
   presentation subset of document-oriented ordering.
 - Added explicit projection-ordering tests across supported selectors, MCP
   revisions, and native kinds, plus strict-CSP and isolated-consumer coverage.
   Frozen native projection fixtures now run under both ordering policies;
   validator snapshots remain unchanged.
+
+### Changed
+
+- Prepared validator `0.14.0-rc.6` followed by core `0.13.0-rc.6` for the `next`
+  channel, pinning core to the matching validator. No package has been tagged or
+  published.
 
 ## 2026-11-05
 

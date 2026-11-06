@@ -84,6 +84,8 @@ export {
   V0_9_DRAFT_4_SPECIFICATION,
   V0_9_RC_1_SCHEMA_URI,
   V0_9_RC_1_SPECIFICATION,
+  V0_9_RC_2_SCHEMA_URI,
+  V0_9_RC_2_SPECIFICATION,
   deprecatedCoreSpecifications,
   rc4Snapshot,
   v0_8Snapshot,
@@ -92,6 +94,7 @@ export {
   v0_9Draft3Snapshot,
   v0_9Draft4Snapshot,
   v0_9Rc1Snapshot,
+  v0_9Rc2Snapshot,
   type CoreSelectorOptions,
   type SupportedCoreSpecification,
 } from './snapshot.js';

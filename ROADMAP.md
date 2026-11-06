@@ -99,9 +99,12 @@ repository.
 - [x] Make RC.1 the configured `0.9.0` default and have conversion follow it;
       advance through approved RC intakes and freeze to `0.9.0` at final
       release.
+- [x] Import immutable RC.2 with conditional discriminated-union validation and
+      frozen fixtures, then adopt it across supported validator and core
+      operations as the `0.9.0` default without changing earlier selectors.
 - [x] Publish validator `0.14.0-rc.5` and core `0.13.0-rc.5`.
-- [ ] Publish approved core `0.13.0-rc.6` on `next` after reviewed release
-      preparation and required CI pass; keep validator at `0.14.0-rc.5`.
+- [ ] Publish approved validator `0.14.0-rc.6` then core `0.13.0-rc.6` on `next`
+      after reviewed release preparation and required CI pass.
 - Add normalization or comparison operations only where multiple consumers
   demonstrate the same requirement.
 

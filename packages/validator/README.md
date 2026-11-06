@@ -108,7 +108,8 @@ uses the default selector chosen for it.
 | `0.9.0-draft.3`      | Preview, pin only        | MCP Description 0.9 Community Working Draft 3. |
 | `0.9.0-draft.4`      | Preview, pin only        | MCP Description 0.9 Community Working Draft 4. |
 | `0.9.0-draft.1`      | Preview, pin only        | MCP Description 0.9 Community Working Draft 1. |
-| `0.9.0-rc.1`         | Default for `0.9.0`      | MCP Description 0.9 Release Candidate 1. |
+| `0.9.0-rc.1`         | Explicit pin             | MCP Description 0.9 Release Candidate 1. |
+| `0.9.0-rc.2`         | Default for `0.9.0`      | MCP Description 0.9 Release Candidate 2. |
 
 The default may move to a corrected revision in a later minor release. Pin a
 selector when results must stay identical across upgrades, for example in CI:
@@ -117,10 +118,13 @@ selector when results must stay identical across upgrades, for example in CI:
 validateMcpDescription(document, { selector: '0.8.0-rev.20261021' });
 ```
 
-`mcpdesc: "0.9.0"` defaults to RC.1, with or without `$schema`. The default
+`mcpdesc: "0.9.0"` defaults to RC.2, with or without `$schema`. The default
 advances through approved RC snapshots on package upgrades, then freezes to
-`0.9.0` at final release. Draft selectors are never defaults; pin one to retain
-its original validation behavior:
+`0.9.0` at final release. RC.2 uses discriminator-based conditional schemas for
+recognized union variants, so invalid members are reported against the chosen
+variant instead of failures from unrelated alternatives. RC.1 and earlier
+selectors retain their original validation behavior. Draft selectors are never
+defaults; pin one to retain its original validation behavior:
 
 ```js
 validateMcpDescription(draftDocument, { selector: '0.9.0-draft.4' });

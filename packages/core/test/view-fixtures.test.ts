@@ -11,9 +11,14 @@ import {
   resolveMcpDescriptionComponentReferences,
   V0_9_DRAFT_4_SPECIFICATION,
   V0_9_RC_1_SPECIFICATION,
+  V0_9_RC_2_SPECIFICATION,
 } from '../src/index.js';
 
-for (const selector of [V0_9_DRAFT_4_SPECIFICATION, V0_9_RC_1_SPECIFICATION]) {
+for (const selector of [
+  V0_9_DRAFT_4_SPECIFICATION,
+  V0_9_RC_1_SPECIFICATION,
+  V0_9_RC_2_SPECIFICATION,
+]) {
   const fixtureRoot = fileURLToPath(
     new URL(
       `../../validator/test/snapshots/${selector}/view-fixtures/`,

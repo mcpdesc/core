@@ -17,6 +17,7 @@ const nativeSelectors = [
   '0.9.0-draft.3',
   '0.9.0-draft.4',
   '0.9.0-rc.1',
+  '0.9.0-rc.2',
 ] as const;
 const selectors = [
   '0.8.0-rc.4',
@@ -155,7 +156,11 @@ describe('Effective Protocol View ordering', () => {
       retained.elicitations = retained.elicitations.slice(0, 1);
       Reflect.deleteProperty(retained.elicitations[0]!, 'protocolVersions');
       expected.tools = [retained, { ...retained, name: 'a' }];
-      if (selector === '0.9.0-draft.4' || selector === '0.9.0-rc.1') {
+      if (
+        selector === '0.9.0-draft.4' ||
+        selector === '0.9.0-rc.1' ||
+        selector === '0.9.0-rc.2'
+      ) {
         Reflect.deleteProperty(expected.components.schemas, 'Unused');
       }
       expect(Object.keys(result.value)).toEqual(Object.keys(document));

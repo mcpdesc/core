@@ -16,8 +16,11 @@ const entries = [
       'v0_9Draft2Snapshot',
       'v0_9Draft3Snapshot',
       'v0_9Rc1Snapshot',
+      'v0_9Rc2Snapshot',
       'V0_9_RC_1_SPECIFICATION',
       'V0_9_RC_1_SCHEMA_URI',
+      'V0_9_RC_2_SPECIFICATION',
+      'V0_9_RC_2_SCHEMA_URI',
       'convertMcpDescriptionVersion',
     ],
   },
@@ -244,8 +247,8 @@ try {
     to: '0.9.0',
   });
   assert.equal(converted.ok, true, JSON.stringify(converted.diagnostics));
-  assert.equal(converted.value.$schema, root.V0_9_RC_1_SCHEMA_URI);
-  assert.equal(root.v0_9Rc1Snapshot.specification, '0.9.0-rc.1');
+  assert.equal(converted.value.$schema, root.V0_9_RC_2_SCHEMA_URI);
+  assert.equal(root.v0_9Rc2Snapshot.specification, '0.9.0-rc.2');
   const defaultNative = root.projectMcpNativeValue(converted.value, {
     protocolVersion: '2026-07-28',
     kind: 'tool',
@@ -256,13 +259,13 @@ try {
     true,
     JSON.stringify(defaultNative.diagnostics),
   );
-  const pinnedRc1 = root.projectMcpNativeValue(converted.value, {
-    selector: root.V0_9_RC_1_SPECIFICATION,
+  const pinnedRc2 = root.projectMcpNativeValue(converted.value, {
+    selector: root.V0_9_RC_2_SPECIFICATION,
     protocolVersion: '2026-07-28',
     kind: 'tool',
     identifier: 'lookup',
   });
-  assert.deepEqual(defaultNative, pinnedRc1);
+  assert.deepEqual(defaultNative, pinnedRc2);
   const projectedDraft2 = root.projectMcpNativeValue(converted.value, {
     specification: '0.9.0-draft.2',
     protocolVersion: '2026-07-28',
