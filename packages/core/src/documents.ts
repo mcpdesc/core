@@ -7,6 +7,7 @@ import {
 } from 'jsonc-parser';
 import { parseDocument as parseYamlDocument, stringify } from 'yaml';
 
+import { orderDocumentValue } from './document-ordering.js';
 import type { JsonValue } from './model.js';
 
 export type DocumentSourceFormat = 'json' | 'yaml';
@@ -42,6 +43,7 @@ export interface ParseMcpDescriptionSourceOptions {
 
 export interface SerializeMcpDescriptionOptions {
   readonly format: DocumentSourceFormat;
+  readonly keyOrder?: 'sorted' | 'preserve' | 'document';
 }
 
 function lineAndColumn(source: string, offset: number): DocumentSourceLocation {
@@ -226,8 +228,13 @@ export function serializeMcpDescription(
   value: JsonValue,
   options: SerializeMcpDescriptionOptions,
 ): string {
-  const sorted = sortValue(value);
+  const output =
+    options.keyOrder === 'sorted'
+      ? sortValue(value)
+      : options.keyOrder === 'document'
+        ? orderDocumentValue(value)
+        : value;
   return options.format === 'json'
-    ? `${JSON.stringify(sorted, undefined, 2)}\n`
-    : stringify(sorted, { lineWidth: 0 });
+    ? `${JSON.stringify(output, undefined, 2)}\n`
+    : stringify(output, { lineWidth: 0 });
 }

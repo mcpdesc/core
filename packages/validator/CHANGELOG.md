@@ -8,6 +8,23 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ## [Unreleased]
 
+## [0.14.0-rc.6] - 2026-11-06
+
+### Added
+
+- Imported immutable `0.9.0-rc.2` from specification tag `v0.9.0-rc.2`
+  (commit `450df01fbd1162cda4a9813ae470448f00fbe3da`) with frozen conformance,
+  projection, conversion, and view/merge fixtures.
+- Added discriminator-based conditional schema validation for RC.2, including
+  filtering redundant conditional-summary errors while preserving specific
+  branch failures and independent findings.
+
+### Changed
+
+- **Upgrade note:** `mcpdesc: "0.9.0"` now defaults to `0.9.0-rc.2`.
+  Transport field typos such as `arg` instead of `args` now produce a focused
+  schema diagnostic; RC.1 and earlier selectors remain unchanged.
+
 ## [0.14.0-rc.5] - 2026-11-04
 
 ### Added

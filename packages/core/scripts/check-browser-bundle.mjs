@@ -16,8 +16,11 @@ const entries = [
       'v0_9Draft2Snapshot',
       'v0_9Draft3Snapshot',
       'v0_9Rc1Snapshot',
+      'v0_9Rc2Snapshot',
       'V0_9_RC_1_SPECIFICATION',
       'V0_9_RC_1_SCHEMA_URI',
+      'V0_9_RC_2_SPECIFICATION',
+      'V0_9_RC_2_SCHEMA_URI',
       'convertMcpDescriptionVersion',
     ],
   },
@@ -116,7 +119,37 @@ globalThis.Function = function BlockedFunction() {
 
 try {
   const root = await import('../dist/index.js');
+  const documents = await import('../dist/documents.js');
   const components = await import('../dist/components.js');
+  const unordered = {
+    tools: [
+      {
+        inputSchema: { properties: { z: {}, a: {} }, type: 'object' },
+        name: 'lookup',
+      },
+    ],
+    info: { version: '1.0.0', name: 'ordering' },
+    mcpdesc: '0.9.0',
+  };
+  const ordered = {
+    mcpdesc: '0.9.0',
+    info: { name: 'ordering', version: '1.0.0' },
+    tools: [{ name: 'lookup', inputSchema: unordered.tools[0].inputSchema }],
+  };
+  for (const entry of [root, documents]) {
+    for (const format of ['json', 'yaml']) {
+      assert.equal(
+        entry.serializeMcpDescription(unordered, {
+          format,
+          keyOrder: 'document',
+        }),
+        entry.serializeMcpDescription(ordered, {
+          format,
+          keyOrder: 'preserve',
+        }),
+      );
+    }
+  }
   const fixture = JSON.parse(
     readFileSync(
       new URL(
@@ -161,6 +194,38 @@ try {
   });
   assert.equal(native.ok, true, JSON.stringify(native.diagnostics));
   assert.deepEqual(native.value, expected);
+  const orderingSource = {
+    mcpdesc: '0.9.0',
+    info: { name: 'native-ordering', version: '1.0.0' },
+    protocolVersions: ['2026-07-28'],
+    tools: [
+      {
+        _meta: { z: 1, a: 2 },
+        inputSchema: { additionalProperties: false, type: 'object' },
+        description: 'Tool',
+        name: 'ordered',
+      },
+    ],
+  };
+  for (const keyOrder of ['preserve', 'document']) {
+    const ordered = root.projectMcpNativeValue(orderingSource, {
+      protocolVersion: '2026-07-28',
+      kind: 'tool',
+      keyOrder,
+    });
+    assert.equal(ordered.ok, true, JSON.stringify(ordered.diagnostics));
+    assert.deepEqual(
+      Object.keys(ordered.value[0]),
+      keyOrder === 'document'
+        ? ['name', 'description', 'inputSchema', '_meta']
+        : ['_meta', 'inputSchema', 'description', 'name'],
+    );
+    assert.deepEqual(Object.keys(ordered.value[0].inputSchema), [
+      'additionalProperties',
+      'type',
+    ]);
+    assert.deepEqual(Object.keys(ordered.value[0]._meta), ['z', 'a']);
+  }
   for (const operation of [
     root.resolveMcpDescriptionComponentReferences,
     components.resolveMcpDescriptionComponentReferences,
@@ -182,8 +247,8 @@ try {
     to: '0.9.0',
   });
   assert.equal(converted.ok, true, JSON.stringify(converted.diagnostics));
-  assert.equal(converted.value.$schema, root.V0_9_RC_1_SCHEMA_URI);
-  assert.equal(root.v0_9Rc1Snapshot.specification, '0.9.0-rc.1');
+  assert.equal(converted.value.$schema, root.V0_9_RC_2_SCHEMA_URI);
+  assert.equal(root.v0_9Rc2Snapshot.specification, '0.9.0-rc.2');
   const defaultNative = root.projectMcpNativeValue(converted.value, {
     protocolVersion: '2026-07-28',
     kind: 'tool',
@@ -194,13 +259,13 @@ try {
     true,
     JSON.stringify(defaultNative.diagnostics),
   );
-  const pinnedRc1 = root.projectMcpNativeValue(converted.value, {
-    selector: root.V0_9_RC_1_SPECIFICATION,
+  const pinnedRc2 = root.projectMcpNativeValue(converted.value, {
+    selector: root.V0_9_RC_2_SPECIFICATION,
     protocolVersion: '2026-07-28',
     kind: 'tool',
     identifier: 'lookup',
   });
-  assert.deepEqual(defaultNative, pinnedRc1);
+  assert.deepEqual(defaultNative, pinnedRc2);
   const projectedDraft2 = root.projectMcpNativeValue(converted.value, {
     specification: '0.9.0-draft.2',
     protocolVersion: '2026-07-28',

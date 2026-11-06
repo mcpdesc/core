@@ -45,7 +45,7 @@ test('exports the active validator API', () => {
   assert.deepEqual(deprecatedSpecifications, expectedDeprecatedSpecifications);
   assert.deepEqual(defaultSpecifications, {
     '0.8.0': { selector: '0.8.0-rev.20261021', schemaPins: false },
-    '0.9.0': { selector: '0.9.0-rc.1', schemaPins: false }
+    '0.9.0': { selector: '0.9.0-rc.2', schemaPins: false }
   });
   assert.deepEqual(supportedProtocolVersions, [
     '2024-11-05',
@@ -57,13 +57,13 @@ test('exports the active validator API', () => {
   assert.deepEqual(Object.keys(specificationProvenance), supportedSpecifications);
 });
 
-test('preserves explicit draft pins while defaulting 0.9.0 documents to RC.1', () => {
+test('preserves explicit draft pins while defaulting 0.9.0 documents to RC.2', () => {
   const document = fixture('expected-valid', 'minimal-zero-primitives.json', '0.9.0-draft.1');
   const pinned = validateMcpDescription(document, { selector: '0.9.0-draft.1' });
   assert.equal(pinned.valid, true);
   assert.equal(pinned.defaulted, false);
   assert.equal(pinned.selector, '0.9.0-draft.1');
-  assert.equal(validateMcpDescription(document).selector, '0.9.0-rc.1');
+  assert.equal(validateMcpDescription(document).selector, '0.9.0-rc.2');
   const draft2Document = fixture(
     'expected-valid',
     'minimal-zero-primitives.json',
@@ -74,7 +74,7 @@ test('preserves explicit draft pins while defaulting 0.9.0 documents to RC.1', (
   });
   assert.equal(draft2.valid, true);
   assert.equal(draft2.selector, '0.9.0-draft.2');
-  assert.equal(validateMcpDescription(draft2Document).selector, '0.9.0-rc.1');
+  assert.equal(validateMcpDescription(draft2Document).selector, '0.9.0-rc.2');
   const draft3Document = fixture(
     'expected-valid',
     'minimal-zero-primitives.json',
@@ -85,7 +85,7 @@ test('preserves explicit draft pins while defaulting 0.9.0 documents to RC.1', (
   });
   assert.equal(draft3.valid, true);
   assert.equal(draft3.selector, '0.9.0-draft.3');
-  assert.equal(validateMcpDescription(draft3Document).selector, '0.9.0-rc.1');
+  assert.equal(validateMcpDescription(draft3Document).selector, '0.9.0-rc.2');
   const draft4Document = fixture(
     'expected-warning',
     'tool-schema-mcp-type-mismatch.json',
@@ -98,7 +98,7 @@ test('preserves explicit draft pins while defaulting 0.9.0 documents to RC.1', (
   assert.equal(draft4.valid, draft4Reference.valid);
   assert.deepEqual(draft4.diagnostics, draft4Reference.diagnostics);
   assert.deepEqual(draft4.results, draft4Reference.results);
-  assert.equal(validateMcpDescription(draft4Document).selector, '0.9.0-rc.1');
+  assert.equal(validateMcpDescription(draft4Document).selector, '0.9.0-rc.2');
   assert.equal(resolveMcpDescriptionSpecification(document, { selector: '0.9.0-draft.1' }).status, 'resolved');
   const invalid = validateMcpDescription({ ...document, tools: [{ name: 'missing' }] }, { selector: '0.9.0-draft.1' });
   assert.equal(invalid.valid, false);
@@ -112,7 +112,7 @@ test('defaults 0.9.0 with or without a schema identity and preserves exact rule 
     if (schema === undefined) delete source.$schema;
     const result = validateMcpDescription(source);
     assert.equal(result.valid, true);
-    assert.equal(result.selector, '0.9.0-rc.1');
+    assert.equal(result.selector, '0.9.0-rc.2');
     assert.equal(result.defaulted, true);
     assert.ok(result.results.some(({ rule }) => rule === 'mcp.tool.output-schema.protocol-version'));
     assert.ok(!result.results.some(({ rule }) => rule.includes('revision-availability')));
@@ -121,6 +121,32 @@ test('defaults 0.9.0 with or without a schema identity and preserves exact rule 
     assert.equal(pinned.defaulted, false);
     assert.ok(pinned.results.some(({ rule }) => rule === 'mcp.tool.output-schema.revision-availability'));
   }
+});
+
+test('reports one actionable transport diagnostic for a misspelled RC.2 field', () => {
+  const document = fixture('expected-invalid', 'transport-arg-typo.json', '0.9.0-rc.2');
+  const rc2 = validateMcpDescription(document, { selector: '0.9.0-rc.2' });
+  assert.equal(rc2.valid, false);
+  assert.deepEqual(
+    rc2.diagnostics.map(({ rule, path }) => ({ rule, path })),
+    [{ rule: 'mcpdesc.transport.members', path: ['transports', 0, 'arg'] }],
+  );
+
+  const rc1 = validateMcpDescription(document, { selector: '0.9.0-rc.1' });
+  assert.equal(rc1.valid, false);
+  assert.equal(rc1.diagnostics.length, 10);
+});
+
+test('retains independent and nested union diagnostics for RC.2', () => {
+  const nested = fixture(
+    'expected-invalid',
+    'discriminated-resource-link-size.json',
+    '0.9.0-rc.2',
+  );
+  const result = validateMcpDescription(nested, { selector: '0.9.0-rc.2' });
+  assert.equal(result.diagnostics.length, 3);
+  assert.equal(result.diagnostics[0].rule, 'mcp.resource.size');
+  assert.ok(result.diagnostics.every(({ message }) => !message.includes('must match "then" schema')));
 });
 
 test('exports configured provenance for each supported schema', () => {

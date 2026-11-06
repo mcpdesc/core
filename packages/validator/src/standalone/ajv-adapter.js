@@ -7,7 +7,7 @@ import validateDraft7Schema from '#standalone-meta-draft7';
 import validateDraft2020Schema from '#standalone-meta-draft2020';
 import { currentValidationSelector } from '../validation-context.js';
 
-const ruleResultSelectors = new Set(['0.9.0-draft.4', '0.9.0-rc.1']);
+const ruleResultSelectors = new Set(['0.9.0-draft.4', '0.9.0-rc.1', '0.9.0-rc.2']);
 
 function pointerToInstancePath(pointer) {
   return pointer === '#' ? '' : pointer.slice(1);
@@ -27,6 +27,10 @@ function toAjvError(error) {
   const params = {};
   if (error.keyword === 'required') params.missingProperty = quotedProperty(error.error);
   if (error.keyword === 'additionalProperties') params.additionalProperty = quotedProperty(error.error);
+  if (error.keyword === 'if') {
+    const failingKeyword = /^Instance does not match "(then|else)" schema\.$/.exec(error.error)?.[1];
+    if (failingKeyword) params.failingKeyword = failingKeyword;
+  }
   const typeMismatch = /^Instance type ".+" is invalid\. Expected "(.+)"\.$/.exec(error.error);
   return {
     instancePath: pointerToInstancePath(error.instanceLocation),

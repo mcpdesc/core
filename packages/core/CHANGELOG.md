@@ -2,7 +2,50 @@
 
 All notable changes to `@mcpdesc/core` are documented in this file.
 
-## [Unreleased]
+## [0.13.0-rc.6] - 2026-11-05
+
+Ordering enhancements when projecting and serializing
+
+### Clarified
+
+- Effective Protocol Views and default native projections preserve relative
+  ordering of retained fields and array elements. Native projection also accepts
+  explicit `keyOrder: 'preserve'`. Resolved schemas retain component target
+  ordering. Neither projection preserves source comments or formatting. Existing
+  selector support, validation, and diagnostics remain unchanged.
+
+### Added
+
+- Added opt-in `keyOrder: 'document'` serialization using the
+  maintainer-approved proposed specification Section 18 ordering profile for
+  0.8.0 and 0.9.0 values. Context-specific field sequences preserve arrays,
+  named-map entries, opaque schemas, metadata, and application payloads. Unknown
+  formats and variants remain untouched. This does not add a validator selector
+  or change validation. Neither document-oriented nor preserving serialization
+  preserves source comments, quoting, whitespace, or moved-property positions.
+- Added explicit `keyOrder: 'preserve'` and `keyOrder: 'sorted'` policies to
+  `serializeMcpDescription` for JSON and YAML. Preservation retains recursive
+  JavaScript property enumeration order; sorted mode retains the previous
+  recursive key-sorting behavior. Neither changes array order or mutates inputs.
+- Added opt-in `keyOrder: 'document'` to native MCP projection for tools,
+  resources, resource templates, and prompts. It reuses MCP Description field
+  sequences for retained native fields and known nested structures, without
+  reordering arrays, embedded schemas, or `_meta` contents. This is a tooling
+  presentation convention, not an MCP wire-order requirement or validator rule.
+- Adopted immutable `0.9.0-rc.2` across projection, merge, declaration
+  selection, component resolution, native projection, and 0.8.0-to-0.9.0
+  conversion, with frozen RC.2 fixtures and strict-CSP and isolated-consumer
+  coverage. Exported `V0_9_RC_2_SPECIFICATION`, `V0_9_RC_2_SCHEMA_URI`, and
+  `v0_9Rc2Snapshot`.
+
+### Changed
+
+- **Upgrade note:** `serializeMcpDescription` now defaults to
+  `keyOrder: 'preserve'` instead of sorting object keys. Pass
+  `keyOrder: 'sorted'` to retain the previous output ordering for snapshots,
+  comparisons, or generated files.
+- **Upgrade note:** unpinned `0.9.0` documents and conversion now use RC.2.
+  Migration from 0.7.0 remains unsupported for 0.9.0 selectors.
 
 ## [0.13.0-rc.5] - 2026-11-04
 

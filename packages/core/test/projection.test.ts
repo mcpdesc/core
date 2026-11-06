@@ -12,6 +12,7 @@ import {
   V0_9_DRAFT_3_SPECIFICATION,
   V0_9_DRAFT_4_SPECIFICATION,
   V0_9_RC_1_SPECIFICATION,
+  V0_9_RC_2_SPECIFICATION,
   projectEffectiveProtocolView,
   projectMcpNativeValue,
   parseMcpDescriptionSource,
@@ -51,6 +52,7 @@ for (const specification of [
   V0_9_DRAFT_3_SPECIFICATION,
   V0_9_DRAFT_4_SPECIFICATION,
   V0_9_RC_1_SPECIFICATION,
+  V0_9_RC_2_SPECIFICATION,
 ] as const) {
   const projectionFixtureRoot = fileURLToPath(
     new URL(
@@ -60,97 +62,109 @@ for (const specification of [
   );
 
   describe(`projectMcpNativeValue frozen conformance: ${specification}`, () => {
-    it('returns empty native lists without inserting empty document collections', () => {
-      const document = {
-        mcpdesc: '0.9.0',
-        info: { name: 'empty-collections', version: '1.0.0' },
-        protocolVersions: ['2025-11-25', '2026-07-28'],
-        tools: [
-          {
-            name: 'legacy',
-            protocolVersions: ['2025-11-25'],
-            inputSchema: { type: 'object' },
-          },
-        ],
-      };
-      const original = structuredClone(document);
-      for (const kind of [
-        'tool',
-        'resource',
-        'resourceTemplate',
-        'prompt',
-      ] as const) {
-        const result = projectMcpNativeValue(document, {
-          specification,
-          protocolVersion: '2026-07-28',
-          kind,
-        });
-        expect(result.ok, JSON.stringify(result.diagnostics)).toBe(true);
-        if (result.ok) expect(result.value).toEqual([]);
-      }
-      expect(document).toEqual(original);
-    });
+    it.each(['preserve', 'document'] as const)(
+      'returns empty native lists without inserting empty document collections: %s',
+      (keyOrder) => {
+        const document = {
+          mcpdesc: '0.9.0',
+          info: { name: 'empty-collections', version: '1.0.0' },
+          protocolVersions: ['2025-11-25', '2026-07-28'],
+          tools: [
+            {
+              name: 'legacy',
+              protocolVersions: ['2025-11-25'],
+              inputSchema: { type: 'object' },
+            },
+          ],
+        };
+        const original = structuredClone(document);
+        for (const kind of [
+          'tool',
+          'resource',
+          'resourceTemplate',
+          'prompt',
+        ] as const) {
+          const result = projectMcpNativeValue(document, {
+            specification,
+            protocolVersion: '2026-07-28',
+            kind,
+            keyOrder,
+          });
+          expect(result.ok, JSON.stringify(result.diagnostics)).toBe(true);
+          if (result.ok) expect(result.value).toEqual([]);
+        }
+        expect(document).toEqual(original);
+      },
+    );
 
     for (const filename of readdirSync(projectionFixtureRoot)
       .filter((name) => name.endsWith('.json'))
       .sort()) {
-      it(filename, () => {
-        const fixture = JSON.parse(
-          readFileSync(path.join(projectionFixtureRoot, filename), 'utf8'),
-        ) as {
-          document: unknown;
-          revision: ProjectMcpNativeValueOptions['protocolVersion'];
-          protocolVersion?: ProjectMcpNativeValueOptions['protocolVersion'];
-          kind: ProjectMcpNativeValueOptions['kind'];
-          identifier?: string;
-          expected?: unknown;
-          expectedError?: string;
-        };
-        let document = fixture.document;
-        if (typeof document === 'string') {
-          const parsed = parseMcpDescriptionSource(
-            readFileSync(path.resolve(projectionFixtureRoot, document), 'utf8'),
-          );
-          expect(parsed.ok).toBe(true);
-          if (!parsed.ok) return;
-          document = parsed.value;
-        }
-        const original = structuredClone(document);
-        const result = projectMcpNativeValue(document, {
-          specification,
-          protocolVersion: fixture.protocolVersion ?? fixture.revision,
-          kind: fixture.kind,
-          ...(fixture.identifier === undefined
-            ? {}
-            : { identifier: fixture.identifier }),
-        });
-        expect(document).toEqual(original);
-        if (fixture.expectedError) {
-          expect(result.ok).toBe(false);
-          expect(result.diagnostics).toContainEqual(
-            expect.objectContaining({ code: fixture.expectedError }),
-          );
-          expect('value' in result).toBe(false);
-          if (fixture.expectedError === 'projection-postcondition-failed') {
-            const postconditionPath =
-              (specification === V0_9_DRAFT_4_SPECIFICATION ||
-                specification === V0_9_RC_1_SPECIFICATION) &&
-              filename.startsWith('tool-ref-root-')
-                ? ['tools', 0, 'inputSchema']
-                : ['tools', 1, 'inputSchema', 'properties', 'enabled'];
-            expect(result.diagnostics).toContainEqual(
-              expect.objectContaining({
-                rule: 'mcpdesc.projection.native-schema',
-                phase: 'operation',
-                path: postconditionPath,
-              }),
+      it.each(['preserve', 'document'] as const)(
+        '%s: ' + filename,
+        (keyOrder) => {
+          const fixture = JSON.parse(
+            readFileSync(path.join(projectionFixtureRoot, filename), 'utf8'),
+          ) as {
+            document: unknown;
+            revision: ProjectMcpNativeValueOptions['protocolVersion'];
+            protocolVersion?: ProjectMcpNativeValueOptions['protocolVersion'];
+            kind: ProjectMcpNativeValueOptions['kind'];
+            identifier?: string;
+            expected?: unknown;
+            expectedError?: string;
+          };
+          let document = fixture.document;
+          if (typeof document === 'string') {
+            const parsed = parseMcpDescriptionSource(
+              readFileSync(
+                path.resolve(projectionFixtureRoot, document),
+                'utf8',
+              ),
             );
+            expect(parsed.ok).toBe(true);
+            if (!parsed.ok) return;
+            document = parsed.value;
           }
-        } else {
-          expect(result.ok, JSON.stringify(result.diagnostics)).toBe(true);
-          if (result.ok) expect(result.value).toEqual(fixture.expected);
-        }
-      });
+          const original = structuredClone(document);
+          const result = projectMcpNativeValue(document, {
+            specification,
+            protocolVersion: fixture.protocolVersion ?? fixture.revision,
+            kind: fixture.kind,
+            keyOrder,
+            ...(fixture.identifier === undefined
+              ? {}
+              : { identifier: fixture.identifier }),
+          });
+          expect(document).toEqual(original);
+          if (fixture.expectedError) {
+            expect(result.ok).toBe(false);
+            expect(result.diagnostics).toContainEqual(
+              expect.objectContaining({ code: fixture.expectedError }),
+            );
+            expect('value' in result).toBe(false);
+            if (fixture.expectedError === 'projection-postcondition-failed') {
+              const postconditionPath =
+                (specification === V0_9_DRAFT_4_SPECIFICATION ||
+                  specification === V0_9_RC_1_SPECIFICATION ||
+                  specification === V0_9_RC_2_SPECIFICATION) &&
+                filename.startsWith('tool-ref-root-')
+                  ? ['tools', 0, 'inputSchema']
+                  : ['tools', 1, 'inputSchema', 'properties', 'enabled'];
+              expect(result.diagnostics).toContainEqual(
+                expect.objectContaining({
+                  rule: 'mcpdesc.projection.native-schema',
+                  phase: 'operation',
+                  path: postconditionPath,
+                }),
+              );
+            }
+          } else {
+            expect(result.ok, JSON.stringify(result.diagnostics)).toBe(true);
+            if (result.ok) expect(result.value).toEqual(fixture.expected);
+          }
+        },
+      );
     }
   });
 }

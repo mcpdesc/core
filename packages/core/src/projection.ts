@@ -27,11 +27,13 @@ import {
   V0_9_DRAFT_3_SPECIFICATION,
   V0_9_DRAFT_4_SPECIFICATION,
   V0_9_RC_1_SPECIFICATION,
+  V0_9_RC_2_SPECIFICATION,
   V0_9_DRAFT_2_SPECIFICATION,
   V0_9_DRAFT_1_SPECIFICATION,
   type CoreSelectorOptions,
 } from './snapshot.js';
 import { resolveMcpDescriptionComponentReferences } from './components.js';
+import { orderNativeValue } from './document-ordering.js';
 
 const scopedCollections = [
   'transports',
@@ -374,7 +376,8 @@ export function projectEffectiveProtocolView(
       diagnostics: [
         ...sourceDiagnostics,
         operationDiagnostic(
-          specification === V0_9_RC_1_SPECIFICATION
+          specification === V0_9_RC_1_SPECIFICATION ||
+            specification === V0_9_RC_2_SPECIFICATION
             ? 'projection-protocol-version-not-declared'
             : 'projection-version-not-declared',
           `MCP protocol revision ${JSON.stringify(options.protocolVersion)} is absent from root protocolVersions`,
@@ -388,7 +391,8 @@ export function projectEffectiveProtocolView(
   const value = projectDocument(source, options.protocolVersion);
   if (
     specification === V0_9_DRAFT_4_SPECIFICATION ||
-    specification === V0_9_RC_1_SPECIFICATION
+    specification === V0_9_RC_1_SPECIFICATION ||
+    specification === V0_9_RC_2_SPECIFICATION
   ) {
     pruneUnusedComponents(value);
   }
@@ -427,10 +431,12 @@ export interface ProjectMcpNativeValueOptions extends CoreSelectorOptions<
   | typeof V0_9_DRAFT_3_SPECIFICATION
   | typeof V0_9_DRAFT_4_SPECIFICATION
   | typeof V0_9_RC_1_SPECIFICATION
+  | typeof V0_9_RC_2_SPECIFICATION
 > {
   readonly protocolVersion: SupportedProtocolVersion;
   readonly kind: McpNativeKind;
   readonly identifier?: string;
+  readonly keyOrder?: 'preserve' | 'document';
 }
 
 const descriptionOnlyFields = new Set([
@@ -505,7 +511,8 @@ export function projectMcpNativeValue(
     selection.specification !== V0_9_DRAFT_2_SPECIFICATION &&
     selection.specification !== V0_9_DRAFT_3_SPECIFICATION &&
     selection.specification !== V0_9_DRAFT_4_SPECIFICATION &&
-    selection.specification !== V0_9_RC_1_SPECIFICATION
+    selection.specification !== V0_9_RC_1_SPECIFICATION &&
+    selection.specification !== V0_9_RC_2_SPECIFICATION
   ) {
     return {
       ok: false,
@@ -582,7 +589,12 @@ export function projectMcpNativeValue(
       ],
     };
   }
-  const values = selected.map(({ declaration }) => nativeValue(declaration));
+  const values = selected.map(({ declaration }) => {
+    const value = nativeValue(declaration);
+    return options.keyOrder === 'document'
+      ? orderNativeValue(value, options.kind)
+      : value;
+  });
   const postconditionDiagnostics = selected.flatMap(({ index }, valueIndex) => {
     const failure = postconditionDiagnostic(
       values[valueIndex]!,

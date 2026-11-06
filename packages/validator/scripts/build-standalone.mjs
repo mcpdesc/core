@@ -28,7 +28,7 @@ const ajv = new Ajv2020({ allErrors: true, strict: false, verbose: true, code: {
 addFormats(ajv);
 const validatorExports = Object.fromEntries(selectors.map((selector, index) => [`snapshot${index + 1}`, selector]));
 const instrumentedSchemas = [];
-for (const selector of ['0.9.0-draft.4', '0.9.0-rc.1'].filter((selector) => selectors.includes(selector))) {
+for (const selector of ['0.9.0-draft.4', '0.9.0-rc.1', '0.9.0-rc.2'].filter((selector) => selectors.includes(selector))) {
   const semanticPath = path.join(packageRoot, 'src/snapshots', selector, 'semantic.js');
   const semanticSource = fs.readFileSync(semanticPath, 'utf8');
   const semanticFile = ts.createSourceFile(semanticPath, semanticSource, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);

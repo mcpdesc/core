@@ -65,6 +65,8 @@ try {
         V0_9_DRAFT_3_SCHEMA_URI,
         V0_9_RC_1_SCHEMA_URI,
         V0_9_RC_1_SPECIFICATION,
+        V0_9_RC_2_SCHEMA_URI,
+        V0_9_RC_2_SPECIFICATION,
         convertMcpDescriptionVersion,
         migrateMcpDescription07To08,
         migrateMcpDescription07ToRc4,
@@ -76,6 +78,7 @@ try {
         v0_9Draft2Snapshot,
         v0_9Draft3Snapshot,
         v0_9Rc1Snapshot,
+        v0_9Rc2Snapshot,
         resolveMcpDescriptionComponentReferences,
         serializeMcpDescriptionMigrationReport,
       } from '@mcpdesc/core';
@@ -110,6 +113,23 @@ try {
       );
       assert.equal(parsed.ok, true);
       assert.deepEqual(parsed.value, source);
+
+      const orderedSource = {
+        tools: [{ inputSchema: { properties: { z: {}, a: {} }, type: 'object' }, name: 'lookup' }],
+        info: { version: '1.0.0', name: 'ordering' },
+        mcpdesc: '0.9.0',
+      };
+      const orderedExpected = {
+        mcpdesc: '0.9.0',
+        info: { name: 'ordering', version: '1.0.0' },
+        tools: [{ name: 'lookup', inputSchema: orderedSource.tools[0].inputSchema }],
+      };
+      for (const format of ['json', 'yaml']) {
+        assert.equal(
+          serializeMcpDescription(orderedSource, { format, keyOrder: 'document' }),
+          serializeMcpDescription(orderedExpected, { format, keyOrder: 'preserve' }),
+        );
+      }
 
       const result = projectEffectiveProtocolView(source, {
         specification: '0.8.0-rc.4',
@@ -235,6 +255,7 @@ try {
         ['0.9.0-draft.2', V0_9_DRAFT_2_SCHEMA_URI],
         ['0.9.0-draft.3', V0_9_DRAFT_3_SCHEMA_URI],
         [v0_9Rc1Snapshot.specification, V0_9_RC_1_SCHEMA_URI],
+        [v0_9Rc2Snapshot.specification, V0_9_RC_2_SCHEMA_URI],
       ]) {
         const reusable = {
           ...source,
@@ -271,6 +292,23 @@ try {
           });
           assert.equal(native.ok, true, JSON.stringify(native.diagnostics));
           assert.deepEqual(native.value, { name: 'referenced', inputSchema: { type: 'object', additionalProperties: false } });
+          const scrambled = {
+            ...reusable,
+            tools: [{ inputSchema: reusable.tools[0].inputSchema, name: 'referenced' }],
+          };
+          for (const keyOrder of ['preserve', 'document']) {
+            const ordered = projectMcpNativeValue(scrambled, {
+              specification,
+              protocolVersion: '2026-07-28',
+              kind: 'tool',
+              keyOrder,
+            });
+            assert.equal(ordered.ok, true, JSON.stringify(ordered.diagnostics));
+            assert.deepEqual(Object.keys(ordered.value[0]), keyOrder === 'document'
+              ? ['name', 'inputSchema']
+              : ['inputSchema', 'name']);
+            assert.deepEqual(Object.keys(ordered.value[0].inputSchema), ['type', 'additionalProperties']);
+          }
           assert.equal(selectMcpDescriptionDeclarations(reusable, { specification, selections: { tools: ['referenced'] } }).ok, true);
           const view = projectEffectiveProtocolView(reusable, { specification, protocolVersion: '2026-07-28' });
           assert.equal(view.ok, true);
@@ -287,8 +325,8 @@ try {
         tools: [{ name: 'lookup', inputSchema: { type: 'object' } }],
       }, { from: '0.8.0', to: '0.9.0' });
       assert.equal(converted.ok, true, JSON.stringify(converted.diagnostics));
-      assert.equal(converted.value.$schema, V0_9_RC_1_SCHEMA_URI);
-      assert.equal(validateMcpDescription(converted.value).selector, V0_9_RC_1_SPECIFICATION);
+      assert.equal(converted.value.$schema, V0_9_RC_2_SCHEMA_URI);
+      assert.equal(validateMcpDescription(converted.value).selector, V0_9_RC_2_SPECIFICATION);
       assert.equal(validateMcpDescription(converted.value).defaulted, true);
       const defaultNative = projectMcpNativeValue(converted.value, {
         protocolVersion: '2026-07-28', kind: 'tool', identifier: 'lookup',
@@ -327,7 +365,11 @@ try {
   writeFileSync(
     path.join(consumerRoot, 'consumer.ts'),
     `
-      import { parseMcpDescriptionSource } from '@mcpdesc/core/documents';
+      import {
+        parseMcpDescriptionSource,
+        serializeMcpDescription,
+        type SerializeMcpDescriptionOptions,
+      } from '@mcpdesc/core/documents';
       import { selectMcpDescriptionDeclarations } from '@mcpdesc/core/selection';
       import {
         resolveMcpDescriptionComponentReferences,
@@ -345,8 +387,11 @@ try {
         v0_9Draft2Snapshot,
         v0_9Draft3Snapshot,
         v0_9Rc1Snapshot,
+        v0_9Rc2Snapshot,
         V0_9_RC_1_SPECIFICATION,
         V0_9_RC_1_SCHEMA_URI,
+        V0_9_RC_2_SPECIFICATION,
+        V0_9_RC_2_SCHEMA_URI,
         convertMcpDescriptionVersion,
         type McpDescriptionConversionFix,
         type McpDescriptionJsonPatchOperation,
@@ -356,24 +401,33 @@ try {
       } from '@mcpdesc/core';
 
       const parsed = parseMcpDescriptionSource('{"mcpdesc":"0.8.0"}');
+      const documentOrder: SerializeMcpDescriptionOptions = {
+        format: 'yaml',
+        keyOrder: 'document',
+      };
+      serializeMcpDescription({ mcpdesc: '0.9.0' }, documentOrder);
       const nativeOptions: ProjectMcpNativeValueOptions = {
         selector: v0_9Rc1Snapshot.specification,
         protocolVersion: '2026-07-28',
         kind: 'tool',
+        keyOrder: 'document',
       };
       const nativeList: OperationResult<JsonObject[]> = projectMcpNativeValue({}, { ...nativeOptions, identifier: undefined });
       const nativeSingle: OperationResult<JsonObject> = projectMcpNativeValue({}, { ...nativeOptions, identifier: 'search' });
+      projectMcpNativeValue({}, { ...nativeOptions, keyOrder: 'preserve' });
+      // @ts-expect-error Recursive sorting is a serialization policy, not a native projection policy.
+      projectMcpNativeValue({}, { ...nativeOptions, keyOrder: 'sorted' });
       const rule: string | undefined = nativeSingle.diagnostics[0]?.rule;
       void nativeList;
       void rule;
-      const rc1Selector: '0.9.0-rc.1' = V0_9_RC_1_SPECIFICATION;
-      const rc1Schema: string = V0_9_RC_1_SCHEMA_URI;
-      void rc1Selector;
-      void rc1Schema;
+      const rc2Selector: '0.9.0-rc.2' = V0_9_RC_2_SPECIFICATION;
+      const rc2Schema: string = V0_9_RC_2_SCHEMA_URI;
+      void rc2Selector;
+      void rc2Schema;
       const conversionFixes: McpDescriptionConversionFix[] = [];
       const conversion = convertMcpDescriptionVersion(
         { mcpdesc: '0.8.0' },
-        { from: '0.8.0', to: '0.9.0', selector: v0_9Rc1Snapshot.specification, fixes: conversionFixes },
+        { from: '0.8.0', to: '0.9.0', selector: v0_9Rc2Snapshot.specification, fixes: conversionFixes },
       );
       const patch: readonly McpDescriptionJsonPatchOperation[] = conversion.ok
         ? conversion.patch

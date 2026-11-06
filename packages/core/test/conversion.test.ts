@@ -7,7 +7,9 @@ import YAML from 'yaml';
 
 import {
   convertMcpDescriptionVersion,
+  parseMcpDescriptionSource,
   projectMcpNativeValue,
+  serializeMcpDescription,
   V0_8_SCHEMA_URI,
   V0_9_DRAFT_2_SPECIFICATION,
   V0_9_DRAFT_2_SCHEMA_URI,
@@ -17,6 +19,8 @@ import {
   V0_9_DRAFT_4_SCHEMA_URI,
   V0_9_RC_1_SPECIFICATION,
   V0_9_RC_1_SCHEMA_URI,
+  V0_9_RC_2_SPECIFICATION,
+  V0_9_RC_2_SCHEMA_URI,
 } from '../src/index.js';
 
 function conversionFixtureDirectory(selector: string): string {
@@ -90,7 +94,8 @@ function testConversionProfile(selector: string): void {
               | typeof V0_9_DRAFT_2_SPECIFICATION
               | typeof V0_9_DRAFT_3_SPECIFICATION
               | typeof V0_9_DRAFT_4_SPECIFICATION
-              | typeof V0_9_RC_1_SPECIFICATION,
+              | typeof V0_9_RC_1_SPECIFICATION
+              | typeof V0_9_RC_2_SPECIFICATION,
             fixes: fixture.fixes,
           },
         );
@@ -123,6 +128,59 @@ testConversionProfile(V0_9_DRAFT_2_SPECIFICATION);
 testConversionProfile(V0_9_DRAFT_3_SPECIFICATION);
 testConversionProfile(V0_9_DRAFT_4_SPECIFICATION);
 testConversionProfile(V0_9_RC_1_SPECIFICATION);
+testConversionProfile(V0_9_RC_2_SPECIFICATION);
+
+describe('convert then serialize', () => {
+  it.each(['json', 'yaml'] as const)(
+    'preserves parsed field order after RC.1 conversion to %s',
+    (format) => {
+      const source = `mcpdesc: 0.8.0
+info:
+  version: 1.0.0
+  name: conversion-order
+protocolVersions:
+  - 2026-07-28
+transports:
+  - type: stdio
+    command: server
+tools:
+  - name: lookup
+    inputSchema:
+      type: object
+`;
+      const parsed = parseMcpDescriptionSource(source, { format: 'yaml' });
+      expect(parsed.ok).toBe(true);
+      if (!parsed.ok) return;
+
+      const converted = convertMcpDescriptionVersion(parsed.value, {
+        from: '0.8.0',
+        to: '0.9.0',
+        selector: V0_9_RC_1_SPECIFICATION,
+      });
+      expect(converted.ok, JSON.stringify(converted.diagnostics)).toBe(true);
+      if (!converted.ok) return;
+
+      const serialized = serializeMcpDescription(converted.value, {
+        format,
+      });
+      if (format === 'yaml') {
+        expect(serialized).toBe(
+          source.replace('mcpdesc: 0.8.0', 'mcpdesc: 0.9.0'),
+        );
+      } else {
+        expect(serialized).toBe(
+          `${JSON.stringify({ ...(parsed.value as object), mcpdesc: '0.9.0' }, undefined, 2)}\n`,
+        );
+      }
+      expect(
+        serializeMcpDescription(parsed.value, {
+          format: 'yaml',
+          keyOrder: 'preserve',
+        }),
+      ).toBe(source);
+    },
+  );
+});
 
 describe('convert then project', () => {
   it('targets Draft 3 explicitly and projects the converted value', () => {
@@ -191,7 +249,7 @@ describe('convert then project', () => {
     expect(projected.ok, JSON.stringify(projected.diagnostics)).toBe(true);
   });
 
-  it('defaults conversion and subsequent native projection to RC.1', () => {
+  it('defaults conversion and subsequent native projection to RC.2', () => {
     const source = {
       $schema: V0_8_SCHEMA_URI,
       mcpdesc: '0.8.0',
@@ -207,7 +265,7 @@ describe('convert then project', () => {
 
     expect(converted.ok, JSON.stringify(converted.diagnostics)).toBe(true);
     if (!converted.ok) return;
-    expect(converted.value.$schema).toBe(V0_9_RC_1_SCHEMA_URI);
+    expect(converted.value.$schema).toBe(V0_9_RC_2_SCHEMA_URI);
 
     const projected = projectMcpNativeValue(converted.value, {
       protocolVersion: '2026-07-28',

@@ -6,8 +6,8 @@
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/mcpdesc/core/blob/main/LICENSE)
 
 Read, write, and transform [MCP Description](https://mcpdesc.org) documents.
-Stable support covers v0.8, with preview support for v0.9 RC.1 and explicit pins
-for earlier v0.9 drafts.
+Stable support covers v0.8, with preview support for v0.9 RC.2 and explicit pins
+for earlier v0.9 drafts and RC.1.
 
 `@mcpdesc/core` provides pure functions to:
 
@@ -81,7 +81,7 @@ human-readable `message`, and a `path` into the document, such as
 A selector names one exact set of validation rules. Normally you omit the
 `selector` option: each operation uses the validator's default selector for the
 document's `mcpdesc` format version, currently `0.8.0-rev.20261021` for `0.8.0`
-documents, and `0.9.0-rc.1` for `0.9.0` documents. Upgrading the package can
+documents, and `0.9.0-rc.2` for `0.9.0` documents. Upgrading the package can
 then deliver validator corrections and newer approved 0.9 RC snapshots, until
 the 0.9 default is frozen to the final `0.9.0` release.
 
@@ -98,20 +98,20 @@ projectEffectiveProtocolView(document, {
 The older `specification` option remains a deprecated alias for `selector`.
 Passing both with different values fails with `conflicting-selector-options`.
 
-| Operation                          | `0.8.0-rev.20261021` (default) | `0.8.0` (deprecated) | `0.8.0-rc.4` (deprecated) | `0.9.0-draft.1` (preview) | `0.9.0-draft.2` (preview) | `0.9.0-draft.3` (preview) | `0.9.0-draft.4` (preview) | `0.9.0-rc.1` (default) |
-| ---------------------------------- | ------------------------------ | -------------------- | ------------------------- | ------------------------- | ------------------------- | ------------------------- | ------------------------- | ---------------------- |
-| Effective Protocol View projection | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 | Supported                 | Supported              |
-| Effective Protocol View merge      | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 | Supported                 | Supported              |
-| Declaration selection              | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 | Supported                 | Supported              |
-| Component reference resolution     | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 | Supported                 | Supported              |
-| Migration from 0.7.0               | Supported                      | Supported            | Supported                 | Not supported             | Not supported             | Not supported             | Not supported             | Not supported          |
-| Native MCP value projection        | Not supported                  | Not supported        | Not supported             | Supported                 | Supported                 | Supported                 | Supported                 | Supported              |
-| Conversion from 0.8.0              | Not supported                  | Not supported        | Not supported             | Not supported             | Supported                 | Supported                 | Supported                 | Supported              |
+| Operation                          | `0.8.0-rev.20261021` (default) | `0.8.0` (deprecated) | `0.8.0-rc.4` (deprecated) | `0.9.0-draft.1` (preview) | `0.9.0-draft.2` (preview) | `0.9.0-draft.3` (preview) | `0.9.0-draft.4` (preview) | `0.9.0-rc.1`  | `0.9.0-rc.2` (default) |
+| ---------------------------------- | ------------------------------ | -------------------- | ------------------------- | ------------------------- | ------------------------- | ------------------------- | ------------------------- | ------------- | ---------------------- |
+| Effective Protocol View projection | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 | Supported                 | Supported     | Supported              |
+| Effective Protocol View merge      | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 | Supported                 | Supported     | Supported              |
+| Declaration selection              | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 | Supported                 | Supported     | Supported              |
+| Component reference resolution     | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 | Supported                 | Supported     | Supported              |
+| Migration from 0.7.0               | Supported                      | Supported            | Supported                 | Not supported             | Not supported             | Not supported             | Not supported             | Not supported | Not supported          |
+| Native MCP value projection        | Not supported                  | Not supported        | Not supported             | Supported                 | Supported                 | Supported                 | Supported                 | Supported     | Supported              |
+| Conversion from 0.8.0              | Not supported                  | Not supported        | Not supported             | Not supported             | Supported                 | Supported                 | Supported                 | Supported     | Supported              |
 
 Deprecated selectors still work when pinned and are listed in
 `deprecatedCoreSpecifications`; they may be removed in a later minor release.
 Draft selectors are never defaults: pass one explicitly to retain that draft's
-behavior. Unpinned 0.9.0 documents use RC.1 even when a recognized same-format
+behavior. Unpinned 0.9.0 documents use RC.2 even when a recognized same-format
 `$schema` names an earlier draft.
 
 Unsupported selectors fail with an `unsupported-specification` diagnostic. A
@@ -160,12 +160,43 @@ if (!parsed.ok) {
 }
 
 const json = serializeMcpDescription(document, { format: 'json' });
+const sortedYaml = serializeMcpDescription(document, {
+  format: 'yaml',
+  keyOrder: 'sorted',
+});
+const organizedYaml = serializeMcpDescription(document, {
+  format: 'yaml',
+  keyOrder: 'document',
+});
 ```
 
 Parsing returns a plain JSON-compatible value and rejects YAML that cannot be
-represented as JSON. Serialization sorts object keys, so equal documents always
-produce identical text. Parsing does not validate the document; use the
-validator or any semantic operation for that.
+represented as JSON. Serialization defaults to `keyOrder: 'preserve'`, retaining
+JavaScript property enumeration order at every level, including objects inside
+arrays. Use `keyOrder: 'sorted'` to recursively sort object keys so equal
+documents produce identical text. Integer-like keys follow JavaScript's numeric
+enumeration order, not their original source order. Neither mode changes array
+order or mutates the input.
+
+`keyOrder: 'document'` applies the maintainer-approved proposed specification
+Section 18 presentation profile: header and identity, transports and security,
+capabilities and declarations, then tags and components. Known nested structures
+use context-specific sequences. Arrays and named-map entry order remain
+unchanged; schemas, metadata, application payloads, and extensions remain
+opaque. Unlisted fields follow known fields in their existing relative order.
+
+This opt-in profile recognizes `mcpdesc: '0.8.0'` and `'0.9.0'` directly,
+without selector resolution or validation. Version-specific fields remain scoped
+to their format; unknown formats and unrecognized structures retain their order.
+It anticipates the proposed specification profile, not a new validator snapshot
+or a claim of RC.2 support. The default remains `preserve`. See the
+[ordering design](https://github.com/mcpdesc/core/blob/main/docs/document-ordering-design.md)
+for the full field sequences and preservation contract.
+
+Preservation applies to the supplied value, including a converter's returned
+value, not the original source text. Comments, quoting, whitespace, and original
+positions of moved properties are not preserved. Parsing does not validate the
+document; use the validator or any semantic operation for that.
 
 ### Project an Effective Protocol View
 
@@ -185,6 +216,13 @@ scopes; and sets root `protocolVersions` to the requested revision. A revision
 missing from the document's root `protocolVersions` fails with
 `projection-protocol-version-not-declared` for RC.1, or
 `projection-version-not-declared` for earlier selectors.
+
+Projection preserves the relative property order of retained fields, the order
+of retained array elements, and surviving component-map entries. Opaque values
+such as schemas, metadata, and extensions retain their internal ordering. It
+does not preserve source comments or formatting; integer-like keys follow
+JavaScript enumeration order. To organize the returned document explicitly,
+serialize it with `keyOrder: 'document'`.
 
 ### Merge protocol views
 
@@ -323,6 +361,13 @@ const tools = projectMcpNativeValue(draftDocument, {
   kind: 'tool',
 });
 if (tools.ok) console.log(tools.value); // every applicable tool, in order
+
+const organizedTools = projectMcpNativeValue(draftDocument, {
+  protocolVersion: '2026-07-28',
+  kind: 'tool',
+  keyOrder: 'document',
+});
+if (organizedTools.ok) console.log(organizedTools.value);
 ```
 
 `kind` is `tool`, `resource`, `resourceTemplate`, or `prompt`. The identifier is
@@ -334,6 +379,23 @@ and removes MCP Description fields such as `examples`, `tags`, `security`,
 `clientRequirements`, and `x-` extensions, including on icons and prompt
 arguments. Embedded schemas and `_meta` are copied unchanged. The result is the
 MCP value only, not a JSON-RPC message.
+
+Native projection defaults to `keyOrder: 'preserve'`: retained fields and array
+elements keep their relative order, including icons and prompt arguments.
+Resolved schemas retain the component target's internal order. Opt into
+`keyOrder: 'document'` to arrange native fields using the MCP Description
+declaration sequences restricted to fields that native projection retains.
+Icons, annotations, execution, and prompt arguments use their corresponding
+nested sequences. Arrays, embedded schemas, and `_meta` contents are never
+reordered by this policy.
+
+This is a core presentation convention, not a required MCP wire order or a new
+validator rule. It neither adds fields nor changes protocol-revision support,
+validation, or diagnostics. Serialize the returned value normally to retain the
+chosen order. The serializer's `document` policy does not infer a native kind
+from bare MCP objects or arrays; use the projection option to organize them. For
+recursive alphabetical sorting instead, serialize with `keyOrder: 'sorted'`.
+Neither projection policy preserves source comments, quoting, or whitespace.
 
 | Failure code                            | Cause                                                                       |
 | --------------------------------------- | --------------------------------------------------------------------------- |
