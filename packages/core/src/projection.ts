@@ -32,6 +32,7 @@ import {
   type CoreSelectorOptions,
 } from './snapshot.js';
 import { resolveMcpDescriptionComponentReferences } from './components.js';
+import { orderNativeValue } from './document-ordering.js';
 
 const scopedCollections = [
   'transports',
@@ -431,6 +432,7 @@ export interface ProjectMcpNativeValueOptions extends CoreSelectorOptions<
   readonly protocolVersion: SupportedProtocolVersion;
   readonly kind: McpNativeKind;
   readonly identifier?: string;
+  readonly keyOrder?: 'preserve' | 'document';
 }
 
 const descriptionOnlyFields = new Set([
@@ -582,7 +584,12 @@ export function projectMcpNativeValue(
       ],
     };
   }
-  const values = selected.map(({ declaration }) => nativeValue(declaration));
+  const values = selected.map(({ declaration }) => {
+    const value = nativeValue(declaration);
+    return options.keyOrder === 'document'
+      ? orderNativeValue(value, options.kind)
+      : value;
+  });
   const postconditionDiagnostics = selected.flatMap(({ index }, valueIndex) => {
     const failure = postconditionDiagnostic(
       values[valueIndex]!,

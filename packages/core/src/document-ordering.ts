@@ -278,6 +278,15 @@ const prompt = fixed(
     completionExamples: mapOf(completionExample),
   },
 );
+const nativeOrders = { tool, resource, resourceTemplate, prompt };
+
+export function orderNativeValue(
+  value: JsonObject,
+  kind: keyof typeof nativeOrders,
+): JsonObject {
+  return nativeOrders[kind](value, true) as JsonObject;
+}
+
 const oauthFlow = fixed('authorizationUrl tokenUrl refreshUrl scopes');
 const securityScheme = variant('type', {
   http: fixed('type scheme bearerFormat description'),

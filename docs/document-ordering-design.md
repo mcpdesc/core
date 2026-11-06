@@ -7,6 +7,11 @@ the final 0.9.0 release. That future specification has not been imported as a
 validator snapshot. This policy does not change MCP Description conformance
 rules.
 
+Native MCP projection also supports opt-in `keyOrder: 'document'`, with
+`preserve` as its default. This native subset is a maintainer-approved core
+presentation convention, not an MCP wire-order requirement or an imported
+specification rule.
+
 ## Purpose and scope
 
 Document-oriented ordering presents familiar fields together in a predictable,
@@ -333,18 +338,83 @@ quoting, YAML anchors, source locations, or original positions of properties
 moved by conversion. YAML writers may choose quoting and formatting; only the
 value-level ordering contract is in scope. This is not a source-aware API.
 
+## Projection ordering
+
+Effective Protocol View projection preserves the relative property order of
+retained fields, the relative order of retained array elements, and surviving
+component-map entries. Removing scopes, filtering declarations and elicitations,
+and pruning unused components do not organize the remaining fields. Schemas,
+metadata, extensions, and application payloads retain their internal order.
+Callers can serialize a view with `keyOrder: 'document'` to organize it
+explicitly; effective projection has no separate ordering option.
+
+Native MCP projection defaults to the same preservation policy and accepts:
+
+```ts
+projectMcpNativeValue(document, {
+  protocolVersion: '2026-07-28',
+  kind: 'tool',
+  keyOrder: 'document',
+});
+```
+
+Both individual values and lists support `preserve` and `document`. Native
+projection first selects the effective view, resolves component references, and
+removes description-only fields and extensions. Preserving projection retains
+the relative order of surviving fields, including fields of icons and prompt
+arguments. Resolved schemas inherit their target component's internal order; the
+containing schema field stays in its retained position.
+
+Document-oriented native projection reuses the declaration sequences above,
+restricted to fields retained by native projection:
+
+| Structure         | Field sequence                                                                                              |
+| ----------------- | ----------------------------------------------------------------------------------------------------------- |
+| Tool              | `name`, `title`, `description`, `icons`, `inputSchema`, `outputSchema`, `annotations`, `execution`, `_meta` |
+| Resource          | `uri`, `name`, `title`, `description`, `icons`, `mimeType`, `size`, `annotations`, `_meta`                  |
+| Resource template | `uriTemplate`, `name`, `title`, `description`, `icons`, `mimeType`, `annotations`, `_meta`                  |
+| Prompt            | `name`, `title`, `description`, `icons`, `arguments`, `_meta`                                               |
+
+Use the same nested sequences for icons, tool/resource annotations, execution,
+and prompt arguments. Preserve all arrays, embedded schemas, and `_meta`
+contents. Missing fields are skipped; ordering never adds fields, removes
+fields, or makes an otherwise unsupported field valid for a protocol revision.
+Existing selector and protocol-revision validation, native postconditions,
+diagnostics, and all-or-nothing failures remain unchanged. Ordering applies
+before result validation.
+
+The explicit `kind` selects the native rule. Do not infer native structures from
+arbitrary objects, fabricate a document header, or change the serializer's
+recognition rules. Serializing a bare native value with `keyOrder: 'document'`
+continues to preserve its supplied order; organize during projection instead.
+Recursive alphabetical ordering remains a serialization-only policy.
+
+This convention requires no new selector or validator snapshot, and does not
+change merge ordering. The value-level and source-text limitations described
+above apply to both projections.
+
 ## Implementation and verification
 
 The internal ordering module is
-[document-ordering.ts](../packages/core/src/document-ordering.ts), reached only
-when serialization explicitly selects `document`. It has no validator, network,
-or filesystem dependency. All other serialization policies bypass its traversal.
+[document-ordering.ts](../packages/core/src/document-ordering.ts), reached when
+serialization or native projection explicitly selects `document`. The two
+operations share declaration and nested ordering rules. The module has no
+validator, network, or filesystem dependency. Other ordering policies bypass its
+traversal.
 
 [document-ordering.test.ts](../packages/core/test/document-ordering.test.ts)
 checks every fixed-field sequence against the embedded schemas, both supported
 format versions, and both output formats. It also checks opaque boundaries,
 unknown variants, named maps, empty values, and unchanged inputs. Browser and
 isolated-consumer checks exercise the public option and declarations.
+
+[projection-ordering.test.ts](../packages/core/test/projection-ordering.test.ts)
+checks preservation across all supported effective-view selectors, plus native
+preservation and organization across every supported native selector, protocol
+revision, and declaration kind. It checks pinned MCP field inventories, exact
+JSON/YAML ordering independent of YAML alias emission, filtering, component
+pruning/resolution, opaque boundaries, idempotence, and input immutability.
+Frozen native projection fixtures run under both policies, including failures.
 
 The ongoing requirements are:
 

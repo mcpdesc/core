@@ -191,6 +191,38 @@ try {
   });
   assert.equal(native.ok, true, JSON.stringify(native.diagnostics));
   assert.deepEqual(native.value, expected);
+  const orderingSource = {
+    mcpdesc: '0.9.0',
+    info: { name: 'native-ordering', version: '1.0.0' },
+    protocolVersions: ['2026-07-28'],
+    tools: [
+      {
+        _meta: { z: 1, a: 2 },
+        inputSchema: { additionalProperties: false, type: 'object' },
+        description: 'Tool',
+        name: 'ordered',
+      },
+    ],
+  };
+  for (const keyOrder of ['preserve', 'document']) {
+    const ordered = root.projectMcpNativeValue(orderingSource, {
+      protocolVersion: '2026-07-28',
+      kind: 'tool',
+      keyOrder,
+    });
+    assert.equal(ordered.ok, true, JSON.stringify(ordered.diagnostics));
+    assert.deepEqual(
+      Object.keys(ordered.value[0]),
+      keyOrder === 'document'
+        ? ['name', 'description', 'inputSchema', '_meta']
+        : ['_meta', 'inputSchema', 'description', 'name'],
+    );
+    assert.deepEqual(Object.keys(ordered.value[0].inputSchema), [
+      'additionalProperties',
+      'type',
+    ]);
+    assert.deepEqual(Object.keys(ordered.value[0]._meta), ['z', 'a']);
+  }
   for (const operation of [
     root.resolveMcpDescriptionComponentReferences,
     components.resolveMcpDescriptionComponentReferences,

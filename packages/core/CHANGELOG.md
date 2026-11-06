@@ -6,12 +6,18 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 
 ## [0.13.0-rc.6] - 2026-11-05
 
+Ordering enhancements when projecting and serializing
+
+### Clarified
+
+- Effective Protocol Views and default native projections preserve relative
+  ordering of retained fields and array elements. Native projection also accepts
+  explicit `keyOrder: 'preserve'`. Resolved schemas retain component target
+  ordering. Neither projection preserves source comments or formatting. Existing
+  selector support, validation, and diagnostics remain unchanged.
+
 ### Added
 
-- Added explicit `keyOrder: 'preserve'` and `keyOrder: 'sorted'` policies to
-  `serializeMcpDescription` for JSON and YAML. Preservation retains recursive
-  JavaScript property enumeration order; sorted mode retains the previous
-  recursive key-sorting behavior. Neither changes array order or mutates inputs.
 - Added opt-in `keyOrder: 'document'` serialization using the
   maintainer-approved proposed specification Section 18 ordering profile for
   0.8.0 and 0.9.0 values. Context-specific field sequences preserve arrays,
@@ -19,6 +25,16 @@ All notable changes to `@mcpdesc/core` are documented in this file.
   formats and variants remain untouched. This does not add a validator selector
   or change validation. Neither document-oriented nor preserving serialization
   preserves source comments, quoting, whitespace, or moved-property positions.
+- Added explicit `keyOrder: 'preserve'` and `keyOrder: 'sorted'` policies to
+  `serializeMcpDescription` for JSON and YAML. Preservation retains recursive
+  JavaScript property enumeration order; sorted mode retains the previous
+  recursive key-sorting behavior. Neither changes array order or mutates inputs.
+- Added opt-in `keyOrder: 'document'` to native MCP projection for tools,
+  resources, resource templates, and prompts. It reuses MCP Description field
+  sequences for retained native fields and known nested structures, without
+  reordering arrays, embedded schemas, or `_meta` contents. This is a tooling
+  presentation convention, not an MCP wire-order requirement or validator rule.
+
 
 ### Changed
 

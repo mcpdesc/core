@@ -9,6 +9,17 @@ scripts, and release infrastructure.
 > - [`@mcpdesc/core`](packages/core/CHANGELOG.md)
 > - [`@mcpdesc/validator`](packages/validator/CHANGELOG.md)
 
+## 2026-11-06
+
+### Added
+
+- Documented projection preservation guarantees and the approved native MCP
+  presentation subset of document-oriented ordering.
+- Added explicit projection-ordering tests across supported selectors, MCP
+  revisions, and native kinds, plus strict-CSP and isolated-consumer coverage.
+  Frozen native projection fixtures now run under both ordering policies;
+  validator snapshots remain unchanged.
+
 ## 2026-11-05
 
 ### Added

@@ -32,6 +32,9 @@ repository.
 - [x] Add opt-in document-oriented serialization using the approved proposed
       Section 18 profile, with context-specific field sequences and explicit
       opaque boundaries, without changing validator conformance.
+- [x] Make effective-view and native projection preservation guarantees explicit
+      and add opt-in native document-oriented ordering using shared declaration
+      sequences, without changing validation or selector support.
 - [x] Add validated 0.7.0-to-Draft-4 migration with deterministic security
       scheme extraction and explicit source-validation responsibility.
 - [x] Add exact MCP Description RC.1 snapshot support without changing Draft 4

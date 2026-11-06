@@ -288,6 +288,23 @@ try {
           });
           assert.equal(native.ok, true, JSON.stringify(native.diagnostics));
           assert.deepEqual(native.value, { name: 'referenced', inputSchema: { type: 'object', additionalProperties: false } });
+          const scrambled = {
+            ...reusable,
+            tools: [{ inputSchema: reusable.tools[0].inputSchema, name: 'referenced' }],
+          };
+          for (const keyOrder of ['preserve', 'document']) {
+            const ordered = projectMcpNativeValue(scrambled, {
+              specification,
+              protocolVersion: '2026-07-28',
+              kind: 'tool',
+              keyOrder,
+            });
+            assert.equal(ordered.ok, true, JSON.stringify(ordered.diagnostics));
+            assert.deepEqual(Object.keys(ordered.value[0]), keyOrder === 'document'
+              ? ['name', 'inputSchema']
+              : ['inputSchema', 'name']);
+            assert.deepEqual(Object.keys(ordered.value[0].inputSchema), ['type', 'additionalProperties']);
+          }
           assert.equal(selectMcpDescriptionDeclarations(reusable, { specification, selections: { tools: ['referenced'] } }).ok, true);
           const view = projectEffectiveProtocolView(reusable, { specification, protocolVersion: '2026-07-28' });
           assert.equal(view.ok, true);
@@ -386,9 +403,13 @@ try {
         selector: v0_9Rc1Snapshot.specification,
         protocolVersion: '2026-07-28',
         kind: 'tool',
+        keyOrder: 'document',
       };
       const nativeList: OperationResult<JsonObject[]> = projectMcpNativeValue({}, { ...nativeOptions, identifier: undefined });
       const nativeSingle: OperationResult<JsonObject> = projectMcpNativeValue({}, { ...nativeOptions, identifier: 'search' });
+      projectMcpNativeValue({}, { ...nativeOptions, keyOrder: 'preserve' });
+      // @ts-expect-error Recursive sorting is a serialization policy, not a native projection policy.
+      projectMcpNativeValue({}, { ...nativeOptions, keyOrder: 'sorted' });
       const rule: string | undefined = nativeSingle.diagnostics[0]?.rule;
       void nativeList;
       void rule;
