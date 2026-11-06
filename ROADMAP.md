@@ -96,8 +96,9 @@ repository.
 - [x] Make RC.1 the configured `0.9.0` default and have conversion follow it;
       advance through approved RC intakes and freeze to `0.9.0` at final
       release.
-- [ ] Review validator `0.14.0-rc.5` then core `0.13.0-rc.5` for npm publication
-      on `next`; do not publish without maintainer approval.
+- [x] Publish validator `0.14.0-rc.5` and core `0.13.0-rc.5`.
+- [ ] Publish approved core `0.13.0-rc.6` on `next` after reviewed release
+      preparation and required CI pass; keep validator at `0.14.0-rc.5`.
 - Add normalization or comparison operations only where multiple consumers
   demonstrate the same requirement.
 

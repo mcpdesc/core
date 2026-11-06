@@ -21,8 +21,10 @@ scripts, and release infrastructure.
 ### Changed
 
 - Extended the core tarball allowlist for the internal document-ordering module.
-  Validator snapshots and package versions remain unchanged; no release was
-  prepared.
+  Validator snapshots remain unchanged.
+- Prepared core `0.13.0-rc.6` for the `next` channel with preserving, sorted,
+  and document-oriented serialization. Validator remains `0.14.0-rc.5`;
+  publication requires the reviewed release commit and passing remote checks.
 
 ## 2026-11-04
 

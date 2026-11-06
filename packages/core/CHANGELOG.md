@@ -4,6 +4,8 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 
 ## [Unreleased]
 
+## [0.13.0-rc.6] - 2026-11-05
+
 ### Added
 
 - Added explicit `keyOrder: 'preserve'` and `keyOrder: 'sorted'` policies to
