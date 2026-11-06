@@ -9,6 +9,21 @@ scripts, and release infrastructure.
 > - [`@mcpdesc/core`](packages/core/CHANGELOG.md)
 > - [`@mcpdesc/validator`](packages/validator/CHANGELOG.md)
 
+## 2026-11-05
+
+### Added
+
+- Added the document-oriented ordering design, recording the proposed
+  specification Section 18 sequences and explicit preservation boundaries.
+- Added exhaustive ordering and field-inventory tests across all eight embedded
+  selectors, with JSON/YAML, strict-CSP, and isolated-consumer coverage.
+
+### Changed
+
+- Extended the core tarball allowlist for the internal document-ordering module.
+  Validator snapshots and package versions remain unchanged; no release was
+  prepared.
+
 ## 2026-11-04
 
 ### Added

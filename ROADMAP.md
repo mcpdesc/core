@@ -27,6 +27,11 @@ repository.
 - [x] Add identity-based declaration selection for focused document subsets.
 - [x] Add pure JSON/YAML source parsing and deterministic serialization without
       host file or stream access.
+- [x] Preserve object-key order by default in JSON/YAML serialization for editor
+      and CLI workflows, with explicit sorted output available.
+- [x] Add opt-in document-oriented serialization using the approved proposed
+      Section 18 profile, with context-specific field sequences and explicit
+      opaque boundaries, without changing validator conformance.
 - [x] Add validated 0.7.0-to-Draft-4 migration with deterministic security
       scheme extraction and explicit source-validation responsibility.
 - [x] Add exact MCP Description RC.1 snapshot support without changing Draft 4

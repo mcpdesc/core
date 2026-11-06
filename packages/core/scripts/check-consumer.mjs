@@ -111,6 +111,23 @@ try {
       assert.equal(parsed.ok, true);
       assert.deepEqual(parsed.value, source);
 
+      const orderedSource = {
+        tools: [{ inputSchema: { properties: { z: {}, a: {} }, type: 'object' }, name: 'lookup' }],
+        info: { version: '1.0.0', name: 'ordering' },
+        mcpdesc: '0.9.0',
+      };
+      const orderedExpected = {
+        mcpdesc: '0.9.0',
+        info: { name: 'ordering', version: '1.0.0' },
+        tools: [{ name: 'lookup', inputSchema: orderedSource.tools[0].inputSchema }],
+      };
+      for (const format of ['json', 'yaml']) {
+        assert.equal(
+          serializeMcpDescription(orderedSource, { format, keyOrder: 'document' }),
+          serializeMcpDescription(orderedExpected, { format, keyOrder: 'preserve' }),
+        );
+      }
+
       const result = projectEffectiveProtocolView(source, {
         specification: '0.8.0-rc.4',
         protocolVersion: '2026-07-28',
@@ -327,7 +344,11 @@ try {
   writeFileSync(
     path.join(consumerRoot, 'consumer.ts'),
     `
-      import { parseMcpDescriptionSource } from '@mcpdesc/core/documents';
+      import {
+        parseMcpDescriptionSource,
+        serializeMcpDescription,
+        type SerializeMcpDescriptionOptions,
+      } from '@mcpdesc/core/documents';
       import { selectMcpDescriptionDeclarations } from '@mcpdesc/core/selection';
       import {
         resolveMcpDescriptionComponentReferences,
@@ -356,6 +377,11 @@ try {
       } from '@mcpdesc/core';
 
       const parsed = parseMcpDescriptionSource('{"mcpdesc":"0.8.0"}');
+      const documentOrder: SerializeMcpDescriptionOptions = {
+        format: 'yaml',
+        keyOrder: 'document',
+      };
+      serializeMcpDescription({ mcpdesc: '0.9.0' }, documentOrder);
       const nativeOptions: ProjectMcpNativeValueOptions = {
         selector: v0_9Rc1Snapshot.specification,
         protocolVersion: '2026-07-28',

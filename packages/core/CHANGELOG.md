@@ -4,6 +4,27 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Added explicit `keyOrder: 'preserve'` and `keyOrder: 'sorted'` policies to
+  `serializeMcpDescription` for JSON and YAML. Preservation retains recursive
+  JavaScript property enumeration order; sorted mode retains the previous
+  recursive key-sorting behavior. Neither changes array order or mutates inputs.
+- Added opt-in `keyOrder: 'document'` serialization using the
+  maintainer-approved proposed specification Section 18 ordering profile for
+  0.8.0 and 0.9.0 values. Context-specific field sequences preserve arrays,
+  named-map entries, opaque schemas, metadata, and application payloads. Unknown
+  formats and variants remain untouched. This does not add a validator selector
+  or change validation. Neither document-oriented nor preserving serialization
+  preserves source comments, quoting, whitespace, or moved-property positions.
+
+### Changed
+
+- **Upgrade note:** `serializeMcpDescription` now defaults to
+  `keyOrder: 'preserve'` instead of sorting object keys. Pass
+  `keyOrder: 'sorted'` to retain the previous output ordering for snapshots,
+  comparisons, or generated files.
+
 ## [0.13.0-rc.5] - 2026-11-04
 
 ### Added

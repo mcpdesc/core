@@ -160,12 +160,43 @@ if (!parsed.ok) {
 }
 
 const json = serializeMcpDescription(document, { format: 'json' });
+const sortedYaml = serializeMcpDescription(document, {
+  format: 'yaml',
+  keyOrder: 'sorted',
+});
+const organizedYaml = serializeMcpDescription(document, {
+  format: 'yaml',
+  keyOrder: 'document',
+});
 ```
 
 Parsing returns a plain JSON-compatible value and rejects YAML that cannot be
-represented as JSON. Serialization sorts object keys, so equal documents always
-produce identical text. Parsing does not validate the document; use the
-validator or any semantic operation for that.
+represented as JSON. Serialization defaults to `keyOrder: 'preserve'`, retaining
+JavaScript property enumeration order at every level, including objects inside
+arrays. Use `keyOrder: 'sorted'` to recursively sort object keys so equal
+documents produce identical text. Integer-like keys follow JavaScript's numeric
+enumeration order, not their original source order. Neither mode changes array
+order or mutates the input.
+
+`keyOrder: 'document'` applies the maintainer-approved proposed specification
+Section 18 presentation profile: header and identity, transports and security,
+capabilities and declarations, then tags and components. Known nested structures
+use context-specific sequences. Arrays and named-map entry order remain
+unchanged; schemas, metadata, application payloads, and extensions remain
+opaque. Unlisted fields follow known fields in their existing relative order.
+
+This opt-in profile recognizes `mcpdesc: '0.8.0'` and `'0.9.0'` directly,
+without selector resolution or validation. Version-specific fields remain scoped
+to their format; unknown formats and unrecognized structures retain their order.
+It anticipates the proposed specification profile, not a new validator snapshot
+or a claim of RC.2 support. The default remains `preserve`. See the
+[ordering design](https://github.com/mcpdesc/core/blob/main/docs/document-ordering-design.md)
+for the full field sequences and preservation contract.
+
+Preservation applies to the supplied value, including a converter's returned
+value, not the original source text. Comments, quoting, whitespace, and original
+positions of moved properties are not preserved. Parsing does not validate the
+document; use the validator or any semantic operation for that.
 
 ### Project an Effective Protocol View
 

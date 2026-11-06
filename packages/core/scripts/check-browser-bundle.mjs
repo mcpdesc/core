@@ -116,7 +116,37 @@ globalThis.Function = function BlockedFunction() {
 
 try {
   const root = await import('../dist/index.js');
+  const documents = await import('../dist/documents.js');
   const components = await import('../dist/components.js');
+  const unordered = {
+    tools: [
+      {
+        inputSchema: { properties: { z: {}, a: {} }, type: 'object' },
+        name: 'lookup',
+      },
+    ],
+    info: { version: '1.0.0', name: 'ordering' },
+    mcpdesc: '0.9.0',
+  };
+  const ordered = {
+    mcpdesc: '0.9.0',
+    info: { name: 'ordering', version: '1.0.0' },
+    tools: [{ name: 'lookup', inputSchema: unordered.tools[0].inputSchema }],
+  };
+  for (const entry of [root, documents]) {
+    for (const format of ['json', 'yaml']) {
+      assert.equal(
+        entry.serializeMcpDescription(unordered, {
+          format,
+          keyOrder: 'document',
+        }),
+        entry.serializeMcpDescription(ordered, {
+          format,
+          keyOrder: 'preserve',
+        }),
+      );
+    }
+  }
   const fixture = JSON.parse(
     readFileSync(
       new URL(
