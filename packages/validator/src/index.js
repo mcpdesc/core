@@ -263,6 +263,9 @@ export function validateMcpDescription(document, options = {}) {
   if (options === null || typeof options !== 'object' || Array.isArray(options)) {
     throw new TypeError('options must be an object');
   }
+  if (options.explainDiagnostics !== undefined && typeof options.explainDiagnostics !== 'boolean') {
+    throw new TypeError('options.explainDiagnostics must be a boolean');
+  }
   if (options.selector !== undefined && options.specification !== undefined && options.selector !== options.specification) {
     throw new TypeError('options.selector and options.specification must identify the same selector');
   }
@@ -284,11 +287,23 @@ export function validateMcpDescription(document, options = {}) {
     };
   }
 
+  const validation = withValidationSelector(
+    resolution.specification,
+    () => snapshots[resolution.specification].validate(document),
+  );
+  const explainDiagnostic = options.explainDiagnostics
+    ? snapshots[resolution.specification].explainDiagnostic
+    : undefined;
+  const diagnostics = typeof explainDiagnostic === 'function'
+    ? validation.diagnostics.map((diagnostic) => {
+      const explanation = explainDiagnostic(document, diagnostic);
+      return explanation ? { ...diagnostic, explanation } : diagnostic;
+    })
+    : validation.diagnostics;
+
   return {
-    ...withValidationSelector(
-      resolution.specification,
-      () => snapshots[resolution.specification].validate(document),
-    ),
+    ...validation,
+    diagnostics,
     selector: resolution.specification,
     specification: resolution.specification,
     defaulted: resolution.defaulted

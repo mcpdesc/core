@@ -42,6 +42,17 @@ export interface McpDescriptionDiagnostic {
   readonly path: Array<string | number>;
   readonly rule?: string;
   readonly protocolVersions?: readonly SupportedProtocolVersion[];
+  readonly explanation?: McpDescriptionDiagnosticExplanation;
+}
+
+export interface McpDescriptionDiagnosticExplanation {
+  readonly kind: 'unexpected-property';
+  readonly property: string;
+  readonly discriminator: Readonly<{
+    property: 'type';
+    value: string;
+  }>;
+  readonly suggestedProperty?: string;
 }
 
 export interface McpDescriptionValidationResult {
@@ -56,6 +67,7 @@ export interface McpDescriptionValidationResult {
 export interface ValidateMcpDescriptionOptions {
   readonly selector?: McpDescriptionSelector;
   readonly specification?: McpDescriptionSpecification;
+  readonly explainDiagnostics?: boolean;
 }
 
 export interface McpDescriptionComponentReferenceProvenance {

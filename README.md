@@ -9,7 +9,7 @@ JavaScript and TypeScript libraries for working with
 [MCP Description](https://mcpdesc.org) documents: machine-readable descriptions
 of an MCP server's tools, resources, prompts, transports, and capabilities.
 
-Tested for MCP Description v0.8 and v0.9 RC.1. Both libraries run offline in
+Tested for MCP Description v0.8 and v0.9 RC.2. Both libraries run offline in
 Node.js and in browser bundles, including pages with a strict Content Security
 Policy.
 
@@ -74,7 +74,7 @@ Several independent version numbers appear in these libraries:
 | MCP Description format version | `mcpdesc: "0.8.0"`               | The document format, declared in the document.                     |
 | Selector                       | `0.8.0`, `0.8.0-rev.20261021`    | One exact, immutable set of validation rules for a format version. |
 | MCP protocol version           | `2025-11-25`, `2026-07-28`       | An MCP protocol version that the described server supports.        |
-| npm package version            | `@mcpdesc/validator@0.14.0-rc.6` | A library release; it may support several selectors.               |
+| npm package version            | `@mcpdesc/validator@0.14.0-rc.7` | A library release; it may support several selectors.               |
 
 For formats with a configured default, both packages select it from the
 document's `mcpdesc` value, so documents benefit from validator corrections when
@@ -87,7 +87,7 @@ the [terminology guide](docs/validator-terminology.md) for details.
 
 | Package                            | Supported selectors                                                                                                                                                         | Runtime     |
 | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| `@mcpdesc/validator` `0.14.0-rc.6` | `0.8.0-rev.20261021` (default for `0.8.0`); `0.9.0-rc.2` (default for `0.9.0`); explicit `0.9.0-rc.1` and `0.9.0-draft.1` through `.4`; deprecated `0.8.0` and `0.8.0-rc.4` | Node.js 20+ |
+| `@mcpdesc/validator` `0.14.0-rc.7` | `0.8.0-rev.20261021` (default for `0.8.0`); `0.9.0-rc.2` (default for `0.9.0`); explicit `0.9.0-rc.1` and `0.9.0-draft.1` through `.4`; deprecated `0.8.0` and `0.8.0-rc.4` | Node.js 20+ |
 | `@mcpdesc/core` `0.13.0-rc.6`      | Same selectors; rule-level results, view/merge fixtures, native projection, 0.8.0-to-0.9.0 conversion, and serialization ordering policies; pins validator `0.14.0-rc.6`    | Node.js 22+ |
 
 Older drafts and release candidates remain available from earlier package

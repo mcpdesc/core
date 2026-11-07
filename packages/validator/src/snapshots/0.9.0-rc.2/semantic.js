@@ -320,6 +320,74 @@ function redundantConditionalSummary(error, errors) {
     && members.has(failure.parentSchema));
 }
 
+function valueAtPath(value, path) {
+  let current = value;
+  for (const segment of path) {
+    if (current === null || typeof current !== 'object') return undefined;
+    current = current[segment];
+  }
+  return current;
+}
+
+function propertyDistance(left, right) {
+  const previous = Array.from({ length: right.length + 1 }, (_, index) => index);
+  for (let leftIndex = 1; leftIndex <= left.length; leftIndex += 1) {
+    const current = [leftIndex];
+    for (let rightIndex = 1; rightIndex <= right.length; rightIndex += 1) {
+      current[rightIndex] = Math.min(
+        current[rightIndex - 1] + 1,
+        previous[rightIndex] + 1,
+        previous[rightIndex - 1] + (left[leftIndex - 1] === right[rightIndex - 1] ? 0 : 1)
+      );
+    }
+    previous.splice(0, previous.length, ...current);
+  }
+  return previous[right.length];
+}
+
+function closestProperty(property, allowed) {
+  const matches = allowed
+    .map((candidate) => ({ candidate, distance: propertyDistance(property, candidate) }))
+    .filter(({ distance }) => distance === 1)
+    .sort((left, right) => left.distance - right.distance || left.candidate.localeCompare(right.candidate));
+  return matches.length === 1 ? matches[0].candidate : undefined;
+}
+
+export function explainDiagnostic(document, diagnostic) {
+  if (
+    diagnostic.code !== 'schema-validation' ||
+    diagnostic.rule !== 'mcpdesc.transport.members' ||
+    diagnostic.path.length !== 3 ||
+    diagnostic.path[0] !== 'transports' ||
+    typeof diagnostic.path[2] !== 'string'
+  ) return undefined;
+
+  const transport = valueAtPath(document, diagnostic.path.slice(0, 2));
+  if (transport === null || typeof transport !== 'object' || Array.isArray(transport)) return undefined;
+  const transportType = transport.type;
+  if (typeof transportType !== 'string') return undefined;
+
+  const branch = schema.$defs.transport.allOf.find(
+    (candidate) => candidate.if?.properties?.type?.const === transportType
+  )?.then;
+  if (!branch || branch.additionalProperties !== false) return undefined;
+
+  const property = diagnostic.path[2];
+  if (
+    Object.hasOwn(branch.properties ?? {}, property) ||
+    Object.entries(branch.patternProperties ?? {}).some(([pattern]) => new RegExp(pattern).test(property))
+  ) return undefined;
+
+  const allowedProperties = Object.keys(branch.properties ?? {});
+  const suggestedProperty = closestProperty(property, allowedProperties);
+  return {
+    kind: 'unexpected-property',
+    property,
+    discriminator: { property: 'type', value: transportType },
+    ...(suggestedProperty ? { suggestedProperty } : {})
+  };
+}
+
 // The alternative of a failed oneOf or anyOf that best matches the instance: its failures reach
 // deepest into the instance, then it has the fewest failures, then it comes first.
 function selectedAlternative(container, errors) {

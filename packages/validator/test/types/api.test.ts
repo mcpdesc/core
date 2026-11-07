@@ -11,6 +11,7 @@ import {
   supportedSpecifications,
   validateMcpDescription,
   type McpDescriptionDiagnostic,
+  type McpDescriptionDiagnosticExplanation,
   type McpDescriptionRuleResult,
   type McpDescriptionRuleResultStatus,
   type McpDescriptionValidationResult
@@ -47,6 +48,9 @@ const browserResult: McpDescriptionValidationResult = validateBrowser(document, 
   specification: '0.8.0'
 });
 const diagnostic: McpDescriptionDiagnostic | undefined = result.diagnostics[0];
+const explainedResult = validateMcpDescription(document, { explainDiagnostics: true });
+const diagnosticExplanation: McpDescriptionDiagnosticExplanation | undefined =
+  explainedResult.diagnostics[0]?.explanation;
 const pathSegment: string | number | undefined = diagnostic?.path[0];
 const diagnosticRule: string | undefined = diagnostic?.rule;
 const diagnosticCode: string | undefined = diagnostic?.code;
@@ -70,6 +74,7 @@ if (resolution.status === 'resolved') {
 }
 
 void pathSegment;
+void diagnosticExplanation;
 void diagnosticRule;
 void diagnosticCode;
 void diagnosticProtocolVersions;

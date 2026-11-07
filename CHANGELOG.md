@@ -28,9 +28,8 @@ scripts, and release infrastructure.
 
 ### Changed
 
-- Prepared validator `0.14.0-rc.6` followed by core `0.13.0-rc.6` for the `next`
-  channel, pinning core to the matching validator. No package has been tagged or
-  published.
+- Published validator `0.14.0-rc.6` followed by core `0.13.0-rc.6` on the `next`
+  channel, with core pinned to the matching validator.
 
 ## 2026-11-05
 

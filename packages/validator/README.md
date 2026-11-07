@@ -6,7 +6,7 @@
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/mcpdesc/core/blob/main/LICENSE)
 
 Validate [MCP Description](https://mcpdesc.org) documents. Tested for MCP
-Description v0.8 and v0.9 RC.1.
+Description v0.8 and v0.9 RC.2.
 
 The validator:
 
@@ -64,6 +64,7 @@ interface McpDescriptionValidationResult {
     path: Array<string | number>; // location, for example ['tools', 0, 'inputSchema']
     rule?: string; // registered rule, for example 'mcp.meta.key-format'
     protocolVersions?: string[]; // revisions the finding concerns, when applicable
+    explanation?: McpDescriptionDiagnosticExplanation; // only when requested and available
   }>;
   results?: Array<{
     rule: string;
@@ -74,6 +75,13 @@ interface McpDescriptionValidationResult {
   /** @deprecated Use `selector`. */
   specification: string | null;
 }
+
+interface McpDescriptionDiagnosticExplanation {
+  kind: 'unexpected-property';
+  property: string;
+  discriminator: { property: 'type'; value: string };
+  suggestedProperty?: string;
+}
 ```
 
 - **Errors** make a document invalid.
@@ -83,6 +91,12 @@ interface McpDescriptionValidationResult {
   property, the path ends with that property's name.
 - Diagnostics are deterministic: the same document and selector always produce
   the same results.
+- Diagnostic explanations are opt-in with `explainDiagnostics: true`. RC.2
+  currently explains unexpected members in recognized transport variants,
+  including a uniquely close property suggestion such as `arg` → `args`. The
+  explanation is additive metadata; the default diagnostic message and shape
+  remain unchanged. Other selectors and diagnostic kinds may have no
+  explanation.
 - From MCP Description 0.9 drafts, diagnostics identify the specification
   `rule` they report. From Draft 4, `rule`, `severity`, and `path` are required
   interoperable fields; `code` and `message` are optional producer output, and
@@ -128,6 +142,23 @@ defaults; pin one to retain its original validation behavior:
 
 ```js
 validateMcpDescription(draftDocument, { selector: '0.9.0-draft.4' });
+```
+
+Request structured explanation metadata for supported findings:
+
+```js
+const result = validateMcpDescription(document, {
+  selector: '0.9.0-rc.2',
+  explainDiagnostics: true
+});
+
+for (const diagnostic of result.diagnostics) {
+  if (diagnostic.explanation?.kind === 'unexpected-property') {
+    console.log(diagnostic.explanation.property);
+    console.log(diagnostic.explanation.discriminator.value);
+    console.log(diagnostic.explanation.suggestedProperty);
+  }
+}
 ```
 
 A document whose format version has no default, such as an unknown future
