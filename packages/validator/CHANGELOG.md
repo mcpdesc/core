@@ -6,7 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this package follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Dates for published releases are the UTC publication dates recorded by npm.
 
-## [Unreleased]
+## [0.14.0-rc.7] - 2026-11-07
+
+### Added
+
+- Added opt-in `explainDiagnostics` metadata for RC.2 unexpected transport
+  properties, including the selected transport discriminator and a unique
+  one-edit property suggestion when available. Default diagnostics are
+  unchanged.
+
+### Changed
+
+- **Upgrade note:** diagnostic explanations are available only when requested
+  with `explainDiagnostics: true`; the concise diagnostic output remains the
+  default.
 
 ## [0.14.0-rc.6] - 2026-11-06
 

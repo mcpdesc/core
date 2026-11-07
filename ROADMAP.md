@@ -102,9 +102,12 @@ repository.
 - [x] Import immutable RC.2 with conditional discriminated-union validation and
       frozen fixtures, then adopt it across supported validator and core
       operations as the `0.9.0` default without changing earlier selectors.
+- [x] Add opt-in structured explanations for RC.2 transport member diagnostics
+      while preserving the default diagnostic shape and snapshot conformance.
 - [x] Publish validator `0.14.0-rc.5` and core `0.13.0-rc.5`.
-- [ ] Publish approved validator `0.14.0-rc.6` then core `0.13.0-rc.6` on `next`
-      after reviewed release preparation and required CI pass.
+- [x] Publish validator `0.14.0-rc.6` then core `0.13.0-rc.6` on `next`.
+- [ ] Publish validator `0.14.0-rc.7` on `next` after reviewed release
+      preparation and required CI pass.
 - Add normalization or comparison operations only where multiple consumers
   demonstrate the same requirement.
 

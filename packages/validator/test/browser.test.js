@@ -79,6 +79,24 @@ test('browser defaults 0.9.0 to RC.2 and preserves results under strict CSP', ()
   assert.deepEqual(browserResult, standardResult);
 });
 
+test('browser exposes RC.2 diagnostic explanations under strict CSP', () => {
+  const document = JSON.parse(fs.readFileSync(
+    new URL('./snapshots/0.9.0-rc.2/fixtures/expected-invalid/transport-arg-typo.json', import.meta.url),
+    'utf8'
+  ));
+  const options = { selector: '0.9.0-rc.2', explainDiagnostics: true };
+  const browserResult = validateUnderCsp(document, options);
+  const standardResult = validateStandard(document, options);
+
+  assert.deepEqual(browserResult, standardResult);
+  assert.deepEqual(browserResult.diagnostics[0].explanation, {
+    kind: 'unexpected-property',
+    property: 'arg',
+    discriminator: { property: 'type', value: 'stdio' },
+    suggestedProperty: 'args'
+  });
+});
+
 test('browser entry remains the standalone implementation', async () => {
   const standalone = await import('@mcpdesc/validator/standalone');
   assert.strictEqual(browser.validateMcpDescription, standalone.validateMcpDescription);

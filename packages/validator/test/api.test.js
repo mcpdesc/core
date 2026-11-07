@@ -131,10 +131,65 @@ test('reports one actionable transport diagnostic for a misspelled RC.2 field', 
     rc2.diagnostics.map(({ rule, path }) => ({ rule, path })),
     [{ rule: 'mcpdesc.transport.members', path: ['transports', 0, 'arg'] }],
   );
+  assert.equal(Object.hasOwn(rc2.diagnostics[0], 'explanation'), false);
 
   const rc1 = validateMcpDescription(document, { selector: '0.9.0-rc.1' });
   assert.equal(rc1.valid, false);
   assert.equal(rc1.diagnostics.length, 10);
+  const explainedRc1 = validateMcpDescription(document, {
+    selector: '0.9.0-rc.1',
+    explainDiagnostics: true
+  });
+  assert.ok(explainedRc1.diagnostics.every(({ explanation }) => explanation === undefined));
+});
+
+test('adds opt-in structured explanations for RC.2 transport member diagnostics', () => {
+  const document = fixture('expected-invalid', 'transport-arg-typo.json', '0.9.0-rc.2');
+  const concise = validateMcpDescription(document, { selector: '0.9.0-rc.2' });
+  const explained = validateMcpDescription(document, {
+    selector: '0.9.0-rc.2',
+    explainDiagnostics: true
+  });
+
+  assert.deepEqual(explained.diagnostics[0], {
+    ...concise.diagnostics[0],
+    explanation: {
+      kind: 'unexpected-property',
+      property: 'arg',
+      discriminator: { property: 'type', value: 'stdio' },
+      suggestedProperty: 'args'
+    }
+  });
+  assert.equal(explained.valid, concise.valid);
+  assert.deepEqual(explained.results, concise.results);
+
+  const independentErrors = structuredClone(document);
+  independentErrors.transports[0].command = 42;
+  const result = validateMcpDescription(independentErrors, {
+    selector: '0.9.0-rc.2',
+    explainDiagnostics: true
+  });
+  assert.equal(result.diagnostics.length, 2);
+  assert.equal(
+    result.diagnostics.filter(({ explanation }) => explanation !== undefined).length,
+    1
+  );
+});
+
+test('does not explain transport fields without a uniquely close valid-branch property', () => {
+  const document = fixture('expected-invalid', 'transport-arg-typo.json', '0.9.0-rc.2');
+  document.transports[0].mystery = true;
+  const result = validateMcpDescription(document, {
+    selector: '0.9.0-rc.2',
+    explainDiagnostics: true
+  });
+  const mystery = result.diagnostics.find(({ path }) => path.at(-1) === 'mystery');
+  assert.ok(mystery);
+  assert.deepEqual(mystery.explanation, {
+    kind: 'unexpected-property',
+    property: 'mystery',
+    discriminator: { property: 'type', value: 'stdio' }
+  });
 });
 
 test('retains independent and nested union diagnostics for RC.2', () => {

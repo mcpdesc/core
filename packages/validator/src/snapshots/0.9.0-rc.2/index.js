@@ -1,4 +1,5 @@
 import {
+  explainDiagnostic,
   supportedProtocolVersions,
   validateDocumentWithResults
 } from './semantic.js';
@@ -11,3 +12,5 @@ export { supportedProtocolVersions };
 export function validate(document) {
   return validateDocumentWithResults(document);
 }
+
+export { explainDiagnostic };
