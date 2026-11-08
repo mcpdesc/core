@@ -52,6 +52,10 @@ function uniqueDiagnostics(
         diagnostic.message,
         diagnostic.path,
         diagnostic.protocolVersion,
+        diagnostic.rule,
+        diagnostic.protocolVersions,
+        diagnostic.detail,
+        diagnostic.relatedLocations,
       ]);
       if (seen.has(identity)) return false;
       seen.add(identity);

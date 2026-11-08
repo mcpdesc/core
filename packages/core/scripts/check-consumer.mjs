@@ -67,6 +67,8 @@ try {
         V0_9_RC_1_SPECIFICATION,
         V0_9_RC_2_SCHEMA_URI,
         V0_9_RC_2_SPECIFICATION,
+        V0_9_RC_3_SCHEMA_URI,
+        V0_9_RC_3_SPECIFICATION,
         convertMcpDescriptionVersion,
         migrateMcpDescription07To08,
         migrateMcpDescription07ToRc4,
@@ -79,6 +81,7 @@ try {
         v0_9Draft3Snapshot,
         v0_9Rc1Snapshot,
         v0_9Rc2Snapshot,
+        v0_9Rc3Snapshot,
         resolveMcpDescriptionComponentReferences,
         serializeMcpDescriptionMigrationReport,
       } from '@mcpdesc/core';
@@ -256,6 +259,7 @@ try {
         ['0.9.0-draft.3', V0_9_DRAFT_3_SCHEMA_URI],
         [v0_9Rc1Snapshot.specification, V0_9_RC_1_SCHEMA_URI],
         [v0_9Rc2Snapshot.specification, V0_9_RC_2_SCHEMA_URI],
+        [v0_9Rc3Snapshot.specification, V0_9_RC_3_SCHEMA_URI],
       ]) {
         const reusable = {
           ...source,
@@ -325,8 +329,8 @@ try {
         tools: [{ name: 'lookup', inputSchema: { type: 'object' } }],
       }, { from: '0.8.0', to: '0.9.0' });
       assert.equal(converted.ok, true, JSON.stringify(converted.diagnostics));
-      assert.equal(converted.value.$schema, V0_9_RC_2_SCHEMA_URI);
-      assert.equal(validateMcpDescription(converted.value).selector, V0_9_RC_2_SPECIFICATION);
+      assert.equal(converted.value.$schema, V0_9_RC_3_SCHEMA_URI);
+      assert.equal(validateMcpDescription(converted.value).selector, V0_9_RC_3_SPECIFICATION);
       assert.equal(validateMcpDescription(converted.value).defaulted, true);
       const defaultNative = projectMcpNativeValue(converted.value, {
         protocolVersion: '2026-07-28', kind: 'tool', identifier: 'lookup',
@@ -388,10 +392,13 @@ try {
         v0_9Draft3Snapshot,
         v0_9Rc1Snapshot,
         v0_9Rc2Snapshot,
+        v0_9Rc3Snapshot,
         V0_9_RC_1_SPECIFICATION,
         V0_9_RC_1_SCHEMA_URI,
         V0_9_RC_2_SPECIFICATION,
         V0_9_RC_2_SCHEMA_URI,
+        V0_9_RC_3_SPECIFICATION,
+        V0_9_RC_3_SCHEMA_URI,
         convertMcpDescriptionVersion,
         type McpDescriptionConversionFix,
         type McpDescriptionJsonPatchOperation,
@@ -422,12 +429,16 @@ try {
       void rule;
       const rc2Selector: '0.9.0-rc.2' = V0_9_RC_2_SPECIFICATION;
       const rc2Schema: string = V0_9_RC_2_SCHEMA_URI;
+      const rc3Selector: '0.9.0-rc.3' = V0_9_RC_3_SPECIFICATION;
+      const rc3Schema: string = V0_9_RC_3_SCHEMA_URI;
       void rc2Selector;
       void rc2Schema;
+      void rc3Selector;
+      void rc3Schema;
       const conversionFixes: McpDescriptionConversionFix[] = [];
       const conversion = convertMcpDescriptionVersion(
         { mcpdesc: '0.8.0' },
-        { from: '0.8.0', to: '0.9.0', selector: v0_9Rc2Snapshot.specification, fixes: conversionFixes },
+        { from: '0.8.0', to: '0.9.0', selector: v0_9Rc3Snapshot.specification, fixes: conversionFixes },
       );
       const patch: readonly McpDescriptionJsonPatchOperation[] = conversion.ok
         ? conversion.patch

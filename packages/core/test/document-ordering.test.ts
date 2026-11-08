@@ -570,15 +570,26 @@ describe('document ordering schema inventory', () => {
       const covered = new Set<string>();
       for (const testCase of cases) {
         const conditionalAlternative =
-          /^(transport|securityScheme|toolResultContent)\/oneOf\/(\d+)$/.exec(
+          /^(transport|securityScheme|resourceContents|toolResultContent)\/oneOf\/(\d+)$/.exec(
             testCase.definition,
           );
-        const pointer =
-          conditionalAlternative && selector === '0.9.0-rc.2'
-            ? `/$defs/${conditionalAlternative[1]}/allOf/${conditionalAlternative[2]}/then`
-            : testCase.definition
-              ? `/$defs/${testCase.definition}`
-              : '';
+        let pointer = testCase.definition
+          ? `/$defs/${testCase.definition}`
+          : '';
+        if (
+          conditionalAlternative &&
+          selector === '0.9.0-rc.2' &&
+          conditionalAlternative[1] !== 'resourceContents'
+        ) {
+          pointer = `/$defs/${conditionalAlternative[1]}/allOf/${conditionalAlternative[2]}/then`;
+        } else if (conditionalAlternative && selector === '0.9.0-rc.3') {
+          pointer =
+            conditionalAlternative[1] === 'resourceContents'
+              ? `/$defs/resourceContents/allOf/0/${
+                  conditionalAlternative[2] === '0' ? 'else' : 'then'
+                }`
+              : `/$defs/${conditionalAlternative[1]}/allOf/${conditionalAlternative[2]}/then`;
+        }
         const definition = pointer
           .split('/')
           .slice(1)
@@ -595,6 +606,9 @@ describe('document ordering schema inventory', () => {
           expected.sort(),
         );
         covered.add(pointer);
+      }
+      if (selector === '0.9.0-rc.3') {
+        covered.add('/$defs/elicitationDeclaration/allOf/0');
       }
       if (selector === '0.9.0-rc.2') {
         const conditionalRoots = [
@@ -631,12 +645,27 @@ describe('document ordering schema inventory', () => {
           return;
         const node = value as Record<string, unknown>;
         if (node.properties && !covered.has(pointer)) {
+          const conditionalRoot =
+            selector === '0.9.0-rc.3' &&
+            Array.isArray(node.allOf) &&
+            node.allOf.some(
+              (branch) =>
+                branch !== null &&
+                typeof branch === 'object' &&
+                Object.hasOwn(branch, 'if'),
+            );
           const elicitationBranch =
             selector === '0.9.0-rc.2'
               ? /^\/\$defs\/elicitationDeclaration\/allOf\/[01]\/then$/
-              : /^\/\$defs\/elicitationDeclaration\/oneOf\/[01]$/;
-          expect(pointer).toMatch(elicitationBranch);
-          expect(Object.keys(node.properties as object)).toEqual(['mode']);
+              : selector === '0.9.0-rc.3'
+                ? /^\/\$defs\/elicitationDeclaration\/allOf\/[12]\/then$/
+                : /^\/\$defs\/elicitationDeclaration\/oneOf\/[01]$/;
+          if (conditionalRoot) {
+            covered.add(pointer);
+          } else {
+            expect(pointer).toMatch(elicitationBranch);
+            expect(Object.keys(node.properties as object)).toEqual(['mode']);
+          }
         }
         for (const [key, child] of Object.entries(node)) {
           if (key === 'if') continue;

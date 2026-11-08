@@ -16,6 +16,8 @@ import {
   V0_9_RC_1_SPECIFICATION,
   V0_9_RC_2_SCHEMA_URI,
   V0_9_RC_2_SPECIFICATION,
+  V0_9_RC_3_SCHEMA_URI,
+  V0_9_RC_3_SPECIFICATION,
   deprecatedCoreSpecifications,
   mergeEffectiveProtocolViews,
   migrateMcpDescription07ToRc4,
@@ -117,6 +119,14 @@ const supportBySpecification = {
     projection: 'supported',
     selection: 'supported',
   },
+  '0.9.0-rc.3': {
+    componentResolution: 'supported',
+    merge: 'supported',
+    migrationFrom07: migrationUnsupported,
+    nativeProjection: 'supported',
+    projection: 'supported',
+    selection: 'supported',
+  },
 } as const satisfies Record<
   SupportedCoreSpecification,
   Record<SelectorSensitiveOperation, SupportDisposition>
@@ -132,6 +142,7 @@ const schemaBySpecification = {
   '0.9.0-draft.4': V0_9_DRAFT_4_SCHEMA_URI,
   '0.9.0-rc.1': V0_9_RC_1_SCHEMA_URI,
   '0.9.0-rc.2': V0_9_RC_2_SCHEMA_URI,
+  '0.9.0-rc.3': V0_9_RC_3_SCHEMA_URI,
 } as const satisfies Record<SupportedCoreSpecification, string>;
 
 const migrateBySpecification = {
@@ -159,6 +170,7 @@ const migrateBySpecification = {
     | '0.9.0-draft.4'
     | '0.9.0-rc.1'
     | '0.9.0-rc.2'
+    | '0.9.0-rc.3'
   >,
   (source: unknown) => { readonly ok: boolean }
 >;
@@ -239,7 +251,8 @@ describe('selector-sensitive operation support', () => {
           | typeof V0_9_DRAFT_3_SPECIFICATION
           | typeof V0_9_DRAFT_4_SPECIFICATION
           | typeof V0_9_RC_1_SPECIFICATION
-          | typeof V0_9_RC_2_SPECIFICATION,
+          | typeof V0_9_RC_2_SPECIFICATION
+          | typeof V0_9_RC_3_SPECIFICATION,
         protocolVersion: '2025-11-25',
         kind: 'tool',
         identifier: 'search',
@@ -270,7 +283,7 @@ describe('selector-sensitive operation support', () => {
     });
   }
 
-  it('defaults 0.9.0 documents to RC.2 while preserving explicit draft pins', () => {
+  it('defaults 0.9.0 documents to RC.3 while preserving explicit draft pins', () => {
     const draft = {
       $schema: V0_9_DRAFT_1_SCHEMA_URI,
       mcpdesc: '0.9.0',
@@ -302,7 +315,7 @@ describe('selector-sensitive operation support', () => {
     for (const operation of operations) {
       const defaulted = operation();
       expect(defaulted.ok, JSON.stringify(defaulted.diagnostics)).toBe(true);
-      expect(defaulted).toEqual(operation(V0_9_RC_2_SPECIFICATION));
+      expect(defaulted).toEqual(operation(V0_9_RC_3_SPECIFICATION));
     }
     expect(
       projectMcpNativeValue(draft, {
@@ -311,6 +324,87 @@ describe('selector-sensitive operation support', () => {
         kind: 'tool',
       }).ok,
     ).toBe(true);
+  });
+
+  it('preserves RC.3 structured diagnostics through core operations', () => {
+    const typoDocument = {
+      mcpdesc: '0.9.0',
+      info: { name: 'rc3-diagnostics', version: '1.0.0' },
+      protocolVersions: ['2025-11-25'],
+      transports: [{ type: 'stdio', command: 'server', typ: 'stdio' }],
+      tools: [{ name: 'search', inputSchema: { type: 'object' } }],
+    };
+    const typo = projectEffectiveProtocolView(typoDocument, {
+      selector: V0_9_RC_3_SPECIFICATION,
+      protocolVersion: '2025-11-25',
+    });
+    expect(typo.ok).toBe(false);
+    expect(typo.diagnostics).toContainEqual(
+      expect.objectContaining({
+        path: ['transports', 0, 'typ'],
+        phase: 'source',
+        rule: 'mcpdesc.transport.members',
+        detail: expect.objectContaining({
+          kind: 'unexpected-member',
+          member: 'typ',
+        }),
+      }),
+    );
+
+    const componentDocument = {
+      mcpdesc: '0.9.0',
+      info: { name: 'rc3-components', version: '1.0.0' },
+      protocolVersions: ['2025-11-25'],
+      transports: [{ type: 'stdio', command: 'server' }],
+      prompts: [
+        {
+          name: 'prepare_release',
+          elicitations: [
+            {
+              name: 'approval',
+              mode: 'form',
+              message: 'Approve this action.',
+              requestedSchema: {
+                $componentRef: '#/components/schemas/Form',
+              },
+            },
+          ],
+        },
+      ],
+      components: {
+        schemas: {
+          Form: {
+            type: 'object',
+            properties: { approval: { type: 'strin' } },
+          },
+        },
+      },
+    };
+    const componentResult = resolveMcpDescriptionComponentReferences(
+      componentDocument,
+      { selector: V0_9_RC_3_SPECIFICATION },
+    );
+    expect(componentResult.ok).toBe(false);
+    expect(componentResult.diagnostics).toContainEqual(
+      expect.objectContaining({
+        path: ['prompts', 0, 'elicitations', 0, 'requestedSchema'],
+        phase: 'source',
+        relatedLocations: [
+          expect.objectContaining({
+            path: [
+              'components',
+              'schemas',
+              'Form',
+              'properties',
+              'approval',
+              'type',
+            ],
+            relation: 'component-definition',
+          }),
+        ],
+        detail: expect.objectContaining({ kind: 'invalid-value' }),
+      }),
+    );
   });
 });
 

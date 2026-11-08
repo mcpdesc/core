@@ -28,6 +28,7 @@ import {
   V0_9_DRAFT_4_SPECIFICATION,
   V0_9_RC_1_SPECIFICATION,
   V0_9_RC_2_SPECIFICATION,
+  V0_9_RC_3_SPECIFICATION,
   V0_9_DRAFT_2_SPECIFICATION,
   V0_9_DRAFT_1_SPECIFICATION,
   type CoreSelectorOptions,
@@ -156,6 +157,10 @@ function diagnosticIdentity(diagnostic: CoreDiagnostic): string {
     diagnostic.message,
     diagnostic.path,
     diagnostic.protocolVersion,
+    diagnostic.rule,
+    diagnostic.protocolVersions,
+    diagnostic.detail,
+    diagnostic.relatedLocations,
   ]);
 }
 
@@ -377,7 +382,8 @@ export function projectEffectiveProtocolView(
         ...sourceDiagnostics,
         operationDiagnostic(
           specification === V0_9_RC_1_SPECIFICATION ||
-            specification === V0_9_RC_2_SPECIFICATION
+            specification === V0_9_RC_2_SPECIFICATION ||
+            specification === V0_9_RC_3_SPECIFICATION
             ? 'projection-protocol-version-not-declared'
             : 'projection-version-not-declared',
           `MCP protocol revision ${JSON.stringify(options.protocolVersion)} is absent from root protocolVersions`,
@@ -392,7 +398,8 @@ export function projectEffectiveProtocolView(
   if (
     specification === V0_9_DRAFT_4_SPECIFICATION ||
     specification === V0_9_RC_1_SPECIFICATION ||
-    specification === V0_9_RC_2_SPECIFICATION
+    specification === V0_9_RC_2_SPECIFICATION ||
+    specification === V0_9_RC_3_SPECIFICATION
   ) {
     pruneUnusedComponents(value);
   }
@@ -432,6 +439,7 @@ export interface ProjectMcpNativeValueOptions extends CoreSelectorOptions<
   | typeof V0_9_DRAFT_4_SPECIFICATION
   | typeof V0_9_RC_1_SPECIFICATION
   | typeof V0_9_RC_2_SPECIFICATION
+  | typeof V0_9_RC_3_SPECIFICATION
 > {
   readonly protocolVersion: SupportedProtocolVersion;
   readonly kind: McpNativeKind;
@@ -512,7 +520,8 @@ export function projectMcpNativeValue(
     selection.specification !== V0_9_DRAFT_3_SPECIFICATION &&
     selection.specification !== V0_9_DRAFT_4_SPECIFICATION &&
     selection.specification !== V0_9_RC_1_SPECIFICATION &&
-    selection.specification !== V0_9_RC_2_SPECIFICATION
+    selection.specification !== V0_9_RC_2_SPECIFICATION &&
+    selection.specification !== V0_9_RC_3_SPECIFICATION
   ) {
     return {
       ok: false,

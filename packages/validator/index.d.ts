@@ -42,7 +42,28 @@ export interface McpDescriptionDiagnostic {
   readonly path: Array<string | number>;
   readonly rule?: string;
   readonly protocolVersions?: readonly SupportedProtocolVersion[];
+  readonly detail?: McpDescriptionDiagnosticDetail;
+  readonly relatedLocations?: readonly McpDescriptionRelatedLocation[];
   readonly explanation?: McpDescriptionDiagnosticExplanation;
+}
+
+export interface McpDescriptionDiagnosticDetail {
+  readonly kind: string;
+  readonly member?: string;
+  readonly members?: readonly string[];
+  readonly allowedValues?: readonly unknown[];
+  readonly allowedMembers?: readonly string[];
+  readonly allowedMemberPatterns?: readonly string[];
+  readonly expectedTypes?: readonly string[];
+  readonly keyword?: string;
+  readonly limit?: number | string;
+  readonly selector?: Readonly<{ member: string; value: unknown }>;
+  readonly [key: string]: unknown;
+}
+
+export interface McpDescriptionRelatedLocation {
+  readonly path: readonly (string | number)[];
+  readonly relation: 'component-definition';
 }
 
 export interface McpDescriptionDiagnosticExplanation {

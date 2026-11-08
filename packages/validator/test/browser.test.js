@@ -66,17 +66,36 @@ test('browser Draft 4 results match the standard entry under strict CSP', () => 
   assert.deepEqual(browserResult.results, standardResult.results);
 });
 
-test('browser defaults 0.9.0 to RC.2 and preserves results under strict CSP', () => {
+test('browser defaults 0.9.0 to RC.3 and preserves results under strict CSP', () => {
   const document = JSON.parse(fs.readFileSync(
-    new URL('./snapshots/0.9.0-rc.2/fixtures/expected-warning/tool-schema-mcp-type-mismatch.json', import.meta.url),
+    new URL('./snapshots/0.9.0-rc.3/fixtures/expected-warning/tool-schema-mcp-type-mismatch.json', import.meta.url),
     'utf8'
   ));
   delete document.$schema;
   const browserResult = validateUnderCsp(document, {});
   const standardResult = validateStandard(document);
-  assert.equal(browserResult.selector, '0.9.0-rc.2');
+  assert.equal(browserResult.selector, '0.9.0-rc.3');
   assert.equal(browserResult.defaulted, true);
   assert.deepEqual(browserResult, standardResult);
+});
+
+test('browser exposes RC.3 diagnostic details under strict CSP', () => {
+  const document = JSON.parse(fs.readFileSync(
+    new URL('./snapshots/0.9.0-rc.3/fixtures/expected-invalid/transport-arg-typo.json', import.meta.url),
+    'utf8'
+  ));
+  const options = { selector: '0.9.0-rc.3' };
+  const browserResult = validateUnderCsp(document, options);
+  const standardResult = validateStandard(document, options);
+
+  assert.deepEqual(browserResult, standardResult);
+  assert.deepEqual(browserResult.diagnostics[0].detail, {
+    kind: 'unexpected-member',
+    member: 'arg',
+    allowedMembers: ['args', 'command', 'env', 'protocolVersions', 'security', 'type'],
+    allowedMemberPatterns: ['^x-'],
+    selector: { member: 'type', value: 'stdio' }
+  });
 });
 
 test('browser exposes RC.2 diagnostic explanations under strict CSP', () => {

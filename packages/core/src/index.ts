@@ -16,6 +16,10 @@ export type {
   OperationResult,
   ProtocolScopedDeclaration,
 } from './model.js';
+export type {
+  McpDescriptionDiagnosticDetail,
+  McpDescriptionRelatedLocation,
+} from '@mcpdesc/validator';
 export {
   convertMcpDescriptionVersion,
   type McpDescriptionConversionFix,
@@ -86,6 +90,8 @@ export {
   V0_9_RC_1_SPECIFICATION,
   V0_9_RC_2_SCHEMA_URI,
   V0_9_RC_2_SPECIFICATION,
+  V0_9_RC_3_SCHEMA_URI,
+  V0_9_RC_3_SPECIFICATION,
   deprecatedCoreSpecifications,
   rc4Snapshot,
   v0_8Snapshot,
@@ -95,6 +101,7 @@ export {
   v0_9Draft4Snapshot,
   v0_9Rc1Snapshot,
   v0_9Rc2Snapshot,
+  v0_9Rc3Snapshot,
   type CoreSelectorOptions,
   type SupportedCoreSpecification,
 } from './snapshot.js';

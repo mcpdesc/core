@@ -106,8 +106,13 @@ repository.
       while preserving the default diagnostic shape and snapshot conformance.
 - [x] Publish validator `0.14.0-rc.5` and core `0.13.0-rc.5`.
 - [x] Publish validator `0.14.0-rc.6` then core `0.13.0-rc.6` on `next`.
-- [ ] Publish validator `0.14.0-rc.7` on `next` after reviewed release
-      preparation and required CI pass.
+- [x] Adopt immutable specification RC.3 across validator and supported core
+      operations, including result format `1.4.0`, source-aware diagnostics,
+      related component locations, and the intentional response-object closure.
+- [x] Prepare validator `0.14.0-rc.8` followed by core `0.13.0-rc.7`, with
+      consumer migration guidance and core pinned to the matching validator.
+- [ ] Publish validator `0.14.0-rc.8` then core `0.13.0-rc.7` after reviewed
+      release preparation and required CI pass.
 - Add normalization or comparison operations only where multiple consumers
   demonstrate the same requirement.
 

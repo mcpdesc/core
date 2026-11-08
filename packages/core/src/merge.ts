@@ -17,6 +17,7 @@ import {
   V0_9_DRAFT_4_SPECIFICATION,
   V0_9_RC_1_SPECIFICATION,
   V0_9_RC_2_SPECIFICATION,
+  V0_9_RC_3_SPECIFICATION,
   type CoreSelectorOptions,
 } from './snapshot.js';
 
@@ -422,6 +423,10 @@ function uniqueDiagnostics(
       diagnostic.message,
       diagnostic.path,
       diagnostic.phase,
+      diagnostic.rule,
+      diagnostic.protocolVersions,
+      diagnostic.detail,
+      diagnostic.relatedLocations,
     ]);
     if (seen.has(identity)) return false;
     seen.add(identity);
@@ -507,7 +512,8 @@ export function mergeEffectiveProtocolViews(
   const mergeComponents =
     specification === V0_9_DRAFT_4_SPECIFICATION ||
     specification === V0_9_RC_1_SPECIFICATION ||
-    specification === V0_9_RC_2_SPECIFICATION;
+    specification === V0_9_RC_2_SPECIFICATION ||
+    specification === V0_9_RC_3_SPECIFICATION;
   const firstView = views.values().next().value;
   if (firstView === undefined) {
     return {

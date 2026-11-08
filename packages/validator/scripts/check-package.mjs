@@ -47,6 +47,7 @@ const expected = [
   'CHANGELOG.md',
   'LICENSE',
   'MIGRATING-0.13.md',
+  'MIGRATING-0.14.md',
   'MODIFICATIONS.md',
   'NOTICE',
   'ORIGIN.md',
