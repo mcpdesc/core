@@ -64,7 +64,8 @@ for (const specification of supportedSpecifications) {
       if (
         specification === '0.9.0-draft.4' ||
         specification === '0.9.0-rc.1' ||
-        specification === '0.9.0-rc.2'
+        specification === '0.9.0-rc.2' ||
+        specification === '0.9.0-rc.3'
       ) {
         assert.deepEqual(standalone.diagnostics, standard.diagnostics, filename);
         assert.deepEqual(standalone.results, standard.results, filename);

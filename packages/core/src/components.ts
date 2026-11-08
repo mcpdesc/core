@@ -60,6 +60,10 @@ function uniqueDiagnostics(
         diagnostic.severity,
         diagnostic.message,
         diagnostic.path,
+        diagnostic.rule,
+        diagnostic.protocolVersions,
+        diagnostic.detail,
+        diagnostic.relatedLocations,
       ]);
       if (seen.has(identity)) return false;
       seen.add(identity);

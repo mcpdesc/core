@@ -1,5 +1,7 @@
 import type {
+  McpDescriptionDiagnosticDetail,
   McpDescriptionDiagnosticSeverity,
+  McpDescriptionRelatedLocation,
   SupportedProtocolVersion,
 } from '@mcpdesc/validator';
 
@@ -71,6 +73,8 @@ export interface CoreDiagnostic {
   readonly path: readonly (number | string)[];
   readonly rule?: string;
   readonly protocolVersions?: readonly SupportedProtocolVersion[];
+  readonly detail?: McpDescriptionDiagnosticDetail;
+  readonly relatedLocations?: readonly McpDescriptionRelatedLocation[];
   readonly phase: DiagnosticPhase;
   readonly protocolVersion?: SupportedProtocolVersion;
 }

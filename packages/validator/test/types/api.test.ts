@@ -11,7 +11,9 @@ import {
   supportedSpecifications,
   validateMcpDescription,
   type McpDescriptionDiagnostic,
+  type McpDescriptionDiagnosticDetail,
   type McpDescriptionDiagnosticExplanation,
+  type McpDescriptionRelatedLocation,
   type McpDescriptionRuleResult,
   type McpDescriptionRuleResultStatus,
   type McpDescriptionValidationResult
@@ -31,6 +33,15 @@ const draft4Result: McpDescriptionValidationResult = validateMcpDescription(docu
 const rc1Result: McpDescriptionValidationResult = validateBrowser(document, {
   selector: '0.9.0-rc.1'
 });
+const rc3Result: McpDescriptionValidationResult = validateStandalone(document, {
+  selector: '0.9.0-rc.3'
+});
+const rc3Detail: McpDescriptionDiagnosticDetail | undefined =
+  rc3Result.diagnostics[0]?.detail;
+const rc3RelatedLocation: McpDescriptionRelatedLocation | undefined =
+  rc3Result.diagnostics[0]?.relatedLocations?.[0];
+const rc3DetailKind: string | undefined = rc3Detail?.kind;
+const rc3DetailMember: string | undefined = rc3Detail?.member;
 const rc1Records: readonly McpDescriptionRuleResult[] | undefined = rc1Result.results;
 const selector: McpDescriptionSelector = result.selector!;
 const componentResolution = resolveMcpDescriptionComponentReferences(document, {
@@ -80,6 +91,9 @@ void diagnosticCode;
 void diagnosticProtocolVersions;
 void draft4Status;
 void rc1Records;
+void rc3DetailKind;
+void rc3DetailMember;
+void rc3RelatedLocation;
 void selector;
 void defaultResult;
 void protocolVersion;

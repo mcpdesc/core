@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this package follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Dates for published releases are the UTC publication dates recorded by npm.
 
+## [0.14.0-rc.8] - 2026-11-08
+
+### Added
+
+- Imported immutable `0.9.0-rc.3` from specification tag `v0.9.0-rc.3`
+  (commit `106387d882030f2c5407291cb14e7cee2d6d6a31`) with the manifest-verified
+  schema, runtime inputs, provenance, and frozen fixtures.
+- Froze validation-result format `1.4.0` and expose RC.3 diagnostic `detail`
+  and `relatedLocations` through default, browser, and standalone APIs.
+- Added selected-branch diagnostic reduction, source-aware paths, component
+  reference attribution, improved rule attribution, and precise de-duplication.
+
+### Changed
+
+- **Upgrade note:** `mcpdesc: "0.9.0"` now defaults to RC.3. Diagnostic
+  locations, counts, rule attribution, and rule results can change. RC.3 also
+  rejects unknown members on Elicitation Interaction Response Objects in Tool
+  Interaction Examples; pin RC.2 to retain its earlier behavior.
+
 ## [0.14.0-rc.7] - 2026-11-07
 
 ### Added

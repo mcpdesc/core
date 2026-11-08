@@ -6,8 +6,8 @@
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/mcpdesc/core/blob/main/LICENSE)
 
 Read, write, and transform [MCP Description](https://mcpdesc.org) documents.
-Stable support covers v0.8, with preview support for v0.9 RC.2 and explicit pins
-for earlier v0.9 drafts and RC.1.
+Stable support covers v0.8, with preview support for v0.9 RC.3 and explicit pins
+for earlier v0.9 drafts and release candidates.
 
 `@mcpdesc/core` provides pure functions to:
 
@@ -76,12 +76,17 @@ human-readable `message`, and a `path` into the document, such as
 | `operation` | The request could not be carried out, for example an undeclared protocol revision. |
 | `result`    | The produced document failed validation and was not returned.                      |
 
+With RC.3, schema-derived diagnostics also expose structured `detail`. A finding
+reached through `$componentRef` points to the use site and includes the
+component definition in `relatedLocations`. Render recognized detail kinds and
+fall back to `message` for unknown kinds or diagnostics without detail.
+
 ## Choosing a selector
 
 A selector names one exact set of validation rules. Normally you omit the
 `selector` option: each operation uses the validator's default selector for the
 document's `mcpdesc` format version, currently `0.8.0-rev.20261021` for `0.8.0`
-documents, and `0.9.0-rc.2` for `0.9.0` documents. Upgrading the package can
+documents, and `0.9.0-rc.3` for `0.9.0` documents. Upgrading the package can
 then deliver validator corrections and newer approved 0.9 RC snapshots, until
 the 0.9 default is frozen to the final `0.9.0` release.
 
@@ -98,20 +103,20 @@ projectEffectiveProtocolView(document, {
 The older `specification` option remains a deprecated alias for `selector`.
 Passing both with different values fails with `conflicting-selector-options`.
 
-| Operation                          | `0.8.0-rev.20261021` (default) | `0.8.0` (deprecated) | `0.8.0-rc.4` (deprecated) | `0.9.0-draft.1` (preview) | `0.9.0-draft.2` (preview) | `0.9.0-draft.3` (preview) | `0.9.0-draft.4` (preview) | `0.9.0-rc.1`  | `0.9.0-rc.2` (default) |
-| ---------------------------------- | ------------------------------ | -------------------- | ------------------------- | ------------------------- | ------------------------- | ------------------------- | ------------------------- | ------------- | ---------------------- |
-| Effective Protocol View projection | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 | Supported                 | Supported     | Supported              |
-| Effective Protocol View merge      | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 | Supported                 | Supported     | Supported              |
-| Declaration selection              | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 | Supported                 | Supported     | Supported              |
-| Component reference resolution     | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 | Supported                 | Supported     | Supported              |
-| Migration from 0.7.0               | Supported                      | Supported            | Supported                 | Not supported             | Not supported             | Not supported             | Not supported             | Not supported | Not supported          |
-| Native MCP value projection        | Not supported                  | Not supported        | Not supported             | Supported                 | Supported                 | Supported                 | Supported                 | Supported     | Supported              |
-| Conversion from 0.8.0              | Not supported                  | Not supported        | Not supported             | Not supported             | Supported                 | Supported                 | Supported                 | Supported     | Supported              |
+| Operation                          | `0.8.0-rev.20261021` (default) | `0.8.0` (deprecated) | `0.8.0-rc.4` (deprecated) | `0.9.0-draft.1` (preview) | `0.9.0-draft.2` (preview) | `0.9.0-draft.3` (preview) | `0.9.0-draft.4` (preview) | `0.9.0-rc.1`  | `0.9.0-rc.2`  | `0.9.0-rc.3` (default) |
+| ---------------------------------- | ------------------------------ | -------------------- | ------------------------- | ------------------------- | ------------------------- | ------------------------- | ------------------------- | ------------- | ------------- | ---------------------- |
+| Effective Protocol View projection | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 | Supported                 | Supported     | Supported     | Supported              |
+| Effective Protocol View merge      | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 | Supported                 | Supported     | Supported     | Supported              |
+| Declaration selection              | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 | Supported                 | Supported     | Supported     | Supported              |
+| Component reference resolution     | Supported                      | Supported            | Supported                 | Supported                 | Supported                 | Supported                 | Supported                 | Supported     | Supported     | Supported              |
+| Migration from 0.7.0               | Supported                      | Supported            | Supported                 | Not supported             | Not supported             | Not supported             | Not supported             | Not supported | Not supported | Not supported          |
+| Native MCP value projection        | Not supported                  | Not supported        | Not supported             | Supported                 | Supported                 | Supported                 | Supported                 | Supported     | Supported     | Supported              |
+| Conversion from 0.8.0              | Not supported                  | Not supported        | Not supported             | Not supported             | Supported                 | Supported                 | Supported                 | Supported     | Supported     | Supported              |
 
 Deprecated selectors still work when pinned and are listed in
 `deprecatedCoreSpecifications`; they may be removed in a later minor release.
 Draft selectors are never defaults: pass one explicitly to retain that draft's
-behavior. Unpinned 0.9.0 documents use RC.2 even when a recognized same-format
+behavior. Unpinned 0.9.0 documents use RC.3 even when a recognized same-format
 `$schema` names an earlier draft.
 
 Unsupported selectors fail with an `unsupported-specification` diagnostic. A

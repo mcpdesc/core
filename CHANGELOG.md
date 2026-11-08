@@ -9,6 +9,22 @@ scripts, and release infrastructure.
 > - [`@mcpdesc/core`](packages/core/CHANGELOG.md)
 > - [`@mcpdesc/validator`](packages/validator/CHANGELOG.md)
 
+## 2026-11-08
+
+### Added
+
+- Imported the manifest-verified immutable specification RC.3 snapshot,
+  including its schema, runtime inputs, provenance, frozen fixtures, and
+  validation-result format `1.4.0`.
+- Integrated RC.3 diagnostics and selector support across validator entry points
+  and selector-sensitive core operations, with source-aware structured results,
+  rule attribution, and component related locations.
+
+### Changed
+
+- Prepared validator `0.14.0-rc.8` followed by core `0.13.0-rc.7`, with core
+  pinned to the matching validator. No tag or publication was created.
+
 ## 2026-11-06
 
 ### Added

@@ -16,11 +16,26 @@ const rc1ResultSchema = JSON.parse(fs.readFileSync(
   'utf8',
 ));
 const validateRc1Result = new Ajv2020({ allErrors: true, strict: false }).compile(rc1ResultSchema);
+const rc3ResultSchemaBytes = fs.readFileSync(
+  new URL('./snapshots/0.9.0-rc.3/validation-result.schema.json', import.meta.url),
+);
+const rc3ResultSchema = JSON.parse(rc3ResultSchemaBytes.toString('utf8'));
+const validateRc3Result = new Ajv2020({ allErrors: true, strict: false }).compile(rc3ResultSchema);
 
 test('pins validation result format 1.3.0 with protocol-version definitions', () => {
   assert.equal(rc1ResultSchema.$id, 'https://mcpdesc.org/schema/validation-result/1.3.0.json');
   assert.ok(rc1ResultSchema.$defs['protocol-version']);
   assert.equal(rc1ResultSchema.$defs.revision, undefined);
+});
+
+test('pins validation result format 1.4.0 with diagnostic details', () => {
+  assert.equal(
+    createHash('sha256').update(rc3ResultSchemaBytes).digest('hex'),
+    '1c0e841ac0e2b2da49fbe1cdd154209c1b93011d9d5b0ba4737fe53429a4b8b7',
+  );
+  assert.equal(rc3ResultSchema.$id, 'https://mcpdesc.org/schema/validation-result/1.4.0.json');
+  assert.ok(rc3ResultSchema.$defs.detail);
+  assert.ok(rc3ResultSchema.$defs['related-location']);
 });
 
 const draft4ResultSchemaBytes = fs.readFileSync(
@@ -89,7 +104,13 @@ for (const specification of supportedSpecifications) {
 
         for (const diagnostic of result.diagnostics) {
           const keys = ['path', 'severity'];
-          for (const optional of ['code', 'message', 'protocolVersions']) {
+          for (const optional of [
+            'code',
+            'message',
+            'protocolVersions',
+            'detail',
+            'relatedLocations',
+          ]) {
             if (diagnostic[optional] !== undefined) keys.push(optional);
           }
           if (specification.startsWith('0.9.0-') && diagnostic.rule !== undefined) {
@@ -98,6 +119,12 @@ for (const specification of supportedSpecifications) {
           }
           assert.deepEqual(Object.keys(diagnostic).sort(), keys.sort());
           assert.ok(diagnostic.path.every((segment) => typeof segment === 'string' || Number.isInteger(segment)));
+        }
+        if (specification === '0.9.0-rc.3') {
+          assert.equal(validateRc3Result(result), true, JSON.stringify(validateRc3Result.errors));
+          for (const diagnostic of result.diagnostics) {
+            if (diagnostic.code === 'schema-validation') assert.ok(diagnostic.detail);
+          }
         }
       });
     }

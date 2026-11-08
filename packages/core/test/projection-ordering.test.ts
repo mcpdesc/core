@@ -18,6 +18,7 @@ const nativeSelectors = [
   '0.9.0-draft.4',
   '0.9.0-rc.1',
   '0.9.0-rc.2',
+  '0.9.0-rc.3',
 ] as const;
 const selectors = [
   '0.8.0-rc.4',
@@ -159,7 +160,8 @@ describe('Effective Protocol View ordering', () => {
       if (
         selector === '0.9.0-draft.4' ||
         selector === '0.9.0-rc.1' ||
-        selector === '0.9.0-rc.2'
+        selector === '0.9.0-rc.2' ||
+        selector === '0.9.0-rc.3'
       ) {
         Reflect.deleteProperty(expected.components.schemas, 'Unused');
       }

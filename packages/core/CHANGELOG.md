@@ -2,6 +2,27 @@
 
 All notable changes to `@mcpdesc/core` are documented in this file.
 
+## [0.13.0-rc.7] - 2026-11-08
+
+### Added
+
+- Adopted immutable validator selector `0.9.0-rc.3` across projection, merge,
+  declaration selection, component reference resolution, native projection, and
+  0.8.0-to-0.9.0 conversion. Exported its selector identity and provenance.
+- Preserve RC.3 diagnostic `detail`, `relatedLocations`, protocol versions, and
+  rule identities through core results; de-duplication retains findings that
+  differ in structured facts or attribution.
+- Added exhaustive selector-support, structured diagnostic propagation, and
+  updated RC.3 conversion and conditional-schema ordering coverage.
+
+### Changed
+
+- **Upgrade note:** unpinned `0.9.0` operations now use RC.3. Results can have
+  different diagnostic paths, counts, rule attribution, and validity. RC.3
+  rejects unknown members on Elicitation Interaction Response Objects in Tool
+  Interaction Examples; pin RC.2 to retain its earlier behavior.
+- Pin validator `0.14.0-rc.8`.
+
 ## [0.13.0-rc.6] - 2026-11-05
 
 Ordering enhancements when projecting and serializing

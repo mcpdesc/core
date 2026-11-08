@@ -11,6 +11,7 @@ import {
   V0_9_DRAFT_4_SPECIFICATION,
   V0_9_RC_1_SPECIFICATION,
   V0_9_RC_2_SPECIFICATION,
+  V0_9_RC_3_SPECIFICATION,
 } from './snapshot.js';
 
 const sourceSelector = '0.8.0-rev.20261021';
@@ -70,7 +71,8 @@ export interface McpDescriptionConversionOptions {
     | typeof V0_9_DRAFT_3_SPECIFICATION
     | typeof V0_9_DRAFT_4_SPECIFICATION
     | typeof V0_9_RC_1_SPECIFICATION
-    | typeof V0_9_RC_2_SPECIFICATION;
+    | typeof V0_9_RC_2_SPECIFICATION
+    | typeof V0_9_RC_3_SPECIFICATION;
   readonly fixes?: readonly McpDescriptionConversionFix[];
 }
 
