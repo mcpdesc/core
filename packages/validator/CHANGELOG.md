@@ -8,6 +8,8 @@ Dates for published releases are the UTC publication dates recorded by npm.
 
 ## Unreleased
 
+## [0.14.0-rc.9] - 2026-11-09
+
 ### Added
 
 - Added per-call `schemaPolicyIfPresent` and
@@ -25,6 +27,9 @@ Dates for published releases are the UTC publication dates recorded by npm.
   package release to reproduce their behavior.
 - Removed RC.2-only `explainDiagnostics` support and its public diagnostic
   explanation type.
+- **Upgrade note:** RC.2 and other retired selectors cannot be explicitly
+  selected in this release. Use an earlier validator package release to
+  reproduce their behavior.
 
 ## [0.14.0-rc.8] - 2026-11-08
 

@@ -116,8 +116,12 @@ repository.
 - [x] Retire older selectors from current validator and core support, retaining
       only `0.8.0-rev.20261021`, `0.8.0`, and `0.9.0-rc.3`; preserve selector
       tombstones and historical artifacts.
-- [ ] Publish validator `0.14.0-rc.8` then core `0.13.0-rc.7` after reviewed
-      release preparation and required CI pass.
+- [x] Publish validator `0.14.0-rc.8` then core `0.13.0-rc.7` on `next`.
+- [x] Prepare validator `0.14.0-rc.9` followed by core `0.13.0-rc.8`, with
+      retired-selector migration notes and core pinned to the matching
+      validator.
+- [ ] Publish validator `0.14.0-rc.9` then core `0.13.0-rc.8` on `next` after
+      the reviewed PR merge and required CI pass.
 - Add normalization or comparison operations only where multiple consumers
   demonstrate the same requirement.
 
