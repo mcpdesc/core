@@ -79,6 +79,19 @@ test('browser defaults 0.9.0 to RC.3 and preserves results under strict CSP', ()
   assert.deepEqual(browserResult, standardResult);
 });
 
+test('browser applies per-call schema selection under strict CSP', () => {
+  const document = JSON.parse(fs.readFileSync(
+    new URL('./snapshots/0.9.0-rc.1/fixtures/expected-valid/minimal-zero-primitives.json', import.meta.url),
+    'utf8'
+  ));
+  const options = { schemaPolicyIfPresent: true };
+  const browserResult = validateUnderCsp(document, options);
+  const standardResult = validateStandard(document, options);
+
+  assert.equal(browserResult.selector, '0.9.0-rc.1');
+  assert.deepEqual(browserResult, standardResult);
+});
+
 test('browser exposes RC.3 diagnostic details under strict CSP', () => {
   const document = JSON.parse(fs.readFileSync(
     new URL('./snapshots/0.9.0-rc.3/fixtures/expected-invalid/transport-arg-typo.json', import.meta.url),

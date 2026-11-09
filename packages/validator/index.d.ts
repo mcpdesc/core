@@ -89,6 +89,8 @@ export interface ValidateMcpDescriptionOptions {
   readonly selector?: McpDescriptionSelector;
   readonly specification?: McpDescriptionSpecification;
   readonly explainDiagnostics?: boolean;
+  readonly schemaPolicyIfPresent?: boolean;
+  readonly fallbackIfSelectorIsUnknown?: boolean;
 }
 
 export interface McpDescriptionComponentReferenceProvenance {
@@ -144,6 +146,8 @@ export type McpDescriptionDefaultSelectors = Readonly<{
 export interface ResolveMcpDescriptionSpecificationOptions {
   readonly selector?: McpDescriptionSelector;
   readonly specification?: McpDescriptionSpecification;
+  readonly schemaPolicyIfPresent?: boolean;
+  readonly fallbackIfSelectorIsUnknown?: boolean;
 }
 
 export interface ResolvedMcpDescriptionSpecification {

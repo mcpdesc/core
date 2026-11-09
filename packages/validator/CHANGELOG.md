@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this package follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Dates for published releases are the UTC publication dates recorded by npm.
 
+## Unreleased
+
+### Added
+
+- Added per-call `schemaPolicyIfPresent` and
+  `fallbackIfSelectorIsUnknown` options to validation and selector resolution,
+  allowing consumers to select a recognized schema identity or explicitly
+  fall back to the configured default for an unavailable selector.
+
 ## [0.14.0-rc.8] - 2026-11-08
 
 ### Added

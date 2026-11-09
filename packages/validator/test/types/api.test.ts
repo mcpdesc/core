@@ -60,6 +60,14 @@ const browserResult: McpDescriptionValidationResult = validateBrowser(document, 
 });
 const diagnostic: McpDescriptionDiagnostic | undefined = result.diagnostics[0];
 const explainedResult = validateMcpDescription(document, { explainDiagnostics: true });
+const schemaPolicyResult = validateMcpDescription(document, {
+  schemaPolicyIfPresent: true,
+  fallbackIfSelectorIsUnknown: true
+});
+const schemaPolicyResolution = resolveMcpDescriptionSpecification(document, {
+  schemaPolicyIfPresent: true,
+  fallbackIfSelectorIsUnknown: false
+});
 const diagnosticExplanation: McpDescriptionDiagnosticExplanation | undefined =
   explainedResult.diagnostics[0]?.explanation;
 const pathSegment: string | number | undefined = diagnostic?.path[0];
@@ -106,6 +114,8 @@ void catalogueDate;
 void extensionMaturity;
 void browserResult;
 void standaloneResult;
+void schemaPolicyResult;
+void schemaPolicyResolution;
 void referencePath;
 
 // @ts-expect-error Retired release candidates are not supported.

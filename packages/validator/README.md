@@ -175,6 +175,20 @@ pin one to retain its original validation behavior:
 validateMcpDescription(draftDocument, { selector: '0.9.0-draft.4' });
 ```
 
+For consumers that want a recognized `$schema` identity to select its exact
+shipped snapshot, opt in per call:
+
+```js
+validateMcpDescription(document, { schemaPolicyIfPresent: true });
+```
+
+By default, the configured format selector remains in use. A recognized schema
+identity for an unavailable selector returns `unsupported-selector`; set
+`fallbackIfSelectorIsUnknown: true` together with `schemaPolicyIfPresent: true`
+to use the configured default instead. Unknown, ambiguous, or contradictory
+schema identities remain errors. Neither option changes package defaults, and
+explicit `selector` pins take precedence.
+
 Request structured explanation metadata for supported findings:
 
 ```js
@@ -211,10 +225,10 @@ if (resolution.status === 'resolved') {
 }
 ```
 
-The format version comes from `mcpdesc`. A `$schema` value must agree with it;
-for 0.8.0 and 0.9.0, recognized schema URIs do not pin a particular selector.
-Use `options.selector` for an exact pin, including when `$schema` names an
-earlier draft of the same format.
+The format version comes from `mcpdesc`. A `$schema` value must agree with it.
+By default, recognized schema URIs do not pin a particular selector; use
+`schemaPolicyIfPresent` to opt into schema-based selection or `options.selector`
+for an exact pin.
 
 ## Browser and strict CSP use
 

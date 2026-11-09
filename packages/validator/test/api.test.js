@@ -512,6 +512,113 @@ test('uses maintainer defaults and fails unsupported format versions without fal
   assert.equal(missing.diagnostics[0].code, 'missing-format-version');
 });
 
+test('per-call schema policy selects known identities and optionally falls back for unavailable selectors', () => {
+  const rc1Document = fixture('expected-valid', 'minimal-zero-primitives.json', '0.9.0-rc.1');
+  const rc1Schema = rc1Document.$schema;
+  assert.equal(validateMcpDescription(rc1Document).selector, '0.9.0-rc.3');
+
+  const schemaSelected = resolveMcpDescriptionSpecification(rc1Document, {
+    schemaPolicyIfPresent: true
+  });
+  assert.equal(schemaSelected.status, 'resolved');
+  assert.equal(schemaSelected.selector, '0.9.0-rc.1');
+  assert.equal(schemaSelected.defaulted, false);
+  assert.equal(validateMcpDescription(rc1Document, {
+    fallbackIfSelectorIsUnknown: true
+  }).selector, '0.9.0-rc.3');
+
+  const validatedWithSchema = validateMcpDescription(rc1Document, {
+    schemaPolicyIfPresent: true
+  });
+  assert.equal(validatedWithSchema.valid, true);
+  assert.equal(validatedWithSchema.selector, '0.9.0-rc.1');
+  assert.equal(validatedWithSchema.defaulted, false);
+
+  const noSchema = { ...rc1Document };
+  delete noSchema.$schema;
+  assert.equal(validateMcpDescription(noSchema, {
+    schemaPolicyIfPresent: true
+  }).selector, '0.9.0-rc.3');
+
+  const retiredSchemaDocument = {
+    ...fixture('expected-valid', 'minimal-zero-primitives.json'),
+    $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0-draft.4.json'
+  };
+  const unavailable = validateMcpDescription(retiredSchemaDocument, {
+    schemaPolicyIfPresent: true
+  });
+  assert.equal(unavailable.valid, false);
+  assert.equal(unavailable.selector, null);
+  assert.equal(unavailable.diagnostics[0].code, 'unsupported-selector');
+
+  const fallbackResolution = resolveMcpDescriptionSpecification(retiredSchemaDocument, {
+    schemaPolicyIfPresent: true,
+    fallbackIfSelectorIsUnknown: true
+  });
+  assert.equal(fallbackResolution.status, 'resolved');
+  assert.equal(fallbackResolution.selector, '0.8.0-rev.20261021');
+  assert.equal(fallbackResolution.defaulted, true);
+
+  const fallbackValidation = validateMcpDescription(retiredSchemaDocument, {
+    schemaPolicyIfPresent: true,
+    fallbackIfSelectorIsUnknown: true
+  });
+  assert.equal(fallbackValidation.selector, '0.8.0-rev.20261021');
+  assert.equal(fallbackValidation.defaulted, true);
+});
+
+test('per-call schema policy preserves ambiguous, unknown, and contradictory identity errors', () => {
+  const options = {
+    schemaPolicyIfPresent: true,
+    fallbackIfSelectorIsUnknown: true
+  };
+  const ambiguous = resolveMcpDescriptionSpecification({
+    mcpdesc: '0.8.0',
+    $schema: 'https://mcpdesc.org/schema/0.8.0.json'
+  }, options);
+  assert.equal(ambiguous.status, 'unresolved');
+  assert.equal(ambiguous.diagnostics[0].code, 'ambiguous-schema-identity');
+
+  const unknown = resolveMcpDescriptionSpecification({
+    mcpdesc: '0.8.0',
+    $schema: 'https://example.com/schema.json'
+  }, options);
+  assert.equal(unknown.status, 'unresolved');
+  assert.equal(unknown.diagnostics[0].code, 'unknown-schema-identity');
+
+  const contradictory = resolveMcpDescriptionSpecification({
+    mcpdesc: '0.9.0',
+    $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0-draft.4.json'
+  }, options);
+  assert.equal(contradictory.status, 'unresolved');
+  assert.equal(contradictory.diagnostics[0].code, 'contradictory-format-version');
+
+  const explicit = validateMcpDescription({
+    mcpdesc: '0.9.0',
+    $schema: 'https://mcpdesc.org/schema/mcp-description/0.9.0-rc.1.json'
+  }, {
+    selector: '0.9.0-rc.2',
+    schemaPolicyIfPresent: true,
+    fallbackIfSelectorIsUnknown: true
+  });
+  assert.equal(explicit.selector, '0.9.0-rc.2');
+});
+
+test('validates per-call schema policy option types', () => {
+  assert.throws(
+    () => validateMcpDescription({}, { schemaPolicyIfPresent: 'true' }),
+    /options\.schemaPolicyIfPresent must be a boolean/
+  );
+  assert.throws(
+    () => validateMcpDescription({}, { fallbackIfSelectorIsUnknown: 1 }),
+    /options\.fallbackIfSelectorIsUnknown must be a boolean/
+  );
+  assert.throws(
+    () => resolveMcpDescriptionSpecification({}, { schemaPolicyIfPresent: 'true' }),
+    /options\.schemaPolicyIfPresent must be a boolean/
+  );
+});
+
 test('checks explicit selector consistency with declared schema identity', () => {
   const selected = resolveMcpDescriptionSpecification({ mcpdesc: '0.8.0' }, {
     selector: '0.8.0'
