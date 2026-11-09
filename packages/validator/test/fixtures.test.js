@@ -8,25 +8,13 @@ import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
 
 import { supportedSpecifications, validateMcpDescription } from '../src/index.js';
-import { validate as validateDraft4Snapshot } from '../src/snapshots/0.9.0-draft.4/index.js';
-import { validate as validateRc1Snapshot } from '../src/snapshots/0.9.0-rc.1/index.js';
+import { validate as validateRc3Snapshot } from '../src/snapshots/0.9.0-rc.3/index.js';
 
-const rc1ResultSchema = JSON.parse(fs.readFileSync(
-  new URL('./snapshots/0.9.0-rc.1/validation-result.schema.json', import.meta.url),
-  'utf8',
-));
-const validateRc1Result = new Ajv2020({ allErrors: true, strict: false }).compile(rc1ResultSchema);
 const rc3ResultSchemaBytes = fs.readFileSync(
   new URL('./snapshots/0.9.0-rc.3/validation-result.schema.json', import.meta.url),
 );
 const rc3ResultSchema = JSON.parse(rc3ResultSchemaBytes.toString('utf8'));
 const validateRc3Result = new Ajv2020({ allErrors: true, strict: false }).compile(rc3ResultSchema);
-
-test('pins validation result format 1.3.0 with protocol-version definitions', () => {
-  assert.equal(rc1ResultSchema.$id, 'https://mcpdesc.org/schema/validation-result/1.3.0.json');
-  assert.ok(rc1ResultSchema.$defs['protocol-version']);
-  assert.equal(rc1ResultSchema.$defs.revision, undefined);
-});
 
 test('pins validation result format 1.4.0 with diagnostic details', () => {
   assert.equal(
@@ -36,20 +24,6 @@ test('pins validation result format 1.4.0 with diagnostic details', () => {
   assert.equal(rc3ResultSchema.$id, 'https://mcpdesc.org/schema/validation-result/1.4.0.json');
   assert.ok(rc3ResultSchema.$defs.detail);
   assert.ok(rc3ResultSchema.$defs['related-location']);
-});
-
-const draft4ResultSchemaBytes = fs.readFileSync(
-  new URL('./snapshots/0.9.0-draft.4/validation-result.schema.json', import.meta.url),
-);
-const validateDraft4Result = new Ajv2020({ allErrors: true, strict: false }).compile(
-  JSON.parse(draft4ResultSchemaBytes.toString('utf8')),
-);
-
-test('pins validation result format 1.0.0', () => {
-  assert.equal(
-    createHash('sha256').update(draft4ResultSchemaBytes).digest('hex'),
-    'e78b5755de7bc311a9a3d6d10e423cf667350e3150bb70cf31b500b64c85cc77',
-  );
 });
 
 function fixtureFiles(fixtureRoot, group) {
@@ -91,11 +65,9 @@ for (const specification of supportedSpecifications) {
           assert.ok(warnings.length > 0);
         }
 
-        if (specification === '0.9.0-draft.4' || specification === '0.9.0-rc.1') {
-          const reference = specification === '0.9.0-rc.1'
-            ? validateRc1Snapshot(document)
-            : validateDraft4Snapshot(document);
-          const validateResult = specification === '0.9.0-rc.1' ? validateRc1Result : validateDraft4Result;
+        if (specification === '0.9.0-rc.3') {
+          const reference = validateRc3Snapshot(document);
+          const validateResult = validateRc3Result;
           assert.deepEqual(result.diagnostics, reference.diagnostics);
           assert.deepEqual(result.results, reference.results);
           assert.equal(validateResult(reference), true, JSON.stringify(validateResult.errors));

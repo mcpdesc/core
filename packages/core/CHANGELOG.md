@@ -2,6 +2,15 @@
 
 All notable changes to `@mcpdesc/core` are documented in this file.
 
+## Unreleased
+
+### Changed
+
+- **Breaking:** narrowed supported selectors to `0.8.0-rev.20261021`, `0.8.0`,
+  and `0.9.0-rc.3`. Retired selectors are no longer accepted by selector-
+  sensitive operations; the RC.4-specific 0.7.0 migration API and retired
+  selector exports were removed.
+
 ## [0.13.0-rc.7] - 2026-11-08
 
 ### Added

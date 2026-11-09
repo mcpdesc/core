@@ -1,8 +1,0 @@
-{
-  "description": "MCP 2025-06-18 is absent from root protocolVersions.",
-  "document": "../fixtures/expected-valid/named-prompt-examples.json",
-  "kind": "prompt",
-  "identifier": "greeting",
-  "expectedError": "projection-protocol-version-not-declared",
-  "protocolVersion": "2025-06-18"
-}

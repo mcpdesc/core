@@ -8,8 +8,11 @@ rationale and rejected options, see the
 [snapshot design record](validator-snapshots.md).
 
 > Validator `0.13.0` promotes the issue #24 revision selector and configured
-> `0.8.0` default proven in `0.13.0-rc.1`. Stable selector `0.8.0` and RC.4
-> remain available as deprecated explicit pins.
+> `0.8.0` default proven in `0.13.0-rc.1`.
+>
+> Current support is limited to `0.8.0-rev.20261021`, deprecated `0.8.0`, and
+> `0.9.0-rc.3`. Retired selectors remain only as configuration tombstones;
+> consumers needing them must use an earlier package release.
 
 ## Route a proposed change
 
@@ -61,8 +64,8 @@ corpus for an existing selector is never edited.
 - **Defaults are a maintainer decision.** Make a revision the default when its
   fixes should reach unpinned documents, which is usually the case. Stable,
   `rev`, and approved `rc` selectors can be defaults; drafts cannot. For 0.9.0,
-  advance the configured default at each approved RC intake, starting with
-  `0.9.0-rc.1`, and freeze it to `0.9.0` at final release. Use
+  advance the configured default at each approved RC intake, currently
+  `0.9.0-rc.3`, and freeze it to `0.9.0` at final release. Use
   `schemaPins: false` so recognized same-format schema identities follow that
   default; caller-supplied selectors continue to pin exact behavior.
 - **Default changes ship in minor releases**, with release notes listing the

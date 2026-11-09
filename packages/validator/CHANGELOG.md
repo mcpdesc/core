@@ -15,6 +15,17 @@ Dates for published releases are the UTC publication dates recorded by npm.
   allowing consumers to select a recognized schema identity or explicitly
   fall back to the configured default for an unavailable selector.
 
+### Changed
+
+- **Breaking:** retired `0.8.0-rc.4`, `0.9.0-draft.1` through `.4`, and
+  `0.9.0-rc.1` and `.2` from the current registry, declarations, standalone
+  bundle, package contents, and snapshot trees. Only
+  `0.8.0-rev.20261021`, `0.8.0`, and `0.9.0-rc.3` remain supported. Selector
+  identities are retained as configuration tombstones; use the historical
+  package release to reproduce their behavior.
+- Removed RC.2-only `explainDiagnostics` support and its public diagnostic
+  explanation type.
+
 ## [0.14.0-rc.8] - 2026-11-08
 
 ### Added

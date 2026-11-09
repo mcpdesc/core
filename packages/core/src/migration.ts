@@ -12,9 +12,6 @@ import type {
 } from './model.js';
 import {
   defaultV0_8Specification,
-  RC_4_SCHEMA_URI,
-  RC_4_SPECIFICATION,
-  rc4Snapshot,
   requestedCoreSelector,
   V0_8_REV_20261021_SPECIFICATION,
   V0_8_SCHEMA_URI,
@@ -40,14 +37,6 @@ const declarationCollections = [
   'prompts',
 ] as const;
 
-export interface MigrateMcpDescription07ToRc4Options extends CoreSelectorOptions<
-  typeof RC_4_SPECIFICATION
-> {
-  readonly defaultProtocolVersion?: SupportedProtocolVersion;
-  readonly protocolVersion?: SupportedProtocolVersion;
-  readonly sourceValidated: true;
-}
-
 /** Omit `selector` to validate the result with the validator default for 0.8.0. */
 export interface MigrateMcpDescription07To08Options extends CoreSelectorOptions<
   typeof V0_8_SPECIFICATION | typeof V0_8_REV_20261021_SPECIFICATION
@@ -57,8 +46,7 @@ export interface MigrateMcpDescription07To08Options extends CoreSelectorOptions<
   readonly sourceValidated: true;
 }
 
-type SupportedMigrationOptions =
-  MigrateMcpDescription07ToRc4Options | MigrateMcpDescription07To08Options;
+type SupportedMigrationOptions = MigrateMcpDescription07To08Options;
 
 export interface McpDescriptionMigrationDefault {
   readonly code: 'migration-default-protocol-version';
@@ -330,7 +318,7 @@ function migrateMcpDescription07(
   options: SupportedMigrationOptions,
   requested: unknown,
   targetSpecification: SupportedCoreSpecification,
-  targetSchemaUri: typeof RC_4_SCHEMA_URI | typeof V0_8_SCHEMA_URI,
+  targetSchemaUri: typeof V0_8_SCHEMA_URI,
   targetProtocolVersions: readonly SupportedProtocolVersion[],
 ): McpDescriptionMigrationResult {
   if (requested !== targetSpecification) {
@@ -501,23 +489,6 @@ export function serializeMcpDescriptionMigrationReport(
   report: McpDescriptionMigrationReport,
 ): string {
   return `${JSON.stringify(report, null, 2)}\n`;
-}
-
-export function migrateMcpDescription07ToRc4(
-  source: unknown,
-  options: MigrateMcpDescription07ToRc4Options,
-): McpDescriptionMigrationResult {
-  const request = requestedCoreSelector(options as CoreSelectorOptions);
-  if (!request.ok)
-    return failedMigration(RC_4_SPECIFICATION, request.diagnostics);
-  return migrateMcpDescription07(
-    source,
-    options,
-    request.requested ?? RC_4_SPECIFICATION,
-    RC_4_SPECIFICATION,
-    RC_4_SCHEMA_URI,
-    rc4Snapshot.protocolVersions,
-  );
 }
 
 export function migrateMcpDescription07To08(

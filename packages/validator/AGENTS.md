@@ -12,8 +12,8 @@ schemas remain in `mcpdesc/mcpdesc-specification`.
 - Keep `./browser` and `./standalone` behavior-identical and strict-CSP safe.
 - Keep Node.js 20 support even when repository-level tooling uses newer Node.js.
 - Diagnostics are deterministic and contain `code`, `severity`, `message`,
-  and root-relative `path`. The 0.9 draft selectors add an optional `rule`
-  string; existing 0.8 selectors retain their four-field output.
+  and root-relative `path`. RC.3 adds `rule` and structured diagnostic
+  metadata; the retained 0.8 selectors keep their four-field output.
 - Validation is synchronous, browser-compatible, offline, and performs no file,
   network, or environment access.
 
@@ -53,7 +53,7 @@ schemas remain in `mcpdesc/mcpdesc-specification`.
   version without a default fails explicitly. Never choose a selector by
   ordering or downgrade to an earlier format version.
 - Draft selectors are never defaults. The `0.9.0` default advances through
-  approved release candidates, currently `0.9.0-rc.2`, until it is frozen to
+  approved release candidates, currently `0.9.0-rc.3`, until it is frozen to
   stable `0.9.0`. Advance it explicitly in configuration at each intake; never
   choose the newest selector at runtime. Explicit caller pins remain immutable.
   Honor each default's `schemaPins` setting when resolving a declared `$schema`.

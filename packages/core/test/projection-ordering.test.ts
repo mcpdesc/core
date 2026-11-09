@@ -11,21 +11,8 @@ import {
   type McpNativeKind,
 } from '../src/index.js';
 
-const nativeSelectors = [
-  '0.9.0-draft.1',
-  '0.9.0-draft.2',
-  '0.9.0-draft.3',
-  '0.9.0-draft.4',
-  '0.9.0-rc.1',
-  '0.9.0-rc.2',
-  '0.9.0-rc.3',
-] as const;
-const selectors = [
-  '0.8.0-rc.4',
-  '0.8.0',
-  '0.8.0-rev.20261021',
-  ...nativeSelectors,
-] as const;
+const nativeSelectors = ['0.9.0-rc.3'] as const;
+const selectors = ['0.8.0', '0.8.0-rev.20261021', ...nativeSelectors] as const;
 const revisions = [
   '2024-11-05',
   '2025-03-26',
@@ -157,12 +144,7 @@ describe('Effective Protocol View ordering', () => {
       retained.elicitations = retained.elicitations.slice(0, 1);
       Reflect.deleteProperty(retained.elicitations[0]!, 'protocolVersions');
       expected.tools = [retained, { ...retained, name: 'a' }];
-      if (
-        selector === '0.9.0-draft.4' ||
-        selector === '0.9.0-rc.1' ||
-        selector === '0.9.0-rc.2' ||
-        selector === '0.9.0-rc.3'
-      ) {
+      if (selector === '0.9.0-rc.3') {
         Reflect.deleteProperty(expected.components.schemas, 'Unused');
       }
       expect(Object.keys(result.value)).toEqual(Object.keys(document));

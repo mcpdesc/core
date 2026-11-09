@@ -5,14 +5,7 @@ import {
 } from '@mcpdesc/validator/standalone';
 
 import type { CoreDiagnostic, JsonObject, JsonValue } from './model.js';
-import {
-  V0_9_DRAFT_2_SPECIFICATION,
-  V0_9_DRAFT_3_SPECIFICATION,
-  V0_9_DRAFT_4_SPECIFICATION,
-  V0_9_RC_1_SPECIFICATION,
-  V0_9_RC_2_SPECIFICATION,
-  V0_9_RC_3_SPECIFICATION,
-} from './snapshot.js';
+import { V0_9_RC_3_SPECIFICATION } from './snapshot.js';
 
 const sourceSelector = '0.8.0-rev.20261021';
 const targetVersion = '0.9.0';
@@ -66,13 +59,7 @@ export interface McpDescriptionConversionFix {
 export interface McpDescriptionConversionOptions {
   readonly from: string;
   readonly to: string;
-  readonly selector?:
-    | typeof V0_9_DRAFT_2_SPECIFICATION
-    | typeof V0_9_DRAFT_3_SPECIFICATION
-    | typeof V0_9_DRAFT_4_SPECIFICATION
-    | typeof V0_9_RC_1_SPECIFICATION
-    | typeof V0_9_RC_2_SPECIFICATION
-    | typeof V0_9_RC_3_SPECIFICATION;
+  readonly selector?: typeof V0_9_RC_3_SPECIFICATION;
   readonly fixes?: readonly McpDescriptionConversionFix[];
 }
 

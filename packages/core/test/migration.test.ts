@@ -1,12 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  RC_4_SCHEMA_URI,
   V0_8_SCHEMA_URI,
   migrateMcpDescription07To08,
-  migrateMcpDescription07ToRc4,
   serializeMcpDescriptionMigrationReport,
-  type MigrateMcpDescription07ToRc4Options,
+  type MigrateMcpDescription07To08Options,
 } from '../src/index.js';
 
 const source = {
@@ -41,20 +39,20 @@ const source = {
   'x-example': { retained: true },
 };
 
-describe('migrateMcpDescription07ToRc4', () => {
-  it('uses a source protocol version and validates the exact RC.4 snapshot', () => {
-    const result = migrateMcpDescription07ToRc4(source, {
-      specification: '0.8.0-rc.4',
+describe('migrateMcpDescription07To08', () => {
+  it('uses a source protocol version and validates the exact stable snapshot', () => {
+    const result = migrateMcpDescription07To08(source, {
+      specification: '0.8.0',
       sourceValidated: true,
     });
 
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    expect(result.value.$schema).toBe(RC_4_SCHEMA_URI);
+    expect(result.value.$schema).toBe(V0_8_SCHEMA_URI);
     expect(result.value.mcpdesc).toBe('0.8.0');
     expect(result.value.protocolVersions).toEqual(['2025-11-25']);
     expect(result.report.sourceSpecification).toBe('0.7.0');
-    expect(result.report.targetSpecification).toBe('0.8.0-rc.4');
+    expect(result.report.targetSpecification).toBe('0.8.0');
     expect(result.report.defaultsApplied).toEqual([]);
   });
 
@@ -62,14 +60,14 @@ describe('migrateMcpDescription07ToRc4', () => {
     const { protocolVersion: _, ...info } = source.info;
     const withoutProtocol = { ...source, info };
     const options = {
-      specification: '0.8.0-rc.4',
+      specification: '0.8.0',
       defaultProtocolVersion: '2026-07-28',
       sourceValidated: true,
     } as const;
     const originalSource = structuredClone(withoutProtocol);
     const originalOptions = structuredClone(options);
 
-    const result = migrateMcpDescription07ToRc4(withoutProtocol, options);
+    const result = migrateMcpDescription07To08(withoutProtocol, options);
 
     expect(result.ok).toBe(true);
     if (!result.ok) return;
@@ -102,9 +100,9 @@ describe('migrateMcpDescription07ToRc4', () => {
 
   it('returns the existing required error when no protocol version is available', () => {
     const { protocolVersion: _, ...info } = source.info;
-    const result = migrateMcpDescription07ToRc4(
+    const result = migrateMcpDescription07To08(
       { ...source, info },
-      { specification: '0.8.0-rc.4', sourceValidated: true },
+      { specification: '0.8.0', sourceValidated: true },
     );
 
     expect(result.ok).toBe(false);
@@ -117,8 +115,8 @@ describe('migrateMcpDescription07ToRc4', () => {
   });
 
   it('prefers the source over a conflicting default but preserves explicit override conflicts', () => {
-    const defaultResult = migrateMcpDescription07ToRc4(source, {
-      specification: '0.8.0-rc.4',
+    const defaultResult = migrateMcpDescription07To08(source, {
+      specification: '0.8.0',
       defaultProtocolVersion: '2026-07-28',
       sourceValidated: true,
     });
@@ -133,8 +131,8 @@ describe('migrateMcpDescription07ToRc4', () => {
       );
     }
 
-    const conflict = migrateMcpDescription07ToRc4(source, {
-      specification: '0.8.0-rc.4',
+    const conflict = migrateMcpDescription07To08(source, {
+      specification: '0.8.0',
       protocolVersion: '2026-07-28',
       sourceValidated: true,
     });
@@ -149,11 +147,11 @@ describe('migrateMcpDescription07ToRc4', () => {
   it('rejects unsupported defaults at the runtime boundary', () => {
     const { protocolVersion: _, ...info } = source.info;
     const options = {
-      specification: '0.8.0-rc.4',
+      specification: '0.8.0',
       defaultProtocolVersion: '2099-01-01',
       sourceValidated: true,
-    } as unknown as MigrateMcpDescription07ToRc4Options;
-    const result = migrateMcpDescription07ToRc4({ ...source, info }, options);
+    } as unknown as MigrateMcpDescription07To08Options;
+    const result = migrateMcpDescription07To08({ ...source, info }, options);
 
     expect(result.ok).toBe(false);
     expect(result.diagnostics).toContainEqual(
@@ -166,8 +164,8 @@ describe('migrateMcpDescription07ToRc4', () => {
   });
 
   it('reports generated names, deduplication, and result-validation failures', () => {
-    const converted = migrateMcpDescription07ToRc4(source, {
-      specification: '0.8.0-rc.4',
+    const converted = migrateMcpDescription07To08(source, {
+      specification: '0.8.0',
       sourceValidated: true,
     });
     expect(converted.report.status).toBe('success-with-warnings');
@@ -188,8 +186,8 @@ describe('migrateMcpDescription07ToRc4', () => {
       transports: [{ type: 'stdio', command: 'server' }],
       tools: [{ name: 'missing_input_schema' }],
     };
-    const failed = migrateMcpDescription07ToRc4(invalidTarget, {
-      specification: '0.8.0-rc.4',
+    const failed = migrateMcpDescription07To08(invalidTarget, {
+      specification: '0.8.0',
       sourceValidated: true,
     });
     expect(failed.ok).toBe(false);
@@ -212,12 +210,12 @@ describe('migrateMcpDescription07ToRc4', () => {
       },
       transports: [{ type: 'stdio', command: 'server' }],
     };
-    const first = migrateMcpDescription07ToRc4(minimalSource, {
-      specification: '0.8.0-rc.4',
+    const first = migrateMcpDescription07To08(minimalSource, {
+      specification: '0.8.0',
       sourceValidated: true,
     });
-    const second = migrateMcpDescription07ToRc4(minimalSource, {
-      specification: '0.8.0-rc.4',
+    const second = migrateMcpDescription07To08(minimalSource, {
+      specification: '0.8.0',
       sourceValidated: true,
     });
 
@@ -230,21 +228,5 @@ describe('migrateMcpDescription07ToRc4', () => {
     );
     expect(serialized.endsWith('\n')).toBe(true);
     expect(JSON.parse(serialized)).toEqual(first.report);
-  });
-});
-
-describe('migrateMcpDescription07To08', () => {
-  it('uses a source protocol version and validates the exact stable snapshot', () => {
-    const result = migrateMcpDescription07To08(source, {
-      specification: '0.8.0',
-      sourceValidated: true,
-    });
-
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-    expect(result.value.$schema).toBe(V0_8_SCHEMA_URI);
-    expect(result.value.mcpdesc).toBe('0.8.0');
-    expect(result.value.protocolVersions).toEqual(['2025-11-25']);
-    expect(result.report.targetSpecification).toBe('0.8.0');
   });
 });

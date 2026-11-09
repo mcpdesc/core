@@ -7,127 +7,31 @@ import {
 
 import type { CoreDiagnostic } from './model.js';
 
-export const RC_4_SPECIFICATION = '0.8.0-rc.4' as const;
-export const RC_4_SCHEMA_URI =
-  'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.4.json' as const;
 export const V0_8_SPECIFICATION = '0.8.0' as const;
 export const V0_8_SCHEMA_URI =
   'https://mcpdesc.org/schema/mcp-description/0.8.0.json' as const;
 export const V0_8_REV_20261021_SPECIFICATION = '0.8.0-rev.20261021' as const;
-export const V0_9_DRAFT_1_SPECIFICATION = '0.9.0-draft.1' as const;
-export const V0_9_DRAFT_1_SCHEMA_URI =
-  'https://mcpdesc.org/schema/mcp-description/0.9.0-draft.1.json' as const;
-export const V0_9_DRAFT_2_SPECIFICATION = '0.9.0-draft.2' as const;
-export const V0_9_DRAFT_2_SCHEMA_URI =
-  'https://mcpdesc.org/schema/mcp-description/0.9.0-draft.2.json' as const;
-export const V0_9_DRAFT_3_SPECIFICATION = '0.9.0-draft.3' as const;
-export const V0_9_DRAFT_3_SCHEMA_URI =
-  'https://mcpdesc.org/schema/mcp-description/0.9.0-draft.3.json' as const;
-export const V0_9_DRAFT_4_SPECIFICATION = '0.9.0-draft.4' as const;
-export const V0_9_DRAFT_4_SCHEMA_URI =
-  'https://mcpdesc.org/schema/mcp-description/0.9.0-draft.4.json' as const;
-export const V0_9_RC_1_SPECIFICATION = '0.9.0-rc.1' as const;
-export const V0_9_RC_1_SCHEMA_URI =
-  'https://mcpdesc.org/schema/mcp-description/0.9.0-rc.1.json' as const;
-export const V0_9_RC_2_SPECIFICATION = '0.9.0-rc.2' as const;
-export const V0_9_RC_2_SCHEMA_URI =
-  'https://mcpdesc.org/schema/mcp-description/0.9.0-rc.2.json' as const;
 export const V0_9_RC_3_SPECIFICATION = '0.9.0-rc.3' as const;
 export const V0_9_RC_3_SCHEMA_URI =
   'https://mcpdesc.org/schema/mcp-description/0.9.0-rc.3.json' as const;
 
 export type SupportedCoreSpecification =
-  | typeof RC_4_SPECIFICATION
   | typeof V0_8_SPECIFICATION
   | typeof V0_8_REV_20261021_SPECIFICATION
-  | typeof V0_9_DRAFT_1_SPECIFICATION
-  | typeof V0_9_DRAFT_2_SPECIFICATION
-  | typeof V0_9_DRAFT_3_SPECIFICATION
-  | typeof V0_9_DRAFT_4_SPECIFICATION
-  | typeof V0_9_RC_1_SPECIFICATION
-  | typeof V0_9_RC_2_SPECIFICATION
   | typeof V0_9_RC_3_SPECIFICATION;
 
 export const deprecatedCoreSpecifications = Object.freeze([
-  RC_4_SPECIFICATION,
   V0_8_SPECIFICATION,
 ] as const);
 
-const rc4Provenance = specificationProvenance[RC_4_SPECIFICATION];
 const v0_8Provenance = specificationProvenance[V0_8_SPECIFICATION];
-const v0_9Draft1Provenance =
-  specificationProvenance[V0_9_DRAFT_1_SPECIFICATION];
-const v0_9Draft2Provenance =
-  specificationProvenance[V0_9_DRAFT_2_SPECIFICATION];
-const v0_9Draft3Provenance =
-  specificationProvenance[V0_9_DRAFT_3_SPECIFICATION];
-const v0_9Draft4Provenance =
-  specificationProvenance[V0_9_DRAFT_4_SPECIFICATION];
-const v0_9Rc1Provenance = specificationProvenance[V0_9_RC_1_SPECIFICATION];
-const v0_9Rc2Provenance = specificationProvenance[V0_9_RC_2_SPECIFICATION];
 const v0_9Rc3Provenance = specificationProvenance[V0_9_RC_3_SPECIFICATION];
-
-export const rc4Snapshot = Object.freeze({
-  specification: RC_4_SPECIFICATION,
-  schemaUri: RC_4_SCHEMA_URI,
-  snapshotTag: rc4Provenance.snapshotTag,
-  schemaSha256: rc4Provenance.schemaSha256,
-  protocolVersions: supportedProtocolVersions,
-});
 
 export const v0_8Snapshot = Object.freeze({
   specification: V0_8_SPECIFICATION,
   schemaUri: V0_8_SCHEMA_URI,
   snapshotTag: v0_8Provenance.snapshotTag,
   schemaSha256: v0_8Provenance.schemaSha256,
-  protocolVersions: supportedProtocolVersions,
-});
-
-export const v0_9Draft1Snapshot = Object.freeze({
-  specification: V0_9_DRAFT_1_SPECIFICATION,
-  schemaUri: V0_9_DRAFT_1_SCHEMA_URI,
-  snapshotTag: v0_9Draft1Provenance.snapshotTag,
-  schemaSha256: v0_9Draft1Provenance.schemaSha256,
-  protocolVersions: supportedProtocolVersions,
-});
-
-export const v0_9Draft2Snapshot = Object.freeze({
-  specification: V0_9_DRAFT_2_SPECIFICATION,
-  schemaUri: V0_9_DRAFT_2_SCHEMA_URI,
-  snapshotTag: v0_9Draft2Provenance.snapshotTag,
-  schemaSha256: v0_9Draft2Provenance.schemaSha256,
-  protocolVersions: supportedProtocolVersions,
-});
-
-export const v0_9Draft3Snapshot = Object.freeze({
-  specification: V0_9_DRAFT_3_SPECIFICATION,
-  schemaUri: V0_9_DRAFT_3_SCHEMA_URI,
-  snapshotTag: v0_9Draft3Provenance.snapshotTag,
-  schemaSha256: v0_9Draft3Provenance.schemaSha256,
-  protocolVersions: supportedProtocolVersions,
-});
-
-export const v0_9Draft4Snapshot = Object.freeze({
-  specification: V0_9_DRAFT_4_SPECIFICATION,
-  schemaUri: V0_9_DRAFT_4_SCHEMA_URI,
-  snapshotTag: v0_9Draft4Provenance.snapshotTag,
-  schemaSha256: v0_9Draft4Provenance.schemaSha256,
-  protocolVersions: supportedProtocolVersions,
-});
-
-export const v0_9Rc1Snapshot = Object.freeze({
-  specification: V0_9_RC_1_SPECIFICATION,
-  schemaUri: V0_9_RC_1_SCHEMA_URI,
-  snapshotTag: v0_9Rc1Provenance.snapshotTag,
-  schemaSha256: v0_9Rc1Provenance.schemaSha256,
-  protocolVersions: supportedProtocolVersions,
-});
-
-export const v0_9Rc2Snapshot = Object.freeze({
-  specification: V0_9_RC_2_SPECIFICATION,
-  schemaUri: V0_9_RC_2_SCHEMA_URI,
-  snapshotTag: v0_9Rc2Provenance.snapshotTag,
-  schemaSha256: v0_9Rc2Provenance.schemaSha256,
   protocolVersions: supportedProtocolVersions,
 });
 
@@ -143,15 +47,8 @@ export function isSupportedCoreSpecification(
   specification: unknown,
 ): specification is SupportedCoreSpecification {
   return (
-    specification === RC_4_SPECIFICATION ||
     specification === V0_8_SPECIFICATION ||
     specification === V0_8_REV_20261021_SPECIFICATION ||
-    specification === V0_9_DRAFT_1_SPECIFICATION ||
-    specification === V0_9_DRAFT_2_SPECIFICATION ||
-    specification === V0_9_DRAFT_3_SPECIFICATION ||
-    specification === V0_9_DRAFT_4_SPECIFICATION ||
-    specification === V0_9_RC_1_SPECIFICATION ||
-    specification === V0_9_RC_2_SPECIFICATION ||
     specification === V0_9_RC_3_SPECIFICATION
   );
 }

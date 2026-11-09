@@ -576,13 +576,7 @@ describe('document ordering schema inventory', () => {
         let pointer = testCase.definition
           ? `/$defs/${testCase.definition}`
           : '';
-        if (
-          conditionalAlternative &&
-          selector === '0.9.0-rc.2' &&
-          conditionalAlternative[1] !== 'resourceContents'
-        ) {
-          pointer = `/$defs/${conditionalAlternative[1]}/allOf/${conditionalAlternative[2]}/then`;
-        } else if (conditionalAlternative && selector === '0.9.0-rc.3') {
+        if (conditionalAlternative && selector === '0.9.0-rc.3') {
           pointer =
             conditionalAlternative[1] === 'resourceContents'
               ? `/$defs/resourceContents/allOf/0/${
@@ -609,24 +603,6 @@ describe('document ordering schema inventory', () => {
       }
       if (selector === '0.9.0-rc.3') {
         covered.add('/$defs/elicitationDeclaration/allOf/0');
-      }
-      if (selector === '0.9.0-rc.2') {
-        const conditionalRoots = [
-          ['transport', 'type'],
-          ['securityScheme', 'type'],
-          ['toolResultContent', 'type'],
-          ['elicitationInteractionRequest', 'mode'],
-          ['elicitationInteractionResponse', 'action'],
-          ['samplingContentBlock', 'type'],
-          ['toolInteractionStep', 'type'],
-        ] as const;
-        for (const [name, field] of conditionalRoots) {
-          const pointer = `/$defs/${name}`;
-          expect(Object.keys(schema.$defs[name].properties), pointer).toEqual([
-            field,
-          ]);
-          covered.add(pointer);
-        }
       }
       const opaque = [
         '/$defs/elicitationFormSchema',
@@ -655,11 +631,9 @@ describe('document ordering schema inventory', () => {
                 Object.hasOwn(branch, 'if'),
             );
           const elicitationBranch =
-            selector === '0.9.0-rc.2'
-              ? /^\/\$defs\/elicitationDeclaration\/allOf\/[01]\/then$/
-              : selector === '0.9.0-rc.3'
-                ? /^\/\$defs\/elicitationDeclaration\/allOf\/[12]\/then$/
-                : /^\/\$defs\/elicitationDeclaration\/oneOf\/[01]$/;
+            selector === '0.9.0-rc.3'
+              ? /^\/\$defs\/elicitationDeclaration\/allOf\/[12]\/then$/
+              : /^\/\$defs\/elicitationDeclaration\/oneOf\/[01]$/;
           if (conditionalRoot) {
             covered.add(pointer);
           } else {

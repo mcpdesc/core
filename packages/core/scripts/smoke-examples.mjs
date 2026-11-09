@@ -7,7 +7,7 @@ import { after, test } from 'node:test';
 import { validateMcpDescription as validateRuntime } from '@mcpdesc/validator';
 import { validateMcpDescription as validateStandalone } from '@mcpdesc/validator/standalone';
 import {
-  V0_9_DRAFT_1_SCHEMA_URI,
+  V0_9_RC_3_SCHEMA_URI,
   parseMcpDescriptionSource,
   projectEffectiveProtocolView,
   projectMcpNativeValue,
@@ -131,7 +131,7 @@ for (const filename of files) {
     assert.equal(parsed.ok, true, JSON.stringify(parsed.diagnostics));
     const document = parsed.value;
     const original = structuredClone(document);
-    const selector = document.mcpdesc === '0.9.0' ? '0.9.0-draft.1' : undefined;
+    const selector = document.mcpdesc === '0.9.0' ? '0.9.0-rc.3' : undefined;
     const validation = validate(document, selector);
     assert.equal(
       validation.valid,
@@ -160,9 +160,9 @@ for (const filename of files) {
     const original = structuredClone(parsed.value);
     const document = structuredClone(parsed.value);
     document.mcpdesc = '0.9.0';
-    document.$schema = V0_9_DRAFT_1_SCHEMA_URI;
+    document.$schema = V0_9_RC_3_SCHEMA_URI;
     const candidate = structuredClone(document);
-    const selector = '0.9.0-draft.1';
+    const selector = '0.9.0-rc.3';
     const validation = validate(document, selector);
     assert.equal(
       validation.valid,

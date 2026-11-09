@@ -68,7 +68,6 @@ interface McpDescriptionValidationResult {
     protocolVersions?: string[]; // revisions the finding concerns, when applicable
     detail?: McpDescriptionDiagnosticDetail; // factual explanation for RC.3 schema findings
     relatedLocations?: McpDescriptionRelatedLocation[]; // component definition locations
-    explanation?: McpDescriptionDiagnosticExplanation; // only when requested and available
   }>;
   results?: Array<{
     rule: string;
@@ -114,27 +113,14 @@ interface McpDescriptionDiagnosticExplanation {
   unexpected members point to the member that exists in the source.
 - Diagnostics are deterministic: the same document and selector always produce
   the same results.
-- Diagnostic explanations are opt-in with `explainDiagnostics: true`. RC.2
-  currently explains unexpected members in recognized transport variants,
-  including a uniquely close property suggestion such as `arg` → `args`. The
-  explanation is additive metadata; the default diagnostic message and shape
-  remain unchanged. Other selectors and diagnostic kinds may have no
-  explanation.
 - RC.3 diagnostics include factual `detail` for schema-derived findings.
   `detail.kind` is extensible: render known kinds and fall back to `message`
   when the kind is unknown or detail is absent. Findings reached through a
   `$componentRef` use the reference site as `path` and add a related
   `component-definition` location.
-- From MCP Description 0.9 drafts, diagnostics identify the specification
-  `rule` they report. From Draft 4, `rule`, `severity`, and `path` are required
-  interoperable fields; `code` and `message` are optional producer output, and
-  `protocolVersions` identifies revision-dependent findings. Draft 4 also
-  returns `results`, one status per rule and declared protocol version. RC.1
-  uses result format `1.3.0` and protocol-version rule identifiers; RC.3 uses
-  result format `1.4.0`, while Draft 4 keeps format `1.0.0` and its original
-  identifiers. Treat `not-applicable` and
-  `not-evaluated` as unconfirmed, not passed. Earlier
-  selectors retain their prior diagnostic shape and do not return rule results.
+- RC.3 diagnostics identify the specification `rule` they report and use result
+  format `1.4.0`. Treat `not-applicable` and `not-evaluated` as unconfirmed, not
+  passed. The retained 0.8 selectors keep their four-field diagnostic output.
 
 ## Choosing validation rules
 
@@ -146,33 +132,23 @@ uses the default selector chosen for it.
 | -------------------- | ------------------------ | ---------------------------------------- |
 | `0.8.0-rev.20261021` | Default for `0.8.0`      | Current rules for MCP Description 0.8.   |
 | `0.8.0`              | Deprecated, pin only     | Original 0.8.0 rules.                    |
-| `0.8.0-rc.4`         | Deprecated, pin only     | Release candidate 4 rules.               |
-| `0.9.0-draft.2`      | Preview, pin only        | MCP Description 0.9 Community Working Draft 2. |
-| `0.9.0-draft.3`      | Preview, pin only        | MCP Description 0.9 Community Working Draft 3. |
-| `0.9.0-draft.4`      | Preview, pin only        | MCP Description 0.9 Community Working Draft 4. |
-| `0.9.0-draft.1`      | Preview, pin only        | MCP Description 0.9 Community Working Draft 1. |
-| `0.9.0-rc.1`         | Explicit pin             | MCP Description 0.9 Release Candidate 1. |
-| `0.9.0-rc.2`         | Explicit pin             | MCP Description 0.9 Release Candidate 2. |
 | `0.9.0-rc.3`         | Default for `0.9.0`      | MCP Description 0.9 Release Candidate 3. |
 
-The default may move to a corrected revision in a later minor release. Pin a
-selector when results must stay identical across upgrades, for example in CI:
+Pin a selector when results must stay identical across upgrades, for example in
+CI:
 
 ```js
 validateMcpDescription(document, { selector: '0.8.0-rev.20261021' });
 ```
 
-`mcpdesc: "0.9.0"` defaults to RC.3, with or without `$schema`. The default
-advances through approved RC snapshots on package upgrades, then freezes to
-`0.9.0` at final release. RC.3 selects applicable union branches through
-guarded schemas and returns structured, source-aware diagnostics. It
-intentionally rejects unknown members on Elicitation Interaction Response
-Objects in Tool Interaction Examples; pin RC.2 to retain the earlier behavior.
-Earlier selector behavior remains unchanged. Draft selectors are never defaults;
-pin one to retain its original validation behavior:
+`mcpdesc: "0.9.0"` defaults to RC.3, with or without `$schema`. RC.3 selects
+applicable union branches through guarded schemas and returns structured,
+source-aware diagnostics. It intentionally rejects unknown members on
+Elicitation Interaction Response Objects in Tool Interaction Examples. Earlier
+selectors are available from their historical package releases.
 
 ```js
-validateMcpDescription(draftDocument, { selector: '0.9.0-draft.4' });
+validateMcpDescription(document, { selector: '0.9.0-rc.3' });
 ```
 
 For consumers that want a recognized `$schema` identity to select its exact
@@ -188,23 +164,6 @@ identity for an unavailable selector returns `unsupported-selector`; set
 to use the configured default instead. Unknown, ambiguous, or contradictory
 schema identities remain errors. Neither option changes package defaults, and
 explicit `selector` pins take precedence.
-
-Request structured explanation metadata for supported findings:
-
-```js
-const result = validateMcpDescription(document, {
-  selector: '0.9.0-rc.2',
-  explainDiagnostics: true
-});
-
-for (const diagnostic of result.diagnostics) {
-  if (diagnostic.explanation?.kind === 'unexpected-property') {
-    console.log(diagnostic.explanation.property);
-    console.log(diagnostic.explanation.discriminator.value);
-    console.log(diagnostic.explanation.suggestedProperty);
-  }
-}
-```
 
 A document whose format version has no default, such as an unknown future
 version, is reported as invalid with `unsupported-format-version`; the validator

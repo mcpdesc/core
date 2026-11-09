@@ -33,23 +33,7 @@ const files = snapshotRoots
   }));
 const generated = {
   formatVersion: 1,
-  approvedExceptions: [
-    {
-      path: 'src/snapshots/0.8.0-rc.4/semantic.js',
-      reason:
-        'Add terminal component-reference provenance without changing the RC.4 schema, conformance results, diagnostics, or fixtures.',
-    },
-    {
-      path: 'src/snapshots/0.9.0-rc.2/index.js',
-      reason:
-        'Expose the opt-in RC.2 diagnostic explanation helper without changing validation results, concise diagnostics, or frozen fixtures.',
-    },
-    {
-      path: 'src/snapshots/0.9.0-rc.2/semantic.js',
-      reason:
-        'Add opt-in schema-derived explanations for RC.2 transport member diagnostics without changing validation results, concise diagnostics, or frozen fixtures.',
-    },
-  ],
+  approvedExceptions: [],
   files,
 };
 const serialized = `${JSON.stringify(generated, null, 2)}\n`;

@@ -313,9 +313,6 @@ export function validateMcpDescription(document, options = {}) {
   if (options === null || typeof options !== 'object' || Array.isArray(options)) {
     throw new TypeError('options must be an object');
   }
-  if (options.explainDiagnostics !== undefined && typeof options.explainDiagnostics !== 'boolean') {
-    throw new TypeError('options.explainDiagnostics must be a boolean');
-  }
   if (options.schemaPolicyIfPresent !== undefined && typeof options.schemaPolicyIfPresent !== 'boolean') {
     throw new TypeError('options.schemaPolicyIfPresent must be a boolean');
   }
@@ -347,19 +344,8 @@ export function validateMcpDescription(document, options = {}) {
     resolution.specification,
     () => snapshots[resolution.specification].validate(document),
   );
-  const explainDiagnostic = options.explainDiagnostics
-    ? snapshots[resolution.specification].explainDiagnostic
-    : undefined;
-  const diagnostics = typeof explainDiagnostic === 'function'
-    ? validation.diagnostics.map((diagnostic) => {
-      const explanation = explainDiagnostic(document, diagnostic);
-      return explanation ? { ...diagnostic, explanation } : diagnostic;
-    })
-    : validation.diagnostics;
-
   return {
     ...validation,
-    diagnostics,
     selector: resolution.specification,
     specification: resolution.specification,
     defaulted: resolution.defaulted
