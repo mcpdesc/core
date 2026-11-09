@@ -1,9 +1,0 @@
-{
-  "description": "Projection preserves the selected Tool's interactionExamples and elicitation declarations.",
-  "operation": "view",
-  "inputs": [
-    "../fixtures/expected-valid/named-tool-interaction-examples.json"
-  ],
-  "expected": "expected/view-tool-interaction-examples-2025-11-25.json",
-  "protocolVersion": "2025-11-25"
-}

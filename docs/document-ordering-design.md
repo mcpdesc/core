@@ -40,16 +40,15 @@ does not imply support for a future selector.
 ## Schema basis
 
 The field inventory below comes from the embedded
-[RC.1 schema](../packages/validator/src/snapshots/0.9.0-rc.1/schema.json).
+[RC.3 schema](../packages/validator/src/snapshots/0.9.0-rc.3/schema.json).
 Sequences come from the supplied proposed specification Section 18, not that
 schema. Once published, the specification section is the source of truth for
 this presentation profile. Schema source property order, examples, and
 implementation constants do not override the specification sequences.
 
-The inventory was also compared with all currently embedded older selectors:
-`0.8.0-rc.4`, `0.8.0`, `0.8.0-rev.20261021`, and `0.9.0-draft.1` through
-`0.9.0-draft.4`. Their fixed-field structures fit the same tables, with these
-qualifications:
+The inventory was also compared with the retained selectors `0.8.0`,
+`0.8.0-rev.20261021`, and `0.9.0-rc.3`. Their fixed-field structures fit the
+same tables, with these qualifications:
 
 - The 0.8 selectors do not declare `_meta` on elicitation responses, root
   declarations, roots-list results, or sampling results. Do not treat `_meta` as

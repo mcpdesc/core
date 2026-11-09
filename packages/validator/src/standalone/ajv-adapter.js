@@ -8,9 +8,6 @@ import validateDraft2020Schema from '#standalone-meta-draft2020';
 import { currentValidationSelector } from '../validation-context.js';
 
 const ruleResultSelectors = new Set([
-  '0.9.0-draft.4',
-  '0.9.0-rc.1',
-  '0.9.0-rc.2',
   '0.9.0-rc.3',
 ]);
 

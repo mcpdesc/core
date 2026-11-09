@@ -53,19 +53,6 @@ test('browser entry applies the format default when no selector is passed', () =
   assert.equal(result.defaulted, true);
 });
 
-test('browser Draft 4 results match the standard entry under strict CSP', () => {
-  const document = JSON.parse(fs.readFileSync(
-    new URL('./snapshots/0.9.0-draft.4/fixtures/expected-warning/tool-schema-mcp-type-mismatch.json', import.meta.url),
-    'utf8'
-  ));
-  const options = { selector: '0.9.0-draft.4' };
-  const browserResult = validateUnderCsp(document, options);
-  const standardResult = validateStandard(document, options);
-
-  assert.deepEqual(browserResult.diagnostics, standardResult.diagnostics);
-  assert.deepEqual(browserResult.results, standardResult.results);
-});
-
 test('browser defaults 0.9.0 to RC.3 and preserves results under strict CSP', () => {
   const document = JSON.parse(fs.readFileSync(
     new URL('./snapshots/0.9.0-rc.3/fixtures/expected-warning/tool-schema-mcp-type-mismatch.json', import.meta.url),
@@ -76,6 +63,20 @@ test('browser defaults 0.9.0 to RC.3 and preserves results under strict CSP', ()
   const standardResult = validateStandard(document);
   assert.equal(browserResult.selector, '0.9.0-rc.3');
   assert.equal(browserResult.defaulted, true);
+  assert.deepEqual(browserResult, standardResult);
+});
+
+test('browser applies per-call schema selection under strict CSP', () => {
+  const document = JSON.parse(fs.readFileSync(
+    new URL('./snapshots/0.9.0-rc.3/fixtures/expected-valid/minimal-zero-primitives.json', import.meta.url),
+    'utf8'
+  ));
+  document.$schema = 'https://mcpdesc.org/schema/mcp-description/0.9.0-rc.1.json';
+  const options = { schemaPolicyIfPresent: true };
+  const browserResult = validateUnderCsp(document, options);
+  const standardResult = validateStandard(document, options);
+
+  assert.equal(browserResult.diagnostics[0].code, 'unsupported-selector');
   assert.deepEqual(browserResult, standardResult);
 });
 
@@ -95,24 +96,6 @@ test('browser exposes RC.3 diagnostic details under strict CSP', () => {
     allowedMembers: ['args', 'command', 'env', 'protocolVersions', 'security', 'type'],
     allowedMemberPatterns: ['^x-'],
     selector: { member: 'type', value: 'stdio' }
-  });
-});
-
-test('browser exposes RC.2 diagnostic explanations under strict CSP', () => {
-  const document = JSON.parse(fs.readFileSync(
-    new URL('./snapshots/0.9.0-rc.2/fixtures/expected-invalid/transport-arg-typo.json', import.meta.url),
-    'utf8'
-  ));
-  const options = { selector: '0.9.0-rc.2', explainDiagnostics: true };
-  const browserResult = validateUnderCsp(document, options);
-  const standardResult = validateStandard(document, options);
-
-  assert.deepEqual(browserResult, standardResult);
-  assert.deepEqual(browserResult.diagnostics[0].explanation, {
-    kind: 'unexpected-property',
-    property: 'arg',
-    discriminator: { property: 'type', value: 'stdio' },
-    suggestedProperty: 'args'
   });
 });
 

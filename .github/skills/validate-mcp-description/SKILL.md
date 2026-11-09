@@ -46,7 +46,7 @@ resolve its exact immutable specification snapshot, and run
 
    ```bash
    node .github/skills/validate-mcp-description/scripts/validate.mjs \
-     --specification 0.8.0-rc.1 path/to/document.yaml
+     --specification 0.8.0 path/to/document.yaml
    ```
 
 5. Report the result as **valid** only when the runner prints `VALID` and exits

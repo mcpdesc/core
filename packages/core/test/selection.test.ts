@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  RC_4_SCHEMA_URI,
+  V0_8_SCHEMA_URI,
   selectMcpDescriptionDeclarations,
 } from '../src/index.js';
 
 const source = {
-  $schema: RC_4_SCHEMA_URI,
+  $schema: V0_8_SCHEMA_URI,
   mcpdesc: '0.8.0',
   info: { name: 'selection-test', version: '1.0.0' },
   protocolVersions: ['2025-11-25', '2026-07-28'],
@@ -43,7 +43,7 @@ describe('selectMcpDescriptionDeclarations', () => {
   it('selects by normative identity and preserves every scoped variant', () => {
     const original = structuredClone(source);
     const result = selectMcpDescriptionDeclarations(source, {
-      specification: '0.8.0-rc.4',
+      specification: '0.8.0',
       selections: {
         tools: ['shared'],
         resources: ['test://selected'],
@@ -71,7 +71,7 @@ describe('selectMcpDescriptionDeclarations', () => {
 
   it('omits unselected and empty declaration collections', () => {
     const result = selectMcpDescriptionDeclarations(source, {
-      specification: '0.8.0-rc.4',
+      specification: '0.8.0',
       selections: { tools: [] },
     });
 
@@ -87,7 +87,7 @@ describe('selectMcpDescriptionDeclarations', () => {
     const result = selectMcpDescriptionDeclarations(
       { ...source, tools: [{ name: 'invalid' }] },
       {
-        specification: '0.8.0-rc.4',
+        specification: '0.8.0',
         selections: { tools: ['invalid'] },
       },
     );
@@ -101,11 +101,11 @@ describe('selectMcpDescriptionDeclarations', () => {
     );
   });
 
-  it('selects declarations from an RC.2 document', () => {
+  it('selects declarations from the stable 0.8 document', () => {
     const result = selectMcpDescriptionDeclarations(
-      { ...source, $schema: RC_4_SCHEMA_URI },
+      { ...source, $schema: V0_8_SCHEMA_URI },
       {
-        specification: '0.8.0-rc.4',
+        specification: '0.8.0',
         selections: { tools: ['other'] },
       },
     );
@@ -118,17 +118,5 @@ describe('selectMcpDescriptionDeclarations', () => {
         inputSchema: { type: 'object', additionalProperties: false },
       },
     ]);
-  });
-
-  it('selects declarations from an RC.2 document', () => {
-    const result = selectMcpDescriptionDeclarations(
-      { ...source, $schema: RC_4_SCHEMA_URI },
-      {
-        specification: '0.8.0-rc.4',
-        selections: { tools: ['other'] },
-      },
-    );
-
-    expect(result.ok).toBe(true);
   });
 });

@@ -6,6 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this package follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Dates for published releases are the UTC publication dates recorded by npm.
 
+## Unreleased
+
+## [0.14.0-rc.9] - 2026-11-09
+
+### Added
+
+- Added per-call `schemaPolicyIfPresent` and
+  `fallbackIfSelectorIsUnknown` options to validation and selector resolution,
+  allowing consumers to select a recognized schema identity or explicitly
+  fall back to the configured default for an unavailable selector.
+
+### Changed
+
+- **Breaking:** retired `0.8.0-rc.4`, `0.9.0-draft.1` through `.4`, and
+  `0.9.0-rc.1` and `.2` from the current registry, declarations, standalone
+  bundle, package contents, and snapshot trees. Only
+  `0.8.0-rev.20261021`, `0.8.0`, and `0.9.0-rc.3` remain supported. Selector
+  identities are retained as configuration tombstones; use the historical
+  package release to reproduce their behavior.
+- Removed RC.2-only `explainDiagnostics` support and its public diagnostic
+  explanation type.
+- **Upgrade note:** RC.2 and other retired selectors cannot be explicitly
+  selected in this release. Use an earlier validator package release to
+  reproduce their behavior.
+
 ## [0.14.0-rc.8] - 2026-11-08
 
 ### Added

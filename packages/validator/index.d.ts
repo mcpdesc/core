@@ -44,7 +44,6 @@ export interface McpDescriptionDiagnostic {
   readonly protocolVersions?: readonly SupportedProtocolVersion[];
   readonly detail?: McpDescriptionDiagnosticDetail;
   readonly relatedLocations?: readonly McpDescriptionRelatedLocation[];
-  readonly explanation?: McpDescriptionDiagnosticExplanation;
 }
 
 export interface McpDescriptionDiagnosticDetail {
@@ -66,16 +65,6 @@ export interface McpDescriptionRelatedLocation {
   readonly relation: 'component-definition';
 }
 
-export interface McpDescriptionDiagnosticExplanation {
-  readonly kind: 'unexpected-property';
-  readonly property: string;
-  readonly discriminator: Readonly<{
-    property: 'type';
-    value: string;
-  }>;
-  readonly suggestedProperty?: string;
-}
-
 export interface McpDescriptionValidationResult {
   readonly valid: boolean;
   readonly diagnostics: McpDescriptionDiagnostic[];
@@ -88,7 +77,8 @@ export interface McpDescriptionValidationResult {
 export interface ValidateMcpDescriptionOptions {
   readonly selector?: McpDescriptionSelector;
   readonly specification?: McpDescriptionSpecification;
-  readonly explainDiagnostics?: boolean;
+  readonly schemaPolicyIfPresent?: boolean;
+  readonly fallbackIfSelectorIsUnknown?: boolean;
 }
 
 export interface McpDescriptionComponentReferenceProvenance {
@@ -144,6 +134,8 @@ export type McpDescriptionDefaultSelectors = Readonly<{
 export interface ResolveMcpDescriptionSpecificationOptions {
   readonly selector?: McpDescriptionSelector;
   readonly specification?: McpDescriptionSpecification;
+  readonly schemaPolicyIfPresent?: boolean;
+  readonly fallbackIfSelectorIsUnknown?: boolean;
 }
 
 export interface ResolvedMcpDescriptionSpecification {

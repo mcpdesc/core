@@ -79,7 +79,7 @@ selectors:
 
   '0.8.0-rc.4':
     formatVersion: '0.8.0'
-    lifecycle: deprecated
+    lifecycle: retired
     specificationTag: 'v0.8.0-rc.4'
     schemaUri: 'https://mcpdesc.org/schema/mcp-description/0.8.0-rc.4.json'
     schemaSha256: 'd38e54db859813b63be2a5c91dde91250035f18bcb5910208cf71fa6875d6eef'
@@ -93,8 +93,8 @@ selectors:
 ```
 
 The current configuration uses `0.8.0-rev.20261021` as the default and retains
-the historical selector identities in `config/selectors.yaml`. Stable `0.8.0`
-and RC.4 are deprecated; older drafts and release candidates are retired.
+the historical selector identities in `config/selectors.yaml`. Stable `0.8.0` is
+deprecated; RC.4 and older drafts and release candidates are retired.
 
 The `formats` table owns defaults and `schemaPins`. The `selectors` table owns
 selector lifecycle and identity metadata, including the schema digest verified

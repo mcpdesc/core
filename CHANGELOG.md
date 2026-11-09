@@ -9,6 +9,17 @@ scripts, and release infrastructure.
 > - [`@mcpdesc/core`](packages/core/CHANGELOG.md)
 > - [`@mcpdesc/validator`](packages/validator/CHANGELOG.md)
 
+## 2026-11-09
+
+### Changed
+
+- Retired older validator selectors from current validator and core runtime
+  support, keeping only `0.8.0-rev.20261021`, `0.8.0`, and `0.9.0-rc.3`.
+  Historical selector identities remain configured as tombstones; consumers
+  needing retired behavior must use its earlier package release.
+- Prepared validator `0.14.0-rc.9` followed by core `0.13.0-rc.8`; tagging and
+  publication await the reviewed PR merge and required CI.
+
 ## 2026-11-08
 
 ### Added

@@ -16,7 +16,6 @@ import {
   validateMcpDescription
 } from '../src/index.js';
 import { validatorConfiguration } from '../src/generated/selector-config.js';
-import { validate as validateDraft4Snapshot } from '../src/snapshots/0.9.0-draft.4/index.js';
 
 const configuredSelectors = Object.entries(validatorConfiguration.selectors);
 const expectedSupportedSpecifications = configuredSelectors
@@ -42,7 +41,13 @@ test('exports the active validator API', () => {
   assert.equal(typeof validateMcpDescription, 'function');
   assert.equal(typeof resolveMcpDescriptionComponentReferences, 'function');
   assert.deepEqual(supportedSpecifications, expectedSupportedSpecifications);
+  assert.deepEqual(supportedSpecifications, [
+    '0.9.0-rc.3',
+    '0.8.0',
+    '0.8.0-rev.20261021'
+  ]);
   assert.deepEqual(deprecatedSpecifications, expectedDeprecatedSpecifications);
+  assert.deepEqual(deprecatedSpecifications, ['0.8.0']);
   assert.deepEqual(defaultSpecifications, {
     '0.8.0': { selector: '0.8.0-rev.20261021', schemaPins: false },
     '0.9.0': { selector: '0.9.0-rc.3', schemaPins: false }
@@ -57,57 +62,32 @@ test('exports the active validator API', () => {
   assert.deepEqual(Object.keys(specificationProvenance), supportedSpecifications);
 });
 
-test('preserves explicit draft pins while defaulting 0.9.0 documents to RC.3', () => {
-  const document = fixture('expected-valid', 'minimal-zero-primitives.json', '0.9.0-draft.1');
-  const pinned = validateMcpDescription(document, { selector: '0.9.0-draft.1' });
-  assert.equal(pinned.valid, true);
-  assert.equal(pinned.defaulted, false);
-  assert.equal(pinned.selector, '0.9.0-draft.1');
+test('rejects retired selector pins while defaulting 0.9.0 documents to RC.3', () => {
+  const document = fixture('expected-valid', 'minimal-zero-primitives.json', '0.9.0-rc.3');
   assert.equal(validateMcpDescription(document).selector, '0.9.0-rc.3');
-  const draft2Document = fixture(
-    'expected-valid',
-    'minimal-zero-primitives.json',
+  for (const selector of [
+    '0.8.0-rc.4',
+    '0.9.0-draft.1',
     '0.9.0-draft.2',
-  );
-  const draft2 = validateMcpDescription(draft2Document, {
-    selector: '0.9.0-draft.2',
-  });
-  assert.equal(draft2.valid, true);
-  assert.equal(draft2.selector, '0.9.0-draft.2');
-  assert.equal(validateMcpDescription(draft2Document).selector, '0.9.0-rc.3');
-  const draft3Document = fixture(
-    'expected-valid',
-    'minimal-zero-primitives.json',
     '0.9.0-draft.3',
-  );
-  const draft3 = validateMcpDescription(draft3Document, {
-    selector: '0.9.0-draft.3',
-  });
-  assert.equal(draft3.valid, true);
-  assert.equal(draft3.selector, '0.9.0-draft.3');
-  assert.equal(validateMcpDescription(draft3Document).selector, '0.9.0-rc.3');
-  const draft4Document = fixture(
-    'expected-warning',
-    'tool-schema-mcp-type-mismatch.json',
     '0.9.0-draft.4',
-  );
-  const draft4 = validateMcpDescription(draft4Document, {
-    selector: '0.9.0-draft.4',
-  });
-  const draft4Reference = validateDraft4Snapshot(draft4Document);
-  assert.equal(draft4.valid, draft4Reference.valid);
-  assert.deepEqual(draft4.diagnostics, draft4Reference.diagnostics);
-  assert.deepEqual(draft4.results, draft4Reference.results);
-  assert.equal(validateMcpDescription(draft4Document).selector, '0.9.0-rc.3');
-  assert.equal(resolveMcpDescriptionSpecification(document, { selector: '0.9.0-draft.1' }).status, 'resolved');
-  const invalid = validateMcpDescription({ ...document, tools: [{ name: 'missing' }] }, { selector: '0.9.0-draft.1' });
-  assert.equal(invalid.valid, false);
-  assert.ok(invalid.diagnostics.some((diagnostic) => diagnostic.rule === 'mcpdesc.document.schema'));
+    '0.9.0-rc.1',
+    '0.9.0-rc.2',
+  ]) {
+    assert.throws(
+      () => validateMcpDescription(document, { selector }),
+      new RegExp(`Unsupported MCP Description selector: ${selector.replaceAll('.', '\\.')}`),
+    );
+    assert.equal(
+      resolveMcpDescriptionSpecification(document, { selector }).status,
+      'unresolved',
+    );
+  }
 });
 
 test('defaults 0.9.0 with or without a schema identity and preserves exact rule pins', () => {
-  const document = fixture('expected-warning', 'tool-schema-mcp-type-mismatch.json', '0.9.0-rc.1');
-  for (const schema of [undefined, document.$schema, 'https://mcpdesc.org/schema/mcp-description/0.9.0-draft.4.json']) {
+  const document = fixture('expected-warning', 'tool-schema-mcp-type-mismatch.json', '0.9.0-rc.3');
+  for (const schema of [undefined, document.$schema, 'https://mcpdesc.org/schema/mcp-description/0.9.0-rc.2.json']) {
     const source = { ...document, $schema: schema };
     if (schema === undefined) delete source.$schema;
     const result = validateMcpDescription(source);
@@ -116,10 +96,10 @@ test('defaults 0.9.0 with or without a schema identity and preserves exact rule 
     assert.equal(result.defaulted, true);
     assert.ok(result.results.some(({ rule }) => rule === 'mcp.tool.output-schema.protocol-version'));
     assert.ok(!result.results.some(({ rule }) => rule.includes('revision-availability')));
-    const pinned = validateMcpDescription(source, { selector: '0.9.0-draft.4' });
-    assert.equal(pinned.selector, '0.9.0-draft.4');
+    const pinned = validateMcpDescription(source, { selector: '0.9.0-rc.3' });
+    assert.equal(pinned.selector, '0.9.0-rc.3');
     assert.equal(pinned.defaulted, false);
-    assert.ok(pinned.results.some(({ rule }) => rule === 'mcp.tool.output-schema.revision-availability'));
+    assert.ok(pinned.results.some(({ rule }) => rule === 'mcp.tool.output-schema.protocol-version'));
   }
 });
 
@@ -160,15 +140,11 @@ test('reports source-aware RC.3 schema details and focused rule results', () => 
   assert.equal(missingType.detail.member, 'type');
 });
 
-test('closes unknown elicitation response members only in RC.3', () => {
+test('RC.3 rejects unknown elicitation response members', () => {
   const document = fixture(
     'expected-invalid',
     'elicitation-response-unknown-member.json',
     '0.9.0-rc.3',
-  );
-  assert.equal(
-    validateMcpDescription(document, { selector: '0.9.0-rc.2' }).valid,
-    true,
   );
   assert.equal(
     validateMcpDescription(document, { selector: '0.9.0-rc.3' }).valid,
@@ -233,87 +209,6 @@ test('maps RC.3 component findings to the reference use and definition', () => {
   ]);
 });
 
-test('reports one actionable transport diagnostic for a misspelled RC.2 field', () => {
-  const document = fixture('expected-invalid', 'transport-arg-typo.json', '0.9.0-rc.2');
-  const rc2 = validateMcpDescription(document, { selector: '0.9.0-rc.2' });
-  assert.equal(rc2.valid, false);
-  assert.deepEqual(
-    rc2.diagnostics.map(({ rule, path }) => ({ rule, path })),
-    [{ rule: 'mcpdesc.transport.members', path: ['transports', 0, 'arg'] }],
-  );
-  assert.equal(Object.hasOwn(rc2.diagnostics[0], 'explanation'), false);
-
-  const rc1 = validateMcpDescription(document, { selector: '0.9.0-rc.1' });
-  assert.equal(rc1.valid, false);
-  assert.equal(rc1.diagnostics.length, 10);
-  const explainedRc1 = validateMcpDescription(document, {
-    selector: '0.9.0-rc.1',
-    explainDiagnostics: true
-  });
-  assert.ok(explainedRc1.diagnostics.every(({ explanation }) => explanation === undefined));
-});
-
-test('adds opt-in structured explanations for RC.2 transport member diagnostics', () => {
-  const document = fixture('expected-invalid', 'transport-arg-typo.json', '0.9.0-rc.2');
-  const concise = validateMcpDescription(document, { selector: '0.9.0-rc.2' });
-  const explained = validateMcpDescription(document, {
-    selector: '0.9.0-rc.2',
-    explainDiagnostics: true
-  });
-
-  assert.deepEqual(explained.diagnostics[0], {
-    ...concise.diagnostics[0],
-    explanation: {
-      kind: 'unexpected-property',
-      property: 'arg',
-      discriminator: { property: 'type', value: 'stdio' },
-      suggestedProperty: 'args'
-    }
-  });
-  assert.equal(explained.valid, concise.valid);
-  assert.deepEqual(explained.results, concise.results);
-
-  const independentErrors = structuredClone(document);
-  independentErrors.transports[0].command = 42;
-  const result = validateMcpDescription(independentErrors, {
-    selector: '0.9.0-rc.2',
-    explainDiagnostics: true
-  });
-  assert.equal(result.diagnostics.length, 2);
-  assert.equal(
-    result.diagnostics.filter(({ explanation }) => explanation !== undefined).length,
-    1
-  );
-});
-
-test('does not explain transport fields without a uniquely close valid-branch property', () => {
-  const document = fixture('expected-invalid', 'transport-arg-typo.json', '0.9.0-rc.2');
-  document.transports[0].mystery = true;
-  const result = validateMcpDescription(document, {
-    selector: '0.9.0-rc.2',
-    explainDiagnostics: true
-  });
-  const mystery = result.diagnostics.find(({ path }) => path.at(-1) === 'mystery');
-  assert.ok(mystery);
-  assert.deepEqual(mystery.explanation, {
-    kind: 'unexpected-property',
-    property: 'mystery',
-    discriminator: { property: 'type', value: 'stdio' }
-  });
-});
-
-test('retains independent and nested union diagnostics for RC.2', () => {
-  const nested = fixture(
-    'expected-invalid',
-    'discriminated-resource-link-size.json',
-    '0.9.0-rc.2',
-  );
-  const result = validateMcpDescription(nested, { selector: '0.9.0-rc.2' });
-  assert.equal(result.diagnostics.length, 3);
-  assert.equal(result.diagnostics[0].rule, 'mcp.resource.size');
-  assert.ok(result.diagnostics.every(({ message }) => !message.includes('must match "then" schema')));
-});
-
 test('exports configured provenance for each supported schema', () => {
   for (const specification of supportedSpecifications) {
     const metadata = validatorConfiguration.selectors[specification];
@@ -328,7 +223,7 @@ test('exports configured provenance for each supported schema', () => {
   }
 });
 
-test('exports the pinned RC.2 extension catalogue and maturity classification', () => {
+test('exports the configured extension catalogue and maturity classification', () => {
   assert.deepEqual(mcpExtensionCatalogue, {
     effectiveDate: '2026-09-04',
     source: 'https://modelcontextprotocol.io/extensions/overview',
@@ -345,44 +240,6 @@ test('exports the pinned RC.2 extension catalogue and maturity classification', 
   assert.ok(Object.isFrozen(mcpExtensionCatalogue));
   assert.ok(Object.isFrozen(mcpExtensionCatalogue.officialIdentifiers));
   assert.ok(Object.isFrozen(mcpExtensionCatalogue.experimentalIdentifiers));
-});
-
-test('keeps RC.4 protocol applicability and extension authority diagnostics independent', () => {
-  const official = fixture('expected-warning', 'pre-standard-extension-capabilities.json', '0.8.0-rc.4');
-  assert.deepEqual(
-    validate(official, '0.8.0-rc.4').diagnostics.map(({ code, severity }) => ({ code, severity })),
-    [{ code: 'extensions-not-supported-by-version', severity: 'warning' }]
-  );
-
-  official.capabilities[0].extensions = { 'io.modelcontextprotocol/future-capability': {} };
-  assert.deepEqual(
-    validate(official, '0.8.0-rc.4').diagnostics.map(({ code, severity }) => ({ code, severity })),
-    [
-      { code: 'extensions-not-supported-by-version', severity: 'warning' },
-      { code: 'unknown-reserved-extension-identifier', severity: 'warning' }
-    ]
-  );
-});
-
-test('keeps pre-standard client requirements strict and malformed extension maps invalid', () => {
-  const document = fixture('expected-warning', 'pre-standard-extension-capabilities.json', '0.8.0-rc.4');
-  delete document.capabilities;
-  document.tools = [{
-    name: 'requires_apps',
-    inputSchema: { type: 'object', additionalProperties: false },
-    clientRequirements: { extensions: { 'io.modelcontextprotocol/ui': {} } }
-  }];
-  const requirement = validate(document, '0.8.0-rc.4');
-  assert.equal(requirement.valid, false);
-  assert.ok(requirement.diagnostics.some(({ code, severity }) => (
-    code === 'client-requirement-version-mismatch' && severity === 'error'
-  )));
-
-  for (const extensions of [{}, { 'missing-prefix': {} }, { 'com.example/invalid': true }]) {
-    const malformed = fixture('expected-warning', 'pre-standard-extension-capabilities.json', '0.8.0-rc.4');
-    malformed.capabilities[0].extensions = extensions;
-    assert.equal(validate(malformed, '0.8.0-rc.4').valid, false);
-  }
 });
 
 for (const specification of supportedSpecifications) {
@@ -404,10 +261,10 @@ for (const specification of supportedSpecifications) {
 }
 
 test('rejects component resolution for unsupported selectors', () => {
-  const document = fixture('expected-valid', 'reusable-components.json', '0.8.0-rc.4');
+  const document = fixture('expected-valid', 'reusable-components.json', '0.8.0');
   assert.throws(
-    () => resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-draft.4' }),
-    /does not support specification: 0\.8\.0-draft\.4/
+    () => resolveMcpDescriptionComponentReferences(document, { specification: '0.8.0-rc.4' }),
+    /does not support specification: 0\.8\.0-rc\.4/
   );
 });
 
@@ -419,16 +276,16 @@ test('defaults from the format version unless the caller pins a selector', () =>
   assert.equal(defaultResult.specification, '0.8.0-rev.20261021');
   assert.equal(defaultResult.defaulted, true);
 
-  const pinnedResult = validateMcpDescription(document, { selector: '0.8.0-rc.4' });
+  const pinnedResult = validateMcpDescription(document, { selector: '0.8.0' });
   assert.equal(pinnedResult.valid, true);
-  assert.equal(pinnedResult.selector, '0.8.0-rc.4');
-  assert.equal(pinnedResult.specification, '0.8.0-rc.4');
+  assert.equal(pinnedResult.selector, '0.8.0');
+  assert.equal(pinnedResult.specification, '0.8.0');
   assert.equal(pinnedResult.defaulted, false);
 
-  const legacyPinnedResult = validateMcpDescription(document, { specification: '0.8.0-rc.4' });
-  assert.equal(legacyPinnedResult.selector, '0.8.0-rc.4');
+  const legacyPinnedResult = validateMcpDescription(document, { specification: '0.8.0' });
+  assert.equal(legacyPinnedResult.selector, '0.8.0');
   assert.throws(
-    () => validateMcpDescription(document, { selector: '0.8.0', specification: '0.8.0-rc.4' }),
+    () => validateMcpDescription(document, { selector: '0.8.0', specification: '0.8.0-rev.20261021' }),
     /must identify the same selector/
   );
 
@@ -512,6 +369,97 @@ test('uses maintainer defaults and fails unsupported format versions without fal
   assert.equal(missing.diagnostics[0].code, 'missing-format-version');
 });
 
+test('per-call schema policy rejects retired identities and optionally falls back', () => {
+  const document = fixture('expected-valid', 'minimal-zero-primitives.json', '0.9.0-rc.3');
+  document.$schema = 'https://mcpdesc.org/schema/mcp-description/0.9.0-rc.1.json';
+  assert.equal(validateMcpDescription(document).selector, '0.9.0-rc.3');
+
+  const unavailableResolution = resolveMcpDescriptionSpecification(document, {
+    schemaPolicyIfPresent: true
+  });
+  assert.equal(unavailableResolution.status, 'unresolved');
+  assert.equal(unavailableResolution.diagnostics[0].code, 'unsupported-selector');
+  const unavailableValidation = validateMcpDescription(document, {
+    schemaPolicyIfPresent: true
+  });
+  assert.equal(unavailableValidation.valid, false);
+  assert.equal(unavailableValidation.selector, null);
+  assert.equal(unavailableValidation.diagnostics[0].code, 'unsupported-selector');
+
+  const noSchema = { ...document };
+  delete noSchema.$schema;
+  assert.equal(validateMcpDescription(noSchema, {
+    schemaPolicyIfPresent: true
+  }).selector, '0.9.0-rc.3');
+
+  const fallbackResolution = resolveMcpDescriptionSpecification(document, {
+    schemaPolicyIfPresent: true,
+    fallbackIfSelectorIsUnknown: true
+  });
+  assert.equal(fallbackResolution.status, 'resolved');
+  assert.equal(fallbackResolution.selector, '0.9.0-rc.3');
+  assert.equal(fallbackResolution.defaulted, true);
+
+  const fallbackValidation = validateMcpDescription(document, {
+    schemaPolicyIfPresent: true,
+    fallbackIfSelectorIsUnknown: true
+  });
+  assert.equal(fallbackValidation.selector, '0.9.0-rc.3');
+  assert.equal(fallbackValidation.defaulted, true);
+});
+
+test('per-call schema policy preserves ambiguous, unknown, and contradictory identity errors', () => {
+  const options = {
+    schemaPolicyIfPresent: true,
+    fallbackIfSelectorIsUnknown: true
+  };
+  const ambiguous = resolveMcpDescriptionSpecification({
+    mcpdesc: '0.8.0',
+    $schema: 'https://mcpdesc.org/schema/0.8.0.json'
+  }, options);
+  assert.equal(ambiguous.status, 'unresolved');
+  assert.equal(ambiguous.diagnostics[0].code, 'ambiguous-schema-identity');
+
+  const unknown = resolveMcpDescriptionSpecification({
+    mcpdesc: '0.8.0',
+    $schema: 'https://example.com/schema.json'
+  }, options);
+  assert.equal(unknown.status, 'unresolved');
+  assert.equal(unknown.diagnostics[0].code, 'unknown-schema-identity');
+
+  const contradictory = resolveMcpDescriptionSpecification({
+    mcpdesc: '0.9.0',
+    $schema: 'https://mcpdesc.org/schema/mcp-description/0.8.0-draft.4.json'
+  }, options);
+  assert.equal(contradictory.status, 'unresolved');
+  assert.equal(contradictory.diagnostics[0].code, 'contradictory-format-version');
+
+  const explicit = validateMcpDescription({
+    mcpdesc: '0.9.0',
+    $schema: 'https://mcpdesc.org/schema/mcp-description/0.9.0-rc.3.json'
+  }, {
+    selector: '0.9.0-rc.3',
+    schemaPolicyIfPresent: true,
+    fallbackIfSelectorIsUnknown: true
+  });
+  assert.equal(explicit.selector, '0.9.0-rc.3');
+});
+
+test('validates per-call schema policy option types', () => {
+  assert.throws(
+    () => validateMcpDescription({}, { schemaPolicyIfPresent: 'true' }),
+    /options\.schemaPolicyIfPresent must be a boolean/
+  );
+  assert.throws(
+    () => validateMcpDescription({}, { fallbackIfSelectorIsUnknown: 1 }),
+    /options\.fallbackIfSelectorIsUnknown must be a boolean/
+  );
+  assert.throws(
+    () => resolveMcpDescriptionSpecification({}, { schemaPolicyIfPresent: 'true' }),
+    /options\.schemaPolicyIfPresent must be a boolean/
+  );
+});
+
 test('checks explicit selector consistency with declared schema identity', () => {
   const selected = resolveMcpDescriptionSpecification({ mcpdesc: '0.8.0' }, {
     selector: '0.8.0'
@@ -535,7 +483,7 @@ test('checks explicit selector consistency with declared schema identity', () =>
 
   const optionConflict = resolveMcpDescriptionSpecification({ mcpdesc: '0.8.0' }, {
     selector: '0.8.0',
-    specification: '0.8.0-rc.4'
+    specification: '0.8.0-rev.20261021'
   });
   assert.equal(optionConflict.status, 'unresolved');
   assert.equal(optionConflict.diagnostics[0].code, 'conflicting-selector-options');

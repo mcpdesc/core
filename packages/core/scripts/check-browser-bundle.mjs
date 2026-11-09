@@ -9,19 +9,9 @@ const entries = [
     allowsValidator: true,
     requiredExports: [
       'migrateMcpDescription07To08',
-      'migrateMcpDescription07ToRc4',
       'serializeMcpDescriptionMigrationReport',
       'projectMcpNativeValue',
-      'v0_9Draft1Snapshot',
-      'v0_9Draft2Snapshot',
-      'v0_9Draft3Snapshot',
-      'v0_9Rc1Snapshot',
-      'v0_9Rc2Snapshot',
       'v0_9Rc3Snapshot',
-      'V0_9_RC_1_SPECIFICATION',
-      'V0_9_RC_1_SCHEMA_URI',
-      'V0_9_RC_2_SPECIFICATION',
-      'V0_9_RC_2_SCHEMA_URI',
       'V0_9_RC_3_SPECIFICATION',
       'V0_9_RC_3_SCHEMA_URI',
       'convertMcpDescriptionVersion',
@@ -171,10 +161,10 @@ try {
       throw new Error('Component resolution failed under strict CSP');
     }
   }
-  const draft = JSON.parse(
+  const rc3 = JSON.parse(
     readFileSync(
       new URL(
-        '../../validator/test/snapshots/0.9.0-draft.1/projection-fixtures/documents/tools.json',
+        '../../validator/test/snapshots/0.9.0-rc.3/projection-fixtures/documents/tools.json',
         import.meta.url,
       ),
       'utf8',
@@ -183,14 +173,14 @@ try {
   const expected = JSON.parse(
     readFileSync(
       new URL(
-        '../../validator/test/snapshots/0.9.0-draft.1/projection-fixtures/tool-component-input-array-output-2026-07-28.json',
+        '../../validator/test/snapshots/0.9.0-rc.3/projection-fixtures/tool-component-input-array-output-2026-07-28.json',
         import.meta.url,
       ),
       'utf8',
     ),
   ).expected;
-  const native = root.projectMcpNativeValue(draft, {
-    specification: '0.9.0-draft.1',
+  const native = root.projectMcpNativeValue(rc3, {
+    specification: '0.9.0-rc.3',
     protocolVersion: '2026-07-28',
     kind: 'tool',
     identifier: 'report',
@@ -233,7 +223,7 @@ try {
     root.resolveMcpDescriptionComponentReferences,
     components.resolveMcpDescriptionComponentReferences,
   ]) {
-    const resolved = operation(draft, { specification: '0.9.0-draft.1' });
+    const resolved = operation(rc3, { specification: '0.9.0-rc.3' });
     assert.equal(resolved.ok, true);
     assert.ok(resolved.provenance.length > 0);
   }
@@ -269,43 +259,14 @@ try {
     identifier: 'lookup',
   });
   assert.deepEqual(defaultNative, pinnedRc3);
-  const projectedDraft2 = root.projectMcpNativeValue(converted.value, {
-    specification: '0.9.0-draft.2',
+  const projectedRc3 = root.projectMcpNativeValue(converted.value, {
+    specification: '0.9.0-rc.3',
     protocolVersion: '2026-07-28',
     kind: 'tool',
     identifier: 'lookup',
   });
-  assert.equal(
-    projectedDraft2.ok,
-    true,
-    JSON.stringify(projectedDraft2.diagnostics),
-  );
-  assert.deepEqual(projectedDraft2.value, {
-    name: 'lookup',
-    inputSchema: { type: 'object' },
-  });
-  const convertedDraft3 = root.convertMcpDescriptionVersion(conversionSource, {
-    from: '0.8.0',
-    to: '0.9.0',
-    selector: '0.9.0-draft.3',
-  });
-  assert.equal(
-    convertedDraft3.ok,
-    true,
-    JSON.stringify(convertedDraft3.diagnostics),
-  );
-  const projectedDraft3 = root.projectMcpNativeValue(convertedDraft3.value, {
-    selector: '0.9.0-draft.3',
-    protocolVersion: '2026-07-28',
-    kind: 'tool',
-    identifier: 'lookup',
-  });
-  assert.equal(
-    projectedDraft3.ok,
-    true,
-    JSON.stringify(projectedDraft3.diagnostics),
-  );
-  assert.deepEqual(projectedDraft3.value, {
+  assert.equal(projectedRc3.ok, true, JSON.stringify(projectedRc3.diagnostics));
+  assert.deepEqual(projectedRc3.value, {
     name: 'lookup',
     inputSchema: { type: 'object' },
   });
@@ -324,7 +285,7 @@ try {
     ],
   };
   const failedPostcondition = root.projectMcpNativeValue(invalidTool, {
-    selector: '0.9.0-draft.3',
+    selector: '0.9.0-rc.3',
     protocolVersion: '2025-11-25',
     kind: 'tool',
     identifier: 'toggle',

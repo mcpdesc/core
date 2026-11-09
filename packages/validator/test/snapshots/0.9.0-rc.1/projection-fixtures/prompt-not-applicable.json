@@ -1,8 +1,0 @@
-{
-  "description": "No Prompt with this name is declared.",
-  "document": "documents/resources-and-prompts.json",
-  "kind": "prompt",
-  "identifier": "translate",
-  "expectedError": "projection-declaration-not-applicable",
-  "protocolVersion": "2025-11-25"
-}

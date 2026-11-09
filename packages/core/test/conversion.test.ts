@@ -11,16 +11,6 @@ import {
   projectMcpNativeValue,
   serializeMcpDescription,
   V0_8_SCHEMA_URI,
-  V0_9_DRAFT_2_SPECIFICATION,
-  V0_9_DRAFT_2_SCHEMA_URI,
-  V0_9_DRAFT_3_SPECIFICATION,
-  V0_9_DRAFT_3_SCHEMA_URI,
-  V0_9_DRAFT_4_SPECIFICATION,
-  V0_9_DRAFT_4_SCHEMA_URI,
-  V0_9_RC_1_SPECIFICATION,
-  V0_9_RC_1_SCHEMA_URI,
-  V0_9_RC_2_SPECIFICATION,
-  V0_9_RC_2_SCHEMA_URI,
   V0_9_RC_3_SPECIFICATION,
   V0_9_RC_3_SCHEMA_URI,
 } from '../src/index.js';
@@ -61,7 +51,7 @@ function errorDiagnostics(
     );
 }
 
-function testConversionProfile(selector: string): void {
+function testConversionProfile(selector: typeof V0_9_RC_3_SPECIFICATION): void {
   const fixtureRoot = conversionFixtureDirectory(selector);
   describe(`convertMcpDescriptionVersion frozen profile conformance: ${selector}`, () => {
     for (const filename of readdirSync(fixtureRoot)
@@ -92,13 +82,7 @@ function testConversionProfile(selector: string): void {
           {
             from: fixture.from,
             to: fixture.to,
-            selector: selector as
-              | typeof V0_9_DRAFT_2_SPECIFICATION
-              | typeof V0_9_DRAFT_3_SPECIFICATION
-              | typeof V0_9_DRAFT_4_SPECIFICATION
-              | typeof V0_9_RC_1_SPECIFICATION
-              | typeof V0_9_RC_2_SPECIFICATION
-              | typeof V0_9_RC_3_SPECIFICATION,
+            selector,
             fixes: fixture.fixes,
           },
         );
@@ -127,16 +111,11 @@ function testConversionProfile(selector: string): void {
   });
 }
 
-testConversionProfile(V0_9_DRAFT_2_SPECIFICATION);
-testConversionProfile(V0_9_DRAFT_3_SPECIFICATION);
-testConversionProfile(V0_9_DRAFT_4_SPECIFICATION);
-testConversionProfile(V0_9_RC_1_SPECIFICATION);
-testConversionProfile(V0_9_RC_2_SPECIFICATION);
 testConversionProfile(V0_9_RC_3_SPECIFICATION);
 
 describe('convert then serialize', () => {
   it.each(['json', 'yaml'] as const)(
-    'preserves parsed field order after RC.1 conversion to %s',
+    'preserves parsed field order after RC.3 conversion to %s',
     (format) => {
       const source = `mcpdesc: 0.8.0
 info:
@@ -159,7 +138,7 @@ tools:
       const converted = convertMcpDescriptionVersion(parsed.value, {
         from: '0.8.0',
         to: '0.9.0',
-        selector: V0_9_RC_1_SPECIFICATION,
+        selector: V0_9_RC_3_SPECIFICATION,
       });
       expect(converted.ok, JSON.stringify(converted.diagnostics)).toBe(true);
       if (!converted.ok) return;
@@ -187,11 +166,11 @@ tools:
 });
 
 describe('convert then project', () => {
-  it('targets Draft 3 explicitly and projects the converted value', () => {
+  it('targets RC.3 explicitly and projects the converted value', () => {
     const source = {
       $schema: V0_8_SCHEMA_URI,
       mcpdesc: '0.8.0',
-      info: { name: 'draft-3-conversion', version: '1.0.0' },
+      info: { name: 'rc-3-conversion', version: '1.0.0' },
       protocolVersions: ['2026-07-28'],
       transports: [{ type: 'stdio', command: 'server' }],
       tools: [{ name: 'lookup', inputSchema: { type: 'object' } }],
@@ -199,20 +178,20 @@ describe('convert then project', () => {
     const converted = convertMcpDescriptionVersion(source, {
       from: '0.8.0',
       to: '0.9.0',
-      selector: V0_9_DRAFT_3_SPECIFICATION,
+      selector: V0_9_RC_3_SPECIFICATION,
     });
 
     expect(converted.ok, JSON.stringify(converted.diagnostics)).toBe(true);
     if (!converted.ok) return;
-    expect(converted.value.$schema).toBe(V0_9_DRAFT_3_SCHEMA_URI);
+    expect(converted.value.$schema).toBe(V0_9_RC_3_SCHEMA_URI);
     expect(converted.patch[1]).toEqual({
       op: 'replace',
       path: '/$schema',
-      value: V0_9_DRAFT_3_SCHEMA_URI,
+      value: V0_9_RC_3_SCHEMA_URI,
     });
 
     const projected = projectMcpNativeValue(converted.value, {
-      selector: V0_9_DRAFT_3_SPECIFICATION,
+      selector: V0_9_RC_3_SPECIFICATION,
       protocolVersion: '2026-07-28',
       kind: 'tool',
       identifier: 'lookup',
@@ -223,34 +202,6 @@ describe('convert then project', () => {
         name: 'lookup',
         inputSchema: { type: 'object' },
       });
-  });
-
-  it('targets Draft 4 explicitly and projects the converted value', () => {
-    const source = {
-      $schema: V0_8_SCHEMA_URI,
-      mcpdesc: '0.8.0',
-      info: { name: 'draft-4-conversion', version: '1.0.0' },
-      protocolVersions: ['2026-07-28'],
-      transports: [{ type: 'stdio', command: 'server' }],
-      tools: [{ name: 'lookup', inputSchema: { type: 'object' } }],
-    };
-    const converted = convertMcpDescriptionVersion(source, {
-      from: '0.8.0',
-      to: '0.9.0',
-      selector: V0_9_DRAFT_4_SPECIFICATION,
-    });
-
-    expect(converted.ok, JSON.stringify(converted.diagnostics)).toBe(true);
-    if (!converted.ok) return;
-    expect(converted.value.$schema).toBe(V0_9_DRAFT_4_SCHEMA_URI);
-
-    const projected = projectMcpNativeValue(converted.value, {
-      selector: V0_9_DRAFT_4_SPECIFICATION,
-      protocolVersion: '2026-07-28',
-      kind: 'tool',
-      identifier: 'lookup',
-    });
-    expect(projected.ok, JSON.stringify(projected.diagnostics)).toBe(true);
   });
 
   it('defaults conversion and subsequent native projection to RC.3', () => {

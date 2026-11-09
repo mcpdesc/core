@@ -38,25 +38,25 @@ selectors are immutable, so the fix cannot change `0.8.0` itself.
    version.
 6. Validator `0.13.0-rc.1` introduced default selection and the revision as the
    default for `0.8.0`; stable `0.13.0` promotes that tested behavior on npm
-   `latest`. The stable `0.8.0` selector is deprecated. RC.4 remains supported
-   as deprecated because `@mcpdesc/core` still uses it; retiring it requires a
-   coordinated core API review and release.
+   `latest`. The stable `0.8.0` selector is deprecated. At that release, RC.4
+   remained supported as deprecated because core still used it; it has since
+   been retired by a coordinated core API review.
 7. Not chosen: changing published selectors in place, a `0.8.1` format release
    for a validator-only fix, and silent fallback. A validator `1.0.0` release is
    deferred.
 
-**Impact.**
+**Impact at the time of the `0.13.0` release.**
 
 | Who                                 | Effect of `0.13.0`                                          |
 | ----------------------------------- | ----------------------------------------------------------- |
 | Document authors                    | No change; `0.8.0` documents get the fix                    |
 | Clients that do not pass a selector | Fix applied on upgrade; future defaults arrive the same way |
 | Clients that pass a selector        | Results unchanged; they stop passing it to receive defaults |
-| RC.4 users                          | RC.4 remains available but deprecated                       |
+| RC.4 users                          | RC.4 remained available but deprecated                      |
 
-**Next steps.** Publish and verify stable validator `0.13.0`. Core selector
-support remains unchanged until a separate operation-by-operation adoption
-review is approved.
+**Next steps at the time.** Publish and verify stable validator `0.13.0`. Core
+selector support was unchanged then; a later operation-by-operation review
+retired selectors no longer supported by the current packages.
 
 The rest of this document records the terminology, the reasoning, and the
 rejected options.
@@ -65,6 +65,11 @@ As of the RC.1 intake, `0.9.0` documents default to `0.9.0-rc.1` with
 `schemaPins: false`. That configured default advances through approved release
 candidates and freezes to `0.9.0` at final release. Draft selectors remain
 explicit pins; the historical 0.13.0 decisions below are otherwise unchanged.
+
+Current runtime support is limited to `0.8.0-rev.20261021`, deprecated `0.8.0`,
+and `0.9.0-rc.3`. All other selectors are retired from current package APIs and
+tarballs; their identity metadata remains in validator configuration, and their
+complete artifacts remain available in repository and release history.
 
 ## Repositories and packages
 
@@ -426,13 +431,12 @@ selectors as stable revisions, not prereleases.
 | `0.8.0-rev.1`                                 | Follows the rule with a counter like `draft` and `rc`, but carries no date                                       |
 | `0.8.0+rev.20261021`                          | Breaks the rule; build metadata cannot order revisions; `+` is unsafe in some URLs                               |
 
-Adopting `-rev.` selectors requires these `mcpdesc/core` changes:
+The `-rev.` selector form is implemented in the intake tooling:
 
-- Extend the selector check in `packages/validator/scripts/import-snapshot.mjs`,
-  which currently accepts only `x.y.z`, `x.y.z-draft.n`, and `x.y.z-rc.n`, to
+- `packages/validator/scripts/import-snapshot.mjs` accepts
   `^\d+\.\d+\.\d+(?:-(?:draft|rc|rev)\.\d+)?$`.
-- Describe revision selectors in `packages/validator/README.md`, `AGENTS.md`,
-  and the `validator-snapshot-intake` skill.
+- Revision selectors are documented in the validator README, maintainer
+  guidance, and the `validator-snapshot-intake` skill.
 
 ## Validator `0.13.0` with default selectors
 
@@ -455,9 +459,10 @@ maintainer-defined defaults move.
 | `0.13.0-rc.1`     | `0.8.0-rc.4` (deprecated), `0.8.0` (deprecated), `0.8.0-rev.20261021` | `0.8.0-rev.20261021`           |
 | `0.13.0`          | `0.8.0-rc.4` (deprecated), `0.8.0` (deprecated), `0.8.0-rev.20261021` | `0.8.0-rev.20261021`           |
 
-RC.4 stays available as a deprecated selector because `@mcpdesc/core` currently
-depends on it. Retirement is deferred to a coordinated core compatibility
-decision; users can still pin RC.4 explicitly in `0.13.0`.
+RC.4 stayed available as a deprecated selector in validator `0.13.0` because
+`@mcpdesc/core` depended on it at that time. It is now retired from current
+package APIs and tarballs; users needing its historical results must use the
+older immutable validator package release that shipped it.
 
 The validator exports the defaults as a table the maintainer edits:
 

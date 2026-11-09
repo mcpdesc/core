@@ -24,13 +24,7 @@ import type {
 } from './model.js';
 import {
   selectCoreSpecification,
-  V0_9_DRAFT_3_SPECIFICATION,
-  V0_9_DRAFT_4_SPECIFICATION,
-  V0_9_RC_1_SPECIFICATION,
-  V0_9_RC_2_SPECIFICATION,
   V0_9_RC_3_SPECIFICATION,
-  V0_9_DRAFT_2_SPECIFICATION,
-  V0_9_DRAFT_1_SPECIFICATION,
   type CoreSelectorOptions,
 } from './snapshot.js';
 import { resolveMcpDescriptionComponentReferences } from './components.js';
@@ -381,9 +375,7 @@ export function projectEffectiveProtocolView(
       diagnostics: [
         ...sourceDiagnostics,
         operationDiagnostic(
-          specification === V0_9_RC_1_SPECIFICATION ||
-            specification === V0_9_RC_2_SPECIFICATION ||
-            specification === V0_9_RC_3_SPECIFICATION
+          specification === V0_9_RC_3_SPECIFICATION
             ? 'projection-protocol-version-not-declared'
             : 'projection-version-not-declared',
           `MCP protocol revision ${JSON.stringify(options.protocolVersion)} is absent from root protocolVersions`,
@@ -395,12 +387,7 @@ export function projectEffectiveProtocolView(
   }
 
   const value = projectDocument(source, options.protocolVersion);
-  if (
-    specification === V0_9_DRAFT_4_SPECIFICATION ||
-    specification === V0_9_RC_1_SPECIFICATION ||
-    specification === V0_9_RC_2_SPECIFICATION ||
-    specification === V0_9_RC_3_SPECIFICATION
-  ) {
+  if (specification === V0_9_RC_3_SPECIFICATION) {
     pruneUnusedComponents(value);
   }
   const resultValidation = validateMcpDescription(value, {
@@ -433,13 +420,7 @@ const nativeKinds = {
 export type McpNativeKind = keyof typeof nativeKinds;
 
 export interface ProjectMcpNativeValueOptions extends CoreSelectorOptions<
-  | typeof V0_9_DRAFT_1_SPECIFICATION
-  | typeof V0_9_DRAFT_2_SPECIFICATION
-  | typeof V0_9_DRAFT_3_SPECIFICATION
-  | typeof V0_9_DRAFT_4_SPECIFICATION
-  | typeof V0_9_RC_1_SPECIFICATION
-  | typeof V0_9_RC_2_SPECIFICATION
-  | typeof V0_9_RC_3_SPECIFICATION
+  typeof V0_9_RC_3_SPECIFICATION
 > {
   readonly protocolVersion: SupportedProtocolVersion;
   readonly kind: McpNativeKind;
@@ -514,15 +495,7 @@ export function projectMcpNativeValue(
       })),
     };
   }
-  if (
-    selection.specification !== V0_9_DRAFT_1_SPECIFICATION &&
-    selection.specification !== V0_9_DRAFT_2_SPECIFICATION &&
-    selection.specification !== V0_9_DRAFT_3_SPECIFICATION &&
-    selection.specification !== V0_9_DRAFT_4_SPECIFICATION &&
-    selection.specification !== V0_9_RC_1_SPECIFICATION &&
-    selection.specification !== V0_9_RC_2_SPECIFICATION &&
-    selection.specification !== V0_9_RC_3_SPECIFICATION
-  ) {
+  if (selection.specification !== V0_9_RC_3_SPECIFICATION) {
     return {
       ok: false,
       diagnostics: [

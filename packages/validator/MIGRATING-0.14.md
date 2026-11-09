@@ -1,8 +1,7 @@
 # Migrating to `@mcpdesc/validator` 0.14
 
 Validator 0.14 adopts MCP Description `0.9.0-rc.3` as the default selector for
-`mcpdesc: "0.9.0"`. To keep RC.2 validation behavior, pin
-`selector: '0.9.0-rc.2'`.
+`mcpdesc: "0.9.0"`.
 
 ## Acceptance change
 
@@ -33,11 +32,23 @@ Rule results distinguish `passed`, `failed`, `warning`, `not-applicable`,
 document validity; warning diagnostics and rule statuses do not independently
 make a document invalid.
 
-The RC.2 selector remains available for applications requiring exact prior
-results:
+## Retired selectors
+
+The current package keeps only `0.8.0-rev.20261021`, `0.8.0`, and
+`0.9.0-rc.3`. Earlier drafts and release candidates, including RC.2, are no
+longer shipped or accepted as explicit pins. Applications that need their exact
+historical results must use the earlier validator package release that shipped
+those selectors.
+
+An unrecognized or retired explicit selector now fails with
+`Unsupported MCP Description selector`.
+
+## Pinning the retained RC.3 selector
+
+Pin RC.3 when exact current results are required:
 
 ```js
 const result = validateMcpDescription(document, {
-  selector: '0.9.0-rc.2'
+  selector: '0.9.0-rc.3'
 });
 ```

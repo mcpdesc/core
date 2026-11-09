@@ -1,9 +1,0 @@
-{
-  "description": "Projection preserves the selected declarations' completionExamples maps.",
-  "operation": "view",
-  "inputs": [
-    "../fixtures/expected-valid/named-completion-examples.json"
-  ],
-  "expected": "expected/view-completion-examples-2026-07-28.json",
-  "protocolVersion": "2026-07-28"
-}

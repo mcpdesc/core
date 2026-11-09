@@ -69,6 +69,12 @@ function resolvedSpecification(specification, defaulted = false, diagnostics = [
 }
 
 export function resolveMcpDescriptionSpecification(document, options = {}) {
+  if (options?.schemaPolicyIfPresent !== undefined && typeof options.schemaPolicyIfPresent !== 'boolean') {
+    throw new TypeError('options.schemaPolicyIfPresent must be a boolean');
+  }
+  if (options?.fallbackIfSelectorIsUnknown !== undefined && typeof options.fallbackIfSelectorIsUnknown !== 'boolean') {
+    throw new TypeError('options.fallbackIfSelectorIsUnknown must be a boolean');
+  }
   const requestedSelector = options?.selector;
   const legacySpecification = options?.specification;
   if (requestedSelector !== undefined && legacySpecification !== undefined && requestedSelector !== legacySpecification) {
@@ -191,6 +197,50 @@ export function resolveMcpDescriptionSpecification(document, options = {}) {
     };
   }
 
+  if (options?.schemaPolicyIfPresent === true) {
+    if (candidates.length > 1) {
+      return {
+        status: 'unresolved',
+        diagnostics: [resolutionDiagnostic(
+          'ambiguous-schema-identity',
+          `$schema ${JSON.stringify(declaredSchema)} identifies multiple selectors: ${candidates.join(', ')}`,
+          ['$schema']
+        )]
+      };
+    }
+
+    if (candidates.length === 1) {
+      const schemaSelector = candidates[0];
+      if (Object.hasOwn(snapshots, schemaSelector)) {
+        return resolvedSpecification(schemaSelector);
+      }
+
+      if (options.fallbackIfSelectorIsUnknown !== true) {
+        return {
+          status: 'unresolved',
+          diagnostics: [resolutionDiagnostic(
+            'unsupported-selector',
+            `Schema identity selects unavailable MCP Description selector: ${schemaSelector}`,
+            ['$schema']
+          )]
+        };
+      }
+
+      const defaultSpecification = defaultSpecifications[schemaFormatVersion];
+      if (defaultSpecification) {
+        return resolvedSpecification(defaultSpecification.selector, true);
+      }
+      return {
+        status: 'unresolved',
+        diagnostics: [resolutionDiagnostic(
+          'unsupported-format-version',
+          `Unsupported MCP Description format version: ${schemaFormatVersion}`,
+          ['mcpdesc']
+        )]
+      };
+    }
+  }
+
   if (schemaFormatVersion !== undefined) {
     const format = validatorConfiguration.formats[schemaFormatVersion];
     const defaultSpecification = defaultSpecifications[schemaFormatVersion];
@@ -263,8 +313,11 @@ export function validateMcpDescription(document, options = {}) {
   if (options === null || typeof options !== 'object' || Array.isArray(options)) {
     throw new TypeError('options must be an object');
   }
-  if (options.explainDiagnostics !== undefined && typeof options.explainDiagnostics !== 'boolean') {
-    throw new TypeError('options.explainDiagnostics must be a boolean');
+  if (options.schemaPolicyIfPresent !== undefined && typeof options.schemaPolicyIfPresent !== 'boolean') {
+    throw new TypeError('options.schemaPolicyIfPresent must be a boolean');
+  }
+  if (options.fallbackIfSelectorIsUnknown !== undefined && typeof options.fallbackIfSelectorIsUnknown !== 'boolean') {
+    throw new TypeError('options.fallbackIfSelectorIsUnknown must be a boolean');
   }
   if (options.selector !== undefined && options.specification !== undefined && options.selector !== options.specification) {
     throw new TypeError('options.selector and options.specification must identify the same selector');
@@ -275,7 +328,7 @@ export function validateMcpDescription(document, options = {}) {
   }
 
   const resolution = selectedSelector === undefined
-    ? resolveMcpDescriptionSpecification(document)
+    ? resolveMcpDescriptionSpecification(document, options)
     : resolvedSpecification(selectedSelector);
   if (resolution.status === 'unresolved') {
     return {
@@ -291,19 +344,8 @@ export function validateMcpDescription(document, options = {}) {
     resolution.specification,
     () => snapshots[resolution.specification].validate(document),
   );
-  const explainDiagnostic = options.explainDiagnostics
-    ? snapshots[resolution.specification].explainDiagnostic
-    : undefined;
-  const diagnostics = typeof explainDiagnostic === 'function'
-    ? validation.diagnostics.map((diagnostic) => {
-      const explanation = explainDiagnostic(document, diagnostic);
-      return explanation ? { ...diagnostic, explanation } : diagnostic;
-    })
-    : validation.diagnostics;
-
   return {
     ...validation,
-    diagnostics,
     selector: resolution.specification,
     specification: resolution.specification,
     defaulted: resolution.defaulted

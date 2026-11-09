@@ -12,7 +12,6 @@ import {
   validateMcpDescription,
   type McpDescriptionDiagnostic,
   type McpDescriptionDiagnosticDetail,
-  type McpDescriptionDiagnosticExplanation,
   type McpDescriptionRelatedLocation,
   type McpDescriptionRuleResult,
   type McpDescriptionRuleResultStatus,
@@ -27,12 +26,6 @@ const result: McpDescriptionValidationResult = validateMcpDescription(document, 
   selector: '0.8.0'
 });
 const defaultResult: McpDescriptionValidationResult = validateMcpDescription(document);
-const draft4Result: McpDescriptionValidationResult = validateMcpDescription(document, {
-  selector: '0.9.0-draft.4'
-});
-const rc1Result: McpDescriptionValidationResult = validateBrowser(document, {
-  selector: '0.9.0-rc.1'
-});
 const rc3Result: McpDescriptionValidationResult = validateStandalone(document, {
   selector: '0.9.0-rc.3'
 });
@@ -42,7 +35,6 @@ const rc3RelatedLocation: McpDescriptionRelatedLocation | undefined =
   rc3Result.diagnostics[0]?.relatedLocations?.[0];
 const rc3DetailKind: string | undefined = rc3Detail?.kind;
 const rc3DetailMember: string | undefined = rc3Detail?.member;
-const rc1Records: readonly McpDescriptionRuleResult[] | undefined = rc1Result.results;
 const selector: McpDescriptionSelector = result.selector!;
 const componentResolution = resolveMcpDescriptionComponentReferences(document, {
   specification: '0.8.0'
@@ -59,15 +51,20 @@ const browserResult: McpDescriptionValidationResult = validateBrowser(document, 
   specification: '0.8.0'
 });
 const diagnostic: McpDescriptionDiagnostic | undefined = result.diagnostics[0];
-const explainedResult = validateMcpDescription(document, { explainDiagnostics: true });
-const diagnosticExplanation: McpDescriptionDiagnosticExplanation | undefined =
-  explainedResult.diagnostics[0]?.explanation;
+const schemaPolicyResult = validateMcpDescription(document, {
+  schemaPolicyIfPresent: true,
+  fallbackIfSelectorIsUnknown: true
+});
+const schemaPolicyResolution = resolveMcpDescriptionSpecification(document, {
+  schemaPolicyIfPresent: true,
+  fallbackIfSelectorIsUnknown: false
+});
 const pathSegment: string | number | undefined = diagnostic?.path[0];
 const diagnosticRule: string | undefined = diagnostic?.rule;
 const diagnosticCode: string | undefined = diagnostic?.code;
 const diagnosticProtocolVersions: readonly string[] | undefined = diagnostic?.protocolVersions;
-const draft4Records: readonly McpDescriptionRuleResult[] | undefined = draft4Result.results;
-const draft4Status: McpDescriptionRuleResultStatus | undefined = draft4Records?.[0]?.status;
+const rc3Records: readonly McpDescriptionRuleResult[] | undefined = rc3Result.results;
+const rc3Status: McpDescriptionRuleResultStatus | undefined = rc3Records?.[0]?.status;
 const configuredSelector: McpDescriptionSelector = supportedSpecifications[0];
 const deprecatedSelector: McpDescriptionSelector = deprecatedSpecifications[0];
 const defaultedStable: McpDescriptionSelector | undefined = defaultSpecifications['0.8.0']?.selector;
@@ -85,12 +82,10 @@ if (resolution.status === 'resolved') {
 }
 
 void pathSegment;
-void diagnosticExplanation;
 void diagnosticRule;
 void diagnosticCode;
 void diagnosticProtocolVersions;
-void draft4Status;
-void rc1Records;
+void rc3Status;
 void rc3DetailKind;
 void rc3DetailMember;
 void rc3RelatedLocation;
@@ -106,6 +101,8 @@ void catalogueDate;
 void extensionMaturity;
 void browserResult;
 void standaloneResult;
+void schemaPolicyResult;
+void schemaPolicyResolution;
 void referencePath;
 
 // @ts-expect-error Retired release candidates are not supported.
