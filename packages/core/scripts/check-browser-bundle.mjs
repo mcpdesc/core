@@ -130,6 +130,15 @@ try {
     tools: [{ name: 'lookup', inputSchema: unordered.tools[0].inputSchema }],
   };
   for (const entry of [root, documents]) {
+    for (const keyOrder of [undefined, 'preserve', 'sorted', 'document']) {
+      assert.equal(
+        entry.serializeMcpDescription(
+          { tools: [{ inputSchema: { required: ['query'] } }] },
+          { format: 'yaml', keyOrder },
+        ),
+        'tools:\n  - inputSchema:\n      required:\n        - query\n',
+      );
+    }
     for (const format of ['json', 'yaml']) {
       assert.equal(
         entry.serializeMcpDescription(unordered, {

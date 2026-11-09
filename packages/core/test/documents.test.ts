@@ -6,6 +6,60 @@ import {
 } from '../src/index.js';
 
 describe('MCP Description source documents', () => {
+  it.each([undefined, 'preserve', 'sorted', 'document'] as const)(
+    'indents nested YAML sequences by two spaces with %s key ordering',
+    (keyOrder) => {
+      const value = {
+        mcpdesc: '0.9.0',
+        tools: [
+          {
+            name: 'lookup',
+            inputSchema: {
+              required: ['query'],
+              type: 'object',
+            },
+          },
+        ],
+        'x-empty': [],
+        'x-matrix': [['first', 'second'], ['third']],
+      };
+      const before = structuredClone(value);
+      const source = serializeMcpDescription(value, {
+        format: 'yaml',
+        keyOrder,
+      });
+      expect(source).toContain('tools:\n  - ');
+      expect(source).toMatch(
+        /(?: {4}| {2}- )inputSchema:\n {6}required:\n {8}- query\n/,
+      );
+      expect(source).toContain(
+        'x-matrix:\n  - - first\n    - second\n  - - third\n',
+      );
+      expect(source).toContain('x-empty: []\n');
+      expect(parseMcpDescriptionSource(source)).toMatchObject({
+        ok: true,
+        value,
+      });
+      expect(value).toEqual(before);
+    },
+  );
+
+  it('accepts indentless YAML input and emits indented sequences', () => {
+    // yaml-style: intentional-input
+    const source =
+      'tools:\n- name: lookup\n  inputSchema:\n    required:\n    - query\n';
+    const parsed = parseMcpDescriptionSource(source);
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    const serialized = serializeMcpDescription(parsed.value, {
+      format: 'yaml',
+    });
+    expect(serialized).toBe(
+      'tools:\n  - name: lookup\n    inputSchema:\n      required:\n        - query\n',
+    );
+    expect(parseMcpDescriptionSource(serialized)).toEqual(parsed);
+  });
+
   it.each(['json', 'yaml'] as const)(
     'organizes known document fields without sorting payloads in %s',
     (format) => {

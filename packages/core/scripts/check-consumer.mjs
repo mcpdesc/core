@@ -103,6 +103,16 @@ try {
       assert.equal(parsed.ok, true);
       assert.deepEqual(parsed.value, source);
 
+      for (const keyOrder of [undefined, 'preserve', 'sorted', 'document']) {
+        assert.equal(
+          serializeMcpDescription(
+            { tools: [{ inputSchema: { required: ['query'] } }] },
+            { format: 'yaml', keyOrder },
+          ),
+          'tools:\\n  - inputSchema:\\n      required:\\n        - query\\n',
+        );
+      }
+
       const orderedSource = {
         tools: [{ inputSchema: { properties: { z: {}, a: {} }, type: 'object' }, name: 'lookup' }],
         info: { version: '1.0.0', name: 'ordering' },

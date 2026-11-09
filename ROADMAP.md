@@ -29,6 +29,8 @@ repository.
       host file or stream access.
 - [x] Preserve object-key order by default in JSON/YAML serialization for editor
       and CLI workflows, with explicit sorted output available.
+- [x] Explicitly enforce two-space indented YAML sequences in core serialization
+      and mutable repository examples, preserving imported snapshot artifacts.
 - [x] Add opt-in document-oriented serialization using the approved proposed
       Section 18 profile, with context-specific field sequences and explicit
       opaque boundaries, without changing validator conformance.

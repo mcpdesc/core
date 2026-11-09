@@ -181,6 +181,13 @@ documents produce identical text. Integer-like keys follow JavaScript's numeric
 enumeration order, not their original source order. Neither mode changes array
 order or mutates the input.
 
+YAML output explicitly uses two-space indentation and indented block sequences,
+including nested arrays, under every key-order policy. Empty arrays remain `[]`.
+Apply `serializeMcpDescription` to values returned by migration, conversion,
+projection, merge, selection, or component resolution for the same output style.
+Parsing accepts both indented and indentless YAML sequences; presentation style
+does not affect validator conformance.
+
 `keyOrder: 'document'` applies the maintainer-approved proposed specification
 Section 18 presentation profile: header and identity, transports and security,
 capabilities and declarations, then tags and components. Known nested structures
