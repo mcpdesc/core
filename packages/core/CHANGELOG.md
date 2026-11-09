@@ -16,7 +16,7 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 
 - Independent nested YAML indentation regression checks, including strict-CSP
   and isolated-consumer coverage.
-  
+
 ### Changed
 
 - **Breaking:** narrowed supported selectors to `0.8.0-rev.20261021`, `0.8.0`,
