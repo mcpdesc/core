@@ -16,14 +16,42 @@ npm ci
 npm run check
 ```
 
-`npm run check` runs formatting, type checks, both packages' tests, builds,
-README example type checks, strict-CSP browser bundle checks, tarball content
-checks, and an isolated consumer install of the packed tarballs.
+`npm run check` runs formatting, YAML sequence-style checks, type checks, both
+packages' tests, builds, README example type checks, strict-CSP browser bundle
+checks, tarball content checks, and an isolated consumer install of the packed
+tarballs.
 
 `npm run check:readme` extracts the TypeScript and JavaScript code blocks from
 the three READMEs and typechecks them against the built packages; it declares
 common placeholders such as `document` and `yamlText`. Keep README examples
 compiling when public APIs change.
+
+### YAML presentation
+
+Use two spaces for indentation and indent block sequences two spaces beyond
+their mapping key, including nested sequences. Flow sequences such as `[query]`
+and empty arrays `[]` remain permitted. This is a tooling presentation
+convention, not a validator conformance rule.
+
+`npm run check:yaml-style` checks tracked and non-ignored untracked YAML files,
+YAML Markdown fences, and valid YAML string literals in JavaScript/TypeScript
+and their Markdown examples. It also checks mutable validator files even though
+Prettier excludes that package. Malformed parser-test literals are exempt; mark
+the statement defining a deliberately non-preferred valid input with
+`// yaml-style: intentional-input`. The style checker's own negative tests are
+also exempt. Interpolated templates are not parsed as complete YAML documents.
+
+Never reformat imported examples or frozen fixtures under validator
+`src/snapshots/` or `test/snapshots/`; those trees are excluded from the style
+check and remain protected by snapshot integrity checks. Review YAML
+presentation in the upstream source before future exports and imports. The
+importer preserves reviewed artifact bytes rather than applying local
+formatting.
+
+Use core's `serializeMcpDescription(value, { format: 'yaml' })` for YAML output
+after migration, conversion, projection, merge, or selection. It explicitly uses
+two-space indentation and indented sequences under every key-order policy. Do
+not introduce separate serializers in command utilities.
 
 To smoke-test real documents, point the opt-in example test at one or more
 folders; it recurses into each and never modifies the files:

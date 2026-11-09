@@ -13,6 +13,12 @@ scripts, and release infrastructure.
 
 ### Changed
 
+- Added `check:yaml-style` to routine checks for mutable YAML files and embedded
+  examples, including validator files excluded by Prettier. Documented the
+  two-space indented-sequence convention and intentional parser-input
+  exceptions. Frozen snapshot artifacts remain excluded and unchanged.
+- Made formatter indentation settings explicit and added YAML style-checker
+  tests to the repository test command.
 - Retired older validator selectors from current validator and core runtime
   support, keeping only `0.8.0-rev.20261021`, `0.8.0`, and `0.9.0-rc.3`.
   Historical selector identities remain configured as tombstones; consumers

@@ -6,6 +6,17 @@ All notable changes to `@mcpdesc/core` are documented in this file.
 
 ## [0.13.0-rc.8] - 2026-11-09
 
+### Clarified
+
+- Explicitly enforce the existing two-space, indented-sequence YAML output style
+  under every serialization key-order policy. Indentless source input remains
+  accepted; validation and frozen snapshot artifacts are unchanged.
+
+### Added
+
+- Independent nested YAML indentation regression checks, including strict-CSP
+  and isolated-consumer coverage.
+
 ### Changed
 
 - **Breaking:** narrowed supported selectors to `0.8.0-rev.20261021`, `0.8.0`,

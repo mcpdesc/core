@@ -236,5 +236,5 @@ export function serializeMcpDescription(
         : value;
   return options.format === 'json'
     ? `${JSON.stringify(output, undefined, 2)}\n`
-    : stringify(output, { lineWidth: 0 });
+    : stringify(output, { indent: 2, indentSeq: true, lineWidth: 0 });
 }
