@@ -2,7 +2,31 @@
 
 All notable changes to `@mcpdesc/core` are documented in this file.
 
-## Unreleased
+## [0.13.0-rc.9] - 2026-11-10
+
+### Added
+
+- Opt-in `presentation: 'normalized'` YAML serialization following the Section
+  15.9 RC.4 candidate presentation profile, independently selectable from
+  document ordering. Includes resolution-based safe quoting for keys and values,
+  quoted protocol versions, RFC 8785 number spelling, lossless multiline
+  formatting, alias-free output, and exactly one final LF.
+- Exact-output, round-trip, idempotence, ordering, transformation-composition,
+  strict-CSP, and isolated-consumer coverage for normalized presentation.
+
+### Compatibility
+
+- Existing serialization defaults, JSON output, validators, and immutable
+  snapshots are unchanged. Normalized YAML rejects sorted ordering, incompatible
+  options, and non-JSON runtime values explicitly.
+- **Breaking:** YAML input now uses JSON scalar recognition with a string
+  fallback rather than YAML 1.2 Core resolution. Unquoted `0o12`, `0x12`, `012`,
+  `TRUE`, and `~` remain strings. Use JSON number, boolean, and null spellings
+  when those types are intended. Normalized output now round-trips through the
+  public parser without changing these strings or string mapping keys.
+- Non-finite numeric forms and overflow remain rejected; quoted versions remain
+  strings. Unresolved YAML tags now return explicit parse diagnostics instead of
+  silently falling back to strings.
 
 ## [0.13.0-rc.8] - 2026-11-09
 

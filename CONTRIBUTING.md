@@ -53,6 +53,14 @@ after migration, conversion, projection, merge, or selection. It explicitly uses
 two-space indentation and indented sequences under every key-order policy. Do
 not introduce separate serializers in command utilities.
 
+For explicitly requested normalized MCP Description YAML, pass
+`presentation: 'normalized'`; add `keyOrder: 'document'` only when document
+ordering is also requested. See the
+[core README](packages/core/README.md#normalized-yaml-presentation) and the
+upstream Section 15.9 profile. The indentation checker is not a full
+normalized-presentation conformance check: configuration, registries, legacy
+examples, and intentional parser inputs are not implicitly normalized.
+
 To smoke-test real documents, point the opt-in example test at one or more
 folders; it recurses into each and never modifies the files:
 

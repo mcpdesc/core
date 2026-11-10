@@ -5,10 +5,26 @@ import {
   type Node,
   type ParseError,
 } from 'jsonc-parser';
-import { parseDocument as parseYamlDocument, stringify } from 'yaml';
+import {
+  parseDocument as parseYamlDocument,
+  Schema,
+  stringify,
+  visit,
+} from 'yaml';
 
 import { orderDocumentValue } from './document-ordering.js';
 import type { JsonValue } from './model.js';
+import {
+  assertNormalizedYamlValue,
+  serializeNormalizedYaml,
+} from './normalized-yaml.js';
+
+const yamlInputSchema = new Schema({
+  schema: 'json',
+  // The restricted profile treats unmatched plain scalars as strings.
+  customTags: (tags) =>
+    tags.filter((tag) => typeof tag !== 'string' && tag.tag !== ''),
+});
 
 export type DocumentSourceFormat = 'json' | 'yaml';
 
@@ -41,10 +57,17 @@ export interface ParseMcpDescriptionSourceOptions {
   readonly format?: DocumentSourceFormat;
 }
 
-export interface SerializeMcpDescriptionOptions {
-  readonly format: DocumentSourceFormat;
-  readonly keyOrder?: 'sorted' | 'preserve' | 'document';
-}
+export type SerializeMcpDescriptionOptions =
+  | {
+      readonly format: DocumentSourceFormat;
+      readonly keyOrder?: 'sorted' | 'preserve' | 'document';
+      readonly presentation?: undefined;
+    }
+  | {
+      readonly format: 'yaml';
+      readonly keyOrder?: 'preserve' | 'document';
+      readonly presentation: 'normalized';
+    };
 
 function lineAndColumn(source: string, offset: number): DocumentSourceLocation {
   const lines = source.slice(0, offset).split('\n');
@@ -173,12 +196,13 @@ function jsonCompatibleYaml(
 
 function parseYaml(source: string): ParseMcpDescriptionSourceResult {
   const document = parseYamlDocument(source, {
+    schema: yamlInputSchema,
     prettyErrors: true,
     strict: true,
     uniqueKeys: true,
     version: '1.2',
   });
-  const error = document.errors[0];
+  const error = document.errors[0] ?? document.warnings[0];
   if (error) {
     const position = error.linePos?.[0];
     return failure(
@@ -188,6 +212,17 @@ function parseYaml(source: string): ParseMcpDescriptionSourceResult {
   }
 
   try {
+    visit(document, {
+      Scalar(_key, scalar) {
+        if (
+          !scalar.tag &&
+          scalar.type === 'PLAIN' &&
+          /^[+-]?(?:\.inf|\.nan)$/iu.test(scalar.source ?? '')
+        ) {
+          throw new Error('non-finite numeric forms are not supported');
+        }
+      },
+    });
     return {
       ok: true,
       value: jsonCompatibleYaml(document.toJS({ mapAsMap: true })),
@@ -228,13 +263,34 @@ export function serializeMcpDescription(
   value: JsonValue,
   options: SerializeMcpDescriptionOptions,
 ): string {
+  if (
+    options.presentation !== undefined &&
+    options.presentation !== 'normalized'
+  ) {
+    throw new TypeError('Unsupported serialization presentation');
+  }
+  if (options.presentation === 'normalized') {
+    if (
+      options.format !== 'yaml' ||
+      (options.keyOrder !== undefined &&
+        options.keyOrder !== 'preserve' &&
+        options.keyOrder !== 'document')
+    ) {
+      throw new TypeError(
+        'Normalized presentation requires YAML with preserve or document key ordering',
+      );
+    }
+    assertNormalizedYamlValue(value);
+  }
   const output =
     options.keyOrder === 'sorted'
       ? sortValue(value)
       : options.keyOrder === 'document'
         ? orderDocumentValue(value)
         : value;
-  return options.format === 'json'
-    ? `${JSON.stringify(output, undefined, 2)}\n`
-    : stringify(output, { indent: 2, indentSeq: true, lineWidth: 0 });
+  return options.presentation === 'normalized'
+    ? serializeNormalizedYaml(output)
+    : options.format === 'json'
+      ? `${JSON.stringify(output, undefined, 2)}\n`
+      : stringify(output, { indent: 2, indentSeq: true, lineWidth: 0 });
 }

@@ -84,10 +84,10 @@ rules. See the [terminology guide](docs/validator-terminology.md) for details.
 
 ## Compatibility
 
-| Package                            | Supported selectors                                                                                                                                            | Runtime     |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| `@mcpdesc/validator` `0.14.0-rc.8` | `0.8.0-rev.20261021` (default for `0.8.0`), `0.8.0` (deprecated), and `0.9.0-rc.3` (default for `0.9.0`)                                                       | Node.js 20+ |
-| `@mcpdesc/core` `0.13.0-rc.7`      | Same selectors; rule-level results, source-aware diagnostics, native projection, conversion, and serialization ordering policies; pins validator `0.14.0-rc.8` | Node.js 22+ |
+| Package                            | Supported selectors                                                                                                                                                             | Runtime     |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `@mcpdesc/validator` `0.14.0-rc.9` | `0.8.0-rev.20261021` (default for `0.8.0`), `0.8.0` (deprecated), and `0.9.0-rc.3` (default for `0.9.0`)                                                                        | Node.js 20+ |
+| `@mcpdesc/core` `0.13.0-rc.9`      | Same selectors; rule-level results, source-aware diagnostics, native projection, conversion, serialization ordering policies, and normalized YAML; pins validator `0.14.0-rc.9` | Node.js 22+ |
 
 Older drafts and release candidates remain available from earlier package
 releases. npm versions are below `1.0.0`: a minor release may contain breaking

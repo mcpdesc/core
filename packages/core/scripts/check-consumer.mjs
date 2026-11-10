@@ -103,6 +103,29 @@ try {
       assert.equal(parsed.ok, true);
       assert.deepEqual(parsed.value, source);
 
+      const normalizedValue = {
+        protocolVersions: ['2026-07-28'],
+        on: 'on',
+        '0o12': '0o12',
+        text: 'first\\nsecond\\n\\n',
+      };
+      for (const keyOrder of [undefined, 'preserve', 'document']) {
+        const options = { format: 'yaml', presentation: 'normalized', keyOrder };
+        const source = serializeMcpDescription(normalizedValue, options);
+        assert.equal(
+          source,
+          'protocolVersions:\\n  - "2026-07-28"\\n"on": "on"\\n0o12: 0o12\\ntext: "first\\\\nsecond\\\\n\\\\n"\\n',
+        );
+        const parsed = parseMcpDescriptionSource(source);
+        assert.equal(parsed.ok, true);
+        assert.deepEqual(parsed.value, normalizedValue);
+        assert.equal(serializeMcpDescription(parsed.value, options), source);
+      }
+      assert.throws(
+        () => serializeMcpDescription({}, { format: 'json', presentation: 'normalized' }),
+        TypeError,
+      );
+
       for (const keyOrder of [undefined, 'preserve', 'sorted', 'document']) {
         assert.equal(
           serializeMcpDescription(
@@ -336,6 +359,19 @@ try {
         keyOrder: 'document',
       };
       serializeMcpDescription({ mcpdesc: '0.9.0' }, documentOrder);
+      const normalizedOptions: SerializeMcpDescriptionOptions = {
+        format: 'yaml',
+        presentation: 'normalized',
+        keyOrder: 'document',
+      };
+      const normalized: string = serializeMcpDescription({}, normalizedOptions);
+      void normalized;
+      // @ts-expect-error Normalized presentation is YAML-only.
+      serializeMcpDescription({}, { format: 'json', presentation: 'normalized' });
+      // @ts-expect-error Normalized presentation cannot sort arbitrary keys.
+      serializeMcpDescription({}, { format: 'yaml', presentation: 'normalized', keyOrder: 'sorted' });
+      // @ts-expect-error Unknown presentation profiles are not accepted.
+      serializeMcpDescription({}, { format: 'yaml', presentation: 'unknown' });
       const nativeOptions: ProjectMcpNativeValueOptions = {
         selector: v0_9Rc3Snapshot.specification,
         protocolVersion: '2026-07-28',

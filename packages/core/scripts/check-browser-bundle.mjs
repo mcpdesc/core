@@ -130,6 +130,42 @@ try {
     tools: [{ name: 'lookup', inputSchema: unordered.tools[0].inputSchema }],
   };
   for (const entry of [root, documents]) {
+    const normalizedValue = {
+      protocolVersions: ['2026-07-28'],
+      on: 'on',
+      '0o12': '0o12',
+      text: 'first\nsecond\n\n',
+    };
+    const normalizedExpected =
+      'protocolVersions:\n  - "2026-07-28"\n"on": "on"\n0o12: 0o12\ntext: "first\\nsecond\\n\\n"\n';
+    for (const keyOrder of [undefined, 'preserve', 'document']) {
+      const options = {
+        format: 'yaml',
+        presentation: 'normalized',
+        keyOrder,
+      };
+      const source = entry.serializeMcpDescription(normalizedValue, options);
+      assert.equal(source, normalizedExpected);
+      const parsed = entry.parseMcpDescriptionSource(source);
+      assert.equal(parsed.ok, true);
+      assert.deepEqual(parsed.value, normalizedValue);
+      assert.equal(
+        entry.serializeMcpDescription(parsed.value, options),
+        source,
+      );
+    }
+    assert.throws(
+      () =>
+        entry.serializeMcpDescription(
+          {},
+          {
+            format: 'yaml',
+            presentation: 'normalized',
+            keyOrder: 'sorted',
+          },
+        ),
+      TypeError,
+    );
     for (const keyOrder of [undefined, 'preserve', 'sorted', 'document']) {
       assert.equal(
         entry.serializeMcpDescription(
