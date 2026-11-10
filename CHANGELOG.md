@@ -9,6 +9,18 @@ scripts, and release infrastructure.
 > - [`@mcpdesc/core`](packages/core/CHANGELOG.md)
 > - [`@mcpdesc/validator`](packages/validator/CHANGELOG.md)
 
+## 2026-11-10
+
+### Changed
+
+- Added an internal normalized-YAML serializer to the core tarball allowlist and
+  extended browser, consumer, and public-type checks for the opt-in Section 15.9
+  presentation profile. Round-trip checks now use the public parser, including
+  octal-like string keys and values under the approved input scalar contract. No
+  validator selector was imported or modified.
+- Prepared core `0.13.0-rc.9` with the existing validator `0.14.0-rc.9` pin.
+  Tagging and publication await the reviewed PR merge and required CI.
+
 ## 2026-11-09
 
 ### Changed

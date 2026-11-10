@@ -113,6 +113,119 @@ describe('MCP Description source documents', () => {
     });
   });
 
+  it.each([
+    ['ordinary', 'ordinary'],
+    ['0o12', '0o12'],
+    ['0x12', '0x12'],
+    ['0b101', '0b101'],
+    ['012', '012'],
+    ['+12', '+12'],
+    ['TRUE', 'TRUE'],
+    ['False', 'False'],
+    ['NULL', 'NULL'],
+    ['~', '~'],
+    ['on', 'on'],
+    ['1:20', '1:20'],
+    ['2026-07-28', '2026-07-28'],
+    ['null', null],
+    ['true', true],
+    ['false', false],
+    ['0', 0],
+    ['-12', -12],
+    ['1.5', 1.5],
+    ['1e3', 1000],
+    ['6.02e23', 6.02e23],
+  ])(
+    'resolves plain YAML %s using JSON recognition and string fallback',
+    (source, value) => {
+      for (const options of [{}, { format: 'yaml' as const }]) {
+        expect(
+          parseMcpDescriptionSource(`value: ${source}\n`, options),
+        ).toEqual({
+          ok: true,
+          value: { value },
+          format: 'yaml',
+          diagnostics: [],
+        });
+      }
+    },
+  );
+
+  it.each(['0o12', '0x12', '012', 'TRUE', '~'])(
+    'preserves fallback string mapping key %s',
+    (key) => {
+      expect(parseMcpDescriptionSource(`${key}: ordinary\n`)).toMatchObject({
+        ok: true,
+        value: { [key]: 'ordinary' },
+      });
+      expect(
+        parseMcpDescriptionSource(`${key}: first\n"${key}": second\n`),
+      ).toMatchObject({
+        ok: false,
+        diagnostics: [
+          { code: 'document-parse', location: { line: 2, column: 1 } },
+        ],
+      });
+    },
+  );
+
+  it.each(['12', 'true', 'null'])(
+    'rejects non-string mapping key %s',
+    (key) => {
+      expect(parseMcpDescriptionSource(`${key}: value\n`)).toMatchObject({
+        ok: false,
+        diagnostics: [
+          { message: expect.stringContaining('mapping keys must be strings') },
+        ],
+      });
+    },
+  );
+
+  it.each(['.inf', '+.INF', '-.inf', '.NaN', '+.nan', '-.NAN', '1e400'])(
+    'rejects unquoted non-finite form %s but preserves quoted strings',
+    (spelling) => {
+      expect(parseMcpDescriptionSource(`value: ${spelling}\n`)).toMatchObject({
+        ok: false,
+        diagnostics: [{ message: expect.stringContaining('non-finite') }],
+      });
+      for (const value of [
+        `"${spelling}"`,
+        `'${spelling}'`,
+        `!!str ${spelling}`,
+      ]) {
+        expect(parseMcpDescriptionSource(`value: ${value}\n`)).toMatchObject({
+          ok: true,
+          value: { value: spelling },
+        });
+      }
+    },
+  );
+
+  it.each(['!!binary SGk=', '!custom ordinary', '!!int 0o12', '!!float .inf'])(
+    'reports unsupported YAML tag resolution for %s',
+    (value) => {
+      expect(parseMcpDescriptionSource(`value: ${value}\n`)).toMatchObject({
+        ok: false,
+        diagnostics: [
+          {
+            code: 'document-parse',
+            message: expect.stringContaining('Unresolved tag'),
+            location: { line: 1, column: 8 },
+          },
+        ],
+      });
+    },
+  );
+
+  it('does not let a YAML 1.1 directive change scalar resolution', () => {
+    expect(
+      parseMcpDescriptionSource('%YAML 1.1\n---\nvalue: 0o12\n'),
+    ).toMatchObject({
+      ok: true,
+      value: { value: '0o12' },
+    });
+  });
+
   it('reports malformed JSON with a stable source location', () => {
     const result = parseMcpDescriptionSource('{\n  "mcpdesc": }');
     expect(result).toEqual({
@@ -174,7 +287,6 @@ describe('MCP Description source documents', () => {
   it.each([
     ['non-finite numbers', 'value: .inf\n'],
     ['non-string mapping keys', '? [a, b]\n: value\n'],
-    ['binary values', 'value: !!binary SGk=\n'],
     ['cyclic aliases', '&value [*value]\n'],
   ])('rejects YAML %s outside the JSON data model', (_case, source) => {
     const result = parseMcpDescriptionSource(source);

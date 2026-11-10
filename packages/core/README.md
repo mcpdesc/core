@@ -171,15 +171,29 @@ const organizedYaml = serializeMcpDescription(document, {
   format: 'yaml',
   keyOrder: 'document',
 });
+const normalizedYaml = serializeMcpDescription(document, {
+  format: 'yaml',
+  presentation: 'normalized',
+});
+const normalizedDocumentYaml = serializeMcpDescription(document, {
+  format: 'yaml',
+  presentation: 'normalized',
+  keyOrder: 'document',
+});
 ```
 
 Parsing returns a plain JSON-compatible value and rejects YAML that cannot be
-represented as JSON. Serialization defaults to `keyOrder: 'preserve'`, retaining
-JavaScript property enumeration order at every level, including objects inside
-arrays. Use `keyOrder: 'sorted'` to recursively sort object keys so equal
-documents produce identical text. Integer-like keys follow JavaScript's numeric
-enumeration order, not their original source order. Neither mode changes array
-order or mutates the input.
+represented as JSON. YAML input recognizes null, booleans, and numbers using
+JSON scalar-resolution rules, with other untagged plain values treated as
+strings. Unquoted non-finite forms such as `.inf` and `.nan`, numeric overflow,
+and unresolved tags are rejected.
+
+Serialization defaults to `keyOrder: 'preserve'`, retaining JavaScript property
+enumeration order at every level, including objects inside arrays. Use
+`keyOrder: 'sorted'` to recursively sort object keys so equal documents produce
+identical text. Integer-like keys follow JavaScript's numeric enumeration order,
+not their original source order. Neither mode changes array order or mutates the
+input.
 
 YAML output explicitly uses two-space indentation and indented block sequences,
 including nested arrays, under every key-order policy. Empty arrays remain `[]`.
@@ -187,6 +201,62 @@ Apply `serializeMcpDescription` to values returned by migration, conversion,
 projection, merge, selection, or component resolution for the same output style.
 Parsing accepts both indented and indentless YAML sequences; presentation style
 does not affect validator conformance.
+
+#### Normalized YAML presentation
+
+Opt in with `presentation: 'normalized'` to apply the presentation profile in
+[Section 15.9](https://github.com/mcpdesc/mcpdesc-specification/blob/main/spec/draft/sections/15-serialization.md),
+introduced in the 0.9.0 RC.4 candidate. This is a presentation feature, not
+adoption of an RC.4 validator selector. Omitting the option preserves existing
+YAML output, and JSON output is unchanged.
+
+Normalized output uses block collections, preserves significant empty values,
+and double-quotes strings and keys when plain spelling is ambiguous under YAML
+1.2 JSON-schema or YAML 1.1 scalar resolution. Protocol-version strings are
+always double-quoted. Numbers use RFC 8785 spelling, including `0` for negative
+zero. Multiline strings use literal blocks with lossless chomping where
+possible, otherwise escaped double quotes. A final keep-chomp block uses escaped
+quotes when it would require extra document-ending line feeds; trailing newlines
+in the value are never trimmed.
+
+The result has LF line endings, no BOM, exactly one final LF, and no scalar
+wrapping. When writing the returned string to bytes, use UTF-8 without a BOM;
+core performs no file or stream I/O.
+
+Normalization preserves the supplied data and property enumeration order
+(including JavaScript's numeric-like key ordering). It does not validate,
+repair, or reinterpret values. Shared objects are emitted as repeated values,
+not aliases. Non-finite numbers, cycles, and non-JSON runtime values throw
+`TypeError` rather than being silently converted.
+
+Ordering remains independent: omit `keyOrder` or use `'preserve'` to retain
+enumeration order, or select `'document'` to apply Section 18 as well.
+Normalized presentation with JSON, `'sorted'` ordering, or an unknown ordering
+policy is rejected by types and runtime checks. Existing non-normalized sorted
+output remains available. Validator behavior is unchanged; normalization is not
+a new YAML input-conformance mode.
+
+Normalized YAML output and our YAML parser use the same scalar-resolution rules,
+so writing normalized YAML and reading it back preserves string values.
+
+For example, the string `"0o12"` is written as:
+
+```yaml
+label: 0o12
+```
+
+Our parser reads `0o12` as the string `"0o12"`, not the octal number `10`. The
+same applies when `0o12` is a mapping key.
+
+**Upgrade note:** earlier core versions used YAML 1.2 Core scalar resolution.
+Unquoted values such as `0o12`, `0x12`, `012`, `TRUE`, and `~` now remain
+strings instead of becoming numbers, booleans, or null. Use JSON numeric,
+boolean, and null spellings when those types are intended, and quote strings for
+portability to other YAML readers. Unsupported tags now produce parse
+diagnostics instead of being silently treated as strings. These input rules
+apply whether or not normalized output is selected.
+
+#### Document-oriented ordering
 
 `keyOrder: 'document'` applies the maintainer-approved proposed specification
 Section 18 presentation profile: header and identity, transports and security,
