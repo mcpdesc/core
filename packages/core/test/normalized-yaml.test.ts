@@ -274,6 +274,29 @@ describe('normalized YAML presentation', () => {
     },
   );
 
+  it('sorts nested object keys only when sorted ordering is requested', () => {
+    const value = {
+      z: { zed: 'z', alpha: 'a' },
+      list: [{ z: 2, a: 1 }],
+      a: 'on',
+    };
+    const before = structuredClone(value);
+    const options = {
+      format: 'yaml',
+      presentation: 'normalized',
+      keyOrder: 'sorted',
+    } as const;
+    const source = serializeMcpDescription(value, options);
+
+    expect(source).toBe(
+      'a: "on"\nlist:\n  - a: 1\n    z: 2\nz:\n  alpha: a\n  zed: z\n',
+    );
+    expect(decode(source)).toEqual(value);
+    expect(serializeMcpDescription(decode(source), options)).toBe(source);
+    expect(value).toEqual(before);
+    expect(normalized(value)).not.toBe(source);
+  });
+
   it('preserves existing output defaults and sorted mode', () => {
     const value = { z: 'on', protocolVersions: ['2026-07-28'], a: 1 };
     expect(serializeMcpDescription(value, { format: 'yaml' })).toBe(
@@ -293,7 +316,6 @@ describe('normalized YAML presentation', () => {
 
   it.each([
     { format: 'json', presentation: 'normalized' },
-    { format: 'yaml', presentation: 'normalized', keyOrder: 'sorted' },
     { format: 'yaml', presentation: 'normalized', keyOrder: 'unknown' },
     { format: 'yaml', presentation: 'unknown' },
   ])('rejects invalid runtime option combination %j', (options) => {
@@ -348,6 +370,7 @@ describe('normalized YAML presentation', () => {
     const options: SerializeMcpDescriptionOptions = {
       format: 'yaml',
       presentation: 'normalized',
+      keyOrder: 'sorted',
     };
     const source: string = serializeMcpDescription({}, options);
     expect(source).toBe('{}\n');

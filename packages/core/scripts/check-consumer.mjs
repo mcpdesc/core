@@ -366,10 +366,14 @@ try {
       };
       const normalized: string = serializeMcpDescription({}, normalizedOptions);
       void normalized;
+      const sortedNormalizedOptions: SerializeMcpDescriptionOptions = {
+        format: 'yaml',
+        presentation: 'normalized',
+        keyOrder: 'sorted',
+      };
+      serializeMcpDescription({}, sortedNormalizedOptions);
       // @ts-expect-error Normalized presentation is YAML-only.
       serializeMcpDescription({}, { format: 'json', presentation: 'normalized' });
-      // @ts-expect-error Normalized presentation cannot sort arbitrary keys.
-      serializeMcpDescription({}, { format: 'yaml', presentation: 'normalized', keyOrder: 'sorted' });
       // @ts-expect-error Unknown presentation profiles are not accepted.
       serializeMcpDescription({}, { format: 'yaml', presentation: 'unknown' });
       const nativeOptions: ProjectMcpNativeValueOptions = {

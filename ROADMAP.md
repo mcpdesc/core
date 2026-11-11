@@ -32,8 +32,9 @@ repository.
 - [x] Explicitly enforce two-space indented YAML sequences in core serialization
       and mutable repository examples, preserving imported snapshot artifacts.
 - [x] Add opt-in normalized YAML presentation using Section 15.9 of the RC.4
-      candidate, independently selectable from ordering, without changing input
-      parsing, validator selectors, or existing serialization defaults.
+      candidate, independently selectable from preservation, sorted, and
+      document ordering, without changing input parsing, validator selectors, or
+      existing serialization defaults.
 - [x] Align YAML input scalar recognition with the approved specification
       clarification: JSON null, boolean, and numeric recognition with string
       fallback, non-finite rejection, and normalized public-parser round trips,
@@ -132,7 +133,11 @@ repository.
 - [x] Publish validator `0.14.0-rc.9` then core `0.13.0-rc.8` on `next`.
 - [x] Prepare core `0.13.0-rc.9` with normalized YAML output and the approved
       input scalar-resolution contract, retaining validator `0.14.0-rc.9`.
-- [ ] Publish core `0.13.0-rc.9` on `next` after the reviewed PR merge and
+- [x] Publish core `0.13.0-rc.9` on `next` after the reviewed PR merge and
+      required CI pass.
+- [x] Prepare core `0.13.0-rc.10` with opt-in sorted ordering for normalized
+      YAML; keep validator `0.14.0-rc.9` unchanged.
+- [ ] Publish core `0.13.0-rc.10` on `next` after the reviewed PR merge and
       required CI pass.
 - Add normalization or comparison operations only where multiple consumers
   demonstrate the same requirement.

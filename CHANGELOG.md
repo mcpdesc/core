@@ -18,8 +18,10 @@ scripts, and release infrastructure.
   presentation profile. Round-trip checks now use the public parser, including
   octal-like string keys and values under the approved input scalar contract. No
   validator selector was imported or modified.
-- Prepared core `0.13.0-rc.9` with the existing validator `0.14.0-rc.9` pin.
-  Tagging and publication await the reviewed PR merge and required CI.
+- Prepared core `0.13.0-rc.9` with the existing validator `0.14.0-rc.9` pin. Its
+  reviewed PR merged, and the release was tagged and published.
+- Prepared core `0.13.0-rc.10` with opt-in sorted ordering for normalized YAML;
+  the validator package and its version remain unchanged.
 
 ## 2026-11-09
 

@@ -65,7 +65,7 @@ export type SerializeMcpDescriptionOptions =
     }
   | {
       readonly format: 'yaml';
-      readonly keyOrder?: 'preserve' | 'document';
+      readonly keyOrder?: 'sorted' | 'preserve' | 'document';
       readonly presentation: 'normalized';
     };
 
@@ -274,10 +274,11 @@ export function serializeMcpDescription(
       options.format !== 'yaml' ||
       (options.keyOrder !== undefined &&
         options.keyOrder !== 'preserve' &&
+        options.keyOrder !== 'sorted' &&
         options.keyOrder !== 'document')
     ) {
       throw new TypeError(
-        'Normalized presentation requires YAML with preserve or document key ordering',
+        'Normalized presentation requires YAML with sorted, preserve, or document key ordering',
       );
     }
     assertNormalizedYamlValue(value);

@@ -154,17 +154,25 @@ try {
         source,
       );
     }
-    assert.throws(
-      () =>
-        entry.serializeMcpDescription(
-          {},
-          {
-            format: 'yaml',
-            presentation: 'normalized',
-            keyOrder: 'sorted',
-          },
-        ),
-      TypeError,
+    const sortedOptions = {
+      format: 'yaml',
+      presentation: 'normalized',
+      keyOrder: 'sorted',
+    };
+    const sortedSource = entry.serializeMcpDescription(
+      normalizedValue,
+      sortedOptions,
+    );
+    assert.equal(
+      sortedSource,
+      '0o12: 0o12\n"on": "on"\nprotocolVersions:\n  - "2026-07-28"\ntext: "first\\nsecond\\n\\n"\n',
+    );
+    const sortedParsed = entry.parseMcpDescriptionSource(sortedSource);
+    assert.equal(sortedParsed.ok, true);
+    assert.deepEqual(sortedParsed.value, normalizedValue);
+    assert.equal(
+      entry.serializeMcpDescription(sortedParsed.value, sortedOptions),
+      sortedSource,
     );
     for (const keyOrder of [undefined, 'preserve', 'sorted', 'document']) {
       assert.equal(
