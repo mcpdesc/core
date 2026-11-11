@@ -2,6 +2,18 @@
 
 All notable changes to `@mcpdesc/core` are documented in this file.
 
+## [0.13.0-rc.10] - 2026-11-10
+
+### Added
+
+- Added explicit recursive `keyOrder: 'sorted'` support to normalized YAML
+  serialization. Omitting `keyOrder` continues to preserve property enumeration
+  order, and array order remains unchanged.
+
+### Compatibility
+
+- Validator behavior and the validator dependency remain unchanged.
+
 ## [0.13.0-rc.9] - 2026-11-10
 
 ### Added

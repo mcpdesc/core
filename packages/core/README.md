@@ -175,6 +175,11 @@ const normalizedYaml = serializeMcpDescription(document, {
   format: 'yaml',
   presentation: 'normalized',
 });
+const normalizedSortedYaml = serializeMcpDescription(document, {
+  format: 'yaml',
+  presentation: 'normalized',
+  keyOrder: 'sorted',
+});
 const normalizedDocumentYaml = serializeMcpDescription(document, {
   format: 'yaml',
   presentation: 'normalized',
@@ -223,18 +228,18 @@ The result has LF line endings, no BOM, exactly one final LF, and no scalar
 wrapping. When writing the returned string to bytes, use UTF-8 without a BOM;
 core performs no file or stream I/O.
 
-Normalization preserves the supplied data and property enumeration order
-(including JavaScript's numeric-like key ordering). It does not validate,
+Normalization preserves the supplied data and, by default, property enumeration
+order (including JavaScript's numeric-like key ordering). It does not validate,
 repair, or reinterpret values. Shared objects are emitted as repeated values,
 not aliases. Non-finite numbers, cycles, and non-JSON runtime values throw
 `TypeError` rather than being silently converted.
 
 Ordering remains independent: omit `keyOrder` or use `'preserve'` to retain
-enumeration order, or select `'document'` to apply Section 18 as well.
-Normalized presentation with JSON, `'sorted'` ordering, or an unknown ordering
-policy is rejected by types and runtime checks. Existing non-normalized sorted
-output remains available. Validator behavior is unchanged; normalization is not
-a new YAML input-conformance mode.
+enumeration order, select `'sorted'` to recursively sort object keys, or select
+`'document'` to apply Section 18 as well. Sorted ordering is opt-in and does not
+change array order. Normalized presentation with JSON or an unknown ordering
+policy is rejected by types and runtime checks. Validator behavior is unchanged;
+normalization is not a new YAML input-conformance mode.
 
 Normalized YAML output and our YAML parser use the same scalar-resolution rules,
 so writing normalized YAML and reading it back preserves string values.
