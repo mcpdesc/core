@@ -1,7 +1,7 @@
 # MCP Description tooling
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![mcpdesc: 0.8](https://img.shields.io/badge/mcpdesc-0.8-blue.svg)](https://mcpdesc.org)
+[![mcpdesc](https://img.shields.io/badge/mcpdesc-0.9-blue.svg)](https://mcpdesc.org)
 [![@mcpdesc/core](https://img.shields.io/npm/v/@mcpdesc/core.svg?label=%40mcpdesc%2Fcore)](https://www.npmjs.com/package/@mcpdesc/core)
 [![@mcpdesc/validator](https://img.shields.io/npm/v/@mcpdesc/validator.svg?label=%40mcpdesc%2Fvalidator)](https://www.npmjs.com/package/@mcpdesc/validator)
 
