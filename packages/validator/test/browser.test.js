@@ -53,7 +53,7 @@ test('browser entry applies the format default when no selector is passed', () =
   assert.equal(result.defaulted, true);
 });
 
-test('browser defaults 0.9.0 to RC.3 and preserves results under strict CSP', () => {
+test('browser defaults 0.9.0 to stable and preserves results under strict CSP', () => {
   const document = JSON.parse(fs.readFileSync(
     new URL('./snapshots/0.9.0-rc.3/fixtures/expected-warning/tool-schema-mcp-type-mismatch.json', import.meta.url),
     'utf8'
@@ -61,7 +61,7 @@ test('browser defaults 0.9.0 to RC.3 and preserves results under strict CSP', ()
   delete document.$schema;
   const browserResult = validateUnderCsp(document, {});
   const standardResult = validateStandard(document);
-  assert.equal(browserResult.selector, '0.9.0-rc.3');
+  assert.equal(browserResult.selector, '0.9.0');
   assert.equal(browserResult.defaulted, true);
   assert.deepEqual(browserResult, standardResult);
 });

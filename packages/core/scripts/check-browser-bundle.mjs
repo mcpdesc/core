@@ -293,7 +293,8 @@ try {
     to: '0.9.0',
   });
   assert.equal(converted.ok, true, JSON.stringify(converted.diagnostics));
-  assert.equal(converted.value.$schema, root.V0_9_RC_3_SCHEMA_URI);
+  assert.equal(converted.value.$schema, root.V0_9_SCHEMA_URI);
+  assert.equal(root.v0_9Snapshot.specification, '0.9.0');
   assert.equal(root.v0_9Rc3Snapshot.specification, '0.9.0-rc.3');
   const defaultNative = root.projectMcpNativeValue(converted.value, {
     protocolVersion: '2026-07-28',

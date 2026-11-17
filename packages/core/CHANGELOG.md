@@ -2,6 +2,25 @@
 
 All notable changes to `@mcpdesc/core` are documented in this file.
 
+## [0.13.0] - 2026-11-16
+
+### Added
+
+- Adopted stable MCP Description selector `0.9.0` across projection, merge,
+  declaration selection, component reference resolution, native projection, and
+  0.8.0-to-0.9.0 conversion. Export its selector identity, canonical schema URI,
+  and provenance. The stable validator selector is now the frozen default; RC.3
+  remains supported but deprecated.
+
+### Changed
+
+- **Breaking:** default unpinned 0.9.0 operations and conversion to stable
+  selector `0.9.0`; callers requiring RC.3 behavior can pin the now-deprecated
+  `0.9.0-rc.3` selector. Conversion now emits the final canonical `$schema`
+  identity.
+- Default 0.9.0 documents and conversion now use the stable selector, including
+  the final canonical `$schema` identity and final diagnostic terminology.
+
 ## [0.13.0-rc.10] - 2026-11-10
 
 ### Added

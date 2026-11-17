@@ -6,7 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this package follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Dates for published releases are the UTC publication dates recorded by npm.
 
-## Unreleased
+## [0.14.0] - 2026-11-16
+
+### Added
+
+- Imported the immutable stable `0.9.0` snapshot from specification tag
+	`v0.9.0`, including the manifest-verified schema, runtime, conformance,
+	projection, view/merge, and conversion fixtures. The schema SHA-256 is
+	`8e00472b1db1e0da30691c5a05a48be2dd3917f00698f907059a909696535f57`.
+- Made stable `0.9.0` the frozen default for format `0.9.0`; retain `0.9.0-rc.3`
+	as a deprecated explicit selector. Stable diagnostics use the final catalog
+	terminology and warning identifiers.
+
+### Changed
+
+- **Breaking:** default `mcpdesc: "0.9.0"` validation to the stable `0.9.0`
+	selector and retain `0.9.0-rc.3` as a deprecated explicit pin. Documents may
+	receive different diagnostics than under RC.3; pin RC.3 for reproducibility.
+- Updated stable rule and warning identifiers to the final specification
+	terminology, including `mcpdesc.extensions.catalog-maturity` and
+	`uncataloged-oauth-scope`.
+- Added stable-selector rule-owner instrumentation to the generated CSP-safe
+	standalone bundle so rule attribution matches the standard entry point.
 
 ## [0.14.0-rc.9] - 2026-11-09
 

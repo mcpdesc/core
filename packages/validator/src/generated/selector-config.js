@@ -1,9 +1,11 @@
-import * as snapshot1 from "../snapshots/0.9.0-rc.3/index.js";
-import * as snapshot2 from "../snapshots/0.8.0/index.js";
-import * as snapshot3 from "../snapshots/0.8.0-rev.20261021/index.js";
-import { resolveComponentReferences as resolveComponentReferences1 } from "../snapshots/0.9.0-rc.3/semantic.js";
-import { resolveComponentReferences as resolveComponentReferences2 } from "../snapshots/0.8.0/semantic.js";
-import { resolveComponentReferences as resolveComponentReferences3 } from "../snapshots/0.8.0-rev.20261021/semantic.js";
+import * as snapshot1 from "../snapshots/0.9.0/index.js";
+import * as snapshot2 from "../snapshots/0.9.0-rc.3/index.js";
+import * as snapshot3 from "../snapshots/0.8.0/index.js";
+import * as snapshot4 from "../snapshots/0.8.0-rev.20261021/index.js";
+import { resolveComponentReferences as resolveComponentReferences1 } from "../snapshots/0.9.0/semantic.js";
+import { resolveComponentReferences as resolveComponentReferences2 } from "../snapshots/0.9.0-rc.3/semantic.js";
+import { resolveComponentReferences as resolveComponentReferences3 } from "../snapshots/0.8.0/semantic.js";
+import { resolveComponentReferences as resolveComponentReferences4 } from "../snapshots/0.8.0-rev.20261021/semantic.js";
 
 function deepFreeze(value) {
   if (value !== null && typeof value === 'object' && !Object.isFrozen(value)) {
@@ -21,14 +23,21 @@ export const validatorConfiguration = deepFreeze({
       "schemaPins": false
     },
     "0.9.0": {
-      "defaultSelector": "0.9.0-rc.3",
+      "defaultSelector": "0.9.0",
       "schemaPins": false
     }
   },
   "selectors": {
-    "0.9.0-rc.3": {
+    "0.9.0": {
       "formatVersion": "0.9.0",
       "lifecycle": "active",
+      "specificationTag": "v0.9.0",
+      "schemaUri": "https://mcpdesc.org/schema/mcp-description/0.9.0.json",
+      "schemaSha256": "8e00472b1db1e0da30691c5a05a48be2dd3917f00698f907059a909696535f57"
+    },
+    "0.9.0-rc.3": {
+      "formatVersion": "0.9.0",
+      "lifecycle": "deprecated",
       "specificationTag": "v0.9.0-rc.3",
       "schemaUri": "https://mcpdesc.org/schema/mcp-description/0.9.0-rc.3.json",
       "schemaSha256": "c7e4378ea39aa67ae11642a5be612ee120d13e180073649938d54bc63764a5aa"
@@ -149,13 +158,15 @@ export const validatorConfiguration = deepFreeze({
 });
 
 export const snapshotImplementations = Object.freeze({
-  "0.9.0-rc.3": snapshot1,
-  "0.8.0": snapshot2,
-  "0.8.0-rev.20261021": snapshot3,
+  "0.9.0": snapshot1,
+  "0.9.0-rc.3": snapshot2,
+  "0.8.0": snapshot3,
+  "0.8.0-rev.20261021": snapshot4,
 });
 
 export const componentResolvers = Object.freeze({
-  "0.9.0-rc.3": resolveComponentReferences1,
-  "0.8.0": resolveComponentReferences2,
-  "0.8.0-rev.20261021": resolveComponentReferences3,
+  "0.9.0": resolveComponentReferences1,
+  "0.9.0-rc.3": resolveComponentReferences2,
+  "0.8.0": resolveComponentReferences3,
+  "0.8.0-rev.20261021": resolveComponentReferences4,
 });

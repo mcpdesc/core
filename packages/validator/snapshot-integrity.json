@@ -51,6 +51,22 @@
       "sha256": "f4c56f79ac6edb9ca38ba9a7c9ab35c6434b86f6c09a4ea56bbd2a3939aa0f91"
     },
     {
+      "path": "src/snapshots/0.9.0/base.js",
+      "sha256": "c104765e6f0b78841048c5f67ee1b9fd9b23f46894ef9e66cbf50d1cfc4bf768"
+    },
+    {
+      "path": "src/snapshots/0.9.0/index.js",
+      "sha256": "5a034616abbf32f4a9c8b291d360a64a853e87ebc404f43e85d9d8340c3812f3"
+    },
+    {
+      "path": "src/snapshots/0.9.0/schema.json",
+      "sha256": "8e00472b1db1e0da30691c5a05a48be2dd3917f00698f907059a909696535f57"
+    },
+    {
+      "path": "src/snapshots/0.9.0/semantic.js",
+      "sha256": "248eb2deb164d3076e96622a47d09871fed75ef847a3fc30d7f410d2b16f0aeb"
+    },
+    {
       "path": "test/snapshots/0.8.0-rev.20261021/README.md",
       "sha256": "bf902b4fa9955ea342a88dbf0d16f2560228e303551f4c3a4d50bf8d5ab0c098"
     },
@@ -2288,6 +2304,1462 @@
     },
     {
       "path": "test/snapshots/0.9.0-rc.3/view-fixtures/view-tool-schema-keywords-2025-11-25.json",
+      "sha256": "a99301bc540eb0b14210a73a0abfb10a474d49072a9299cfda7e88a987087026"
+    },
+    {
+      "path": "test/snapshots/0.9.0/README.md",
+      "sha256": "6e54b6fb1ea0e8d3d992189d0843536e029e4403f94352a9ccc0ce65aba43763"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/0.8.0-to-0.9.0.json",
+      "sha256": "1fc912d07b16bdd5a25090c1d612b86ebd75b7eb1abdda1e386287ec01525a69"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/README.md",
+      "sha256": "b3cbc2f1b3fe5204cdc3eb9d4be936f4696441090a47853cb7252578be983a02"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/completion-result-extra-field.json",
+      "sha256": "8eba6ea74df1bf40a04999667401e780428c81826c66c7219801fcb370a35e14"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/documents/completion-result-extra-field.json",
+      "sha256": "04c79c5502f82f556aa3d06eac911dc83a9f0df295260216d4a43308d80bb67f"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/documents/experimental-requirement-conflict.json",
+      "sha256": "c9dddc3508c8bd5b2ba67017ecfbdef2732d370f6961a4ea0284a59b743e037d"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/documents/fractional-numbers.json",
+      "sha256": "e9d1dfcfecfc02855e7247fb1026a02450708c535bae25e1787b782d8d5404b4"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/documents/malformed-uri-template.json",
+      "sha256": "cbcaec1d16f1b73af9c6f314c6c45024bf259212bf0dc663441637e18f1013c2"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/documents/relative-resource-uri.json",
+      "sha256": "a8a5cb64601bf124e07466ac4f943bd7c4f61871b24e87454322f990ad88b52b"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/fix-move-requirement-conflict.json",
+      "sha256": "edc418089efe9dc021eb721898b7e84572ada5126bfbf58a3baf670036917976"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/fix-move-requirement-to-experimental.json",
+      "sha256": "098e58d73180004f567c954469904e0b51568d02acefa07154323359aa9e59a5"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/fix-remove-annotation-properties.json",
+      "sha256": "09bf996ba0fb1fde06ceb68beffa178f549a9917c6df6d70d47f4f21ac97875d"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/fix-remove-completion-field.json",
+      "sha256": "1fa0181247ac9408c48efb729ae15cd717b4f2c0bcbe3098638f37135c423d60"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/fix-without-blocker.json",
+      "sha256": "fcc674e5b98ac71380dbdafb3cf463b99a626bcdbe253c2c716d6b894bf9802d"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/fractional-numbers.json",
+      "sha256": "66934e091ce67d4769d595366942a72f3caf3159648488f5c577535b6fcf1101"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/malformed-uri-template.json",
+      "sha256": "f96bc4f471135202f64a58050ed4346c2c3f83cce5e7d7ff01327618cf3ddf0f"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/path-undefined.json",
+      "sha256": "3938edecbedea59d0c96a81d4125ca3228ceb98d2bcea3b91aab008e7a52bc74"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/relative-resource-uri.json",
+      "sha256": "ba55706d6e68440ecb7f304dfdca1e0e4d8e580d427e8b7cc05fc56c88e93419"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-example-client-requirements.json",
+      "sha256": "9f8f20945286c19fcadaf40a8e3c19dbccf6dd3720fe619248eefda43d0e61cf"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-example-full-featured.json",
+      "sha256": "e9558382f13c214a0b347aa87b6f6a68ab9f72fdf132a1feff84646c45361fe7"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-example-http-server.json",
+      "sha256": "c6f9284cb3353de91c8839e867031d9c1b7bcd3097f8bf395d1201a0137194e3"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-example-minimal.json",
+      "sha256": "2c35744277d87ce3f1175b0780baba7a5c276974b6f88181ff460c04db35497b"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-example-multi-transport.json",
+      "sha256": "b1d1b04126e4d102b45727792117b4b3cc460a7a4aab59e2ce28bd806b1f03d1"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-example-multi-version.json",
+      "sha256": "252a3f358ef7545226aba2e8b3e9d737161ac27d0f78a88403ade6046afa7dcf"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-example-reusable-components.json",
+      "sha256": "351f49a311d98f57590cf7902cd8c5ddc63472bf119f40bf2d04e944098921d3"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-example-stdio-server.json",
+      "sha256": "f3919468b73754904d6162288b2a1cc44a41f8bb1cca20947bb685cb22fae5ec"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-client-capability-requirements.json",
+      "sha256": "ebdab699228fe51884c188cee6f35ff5de3c253ac0e4d885b170df082eb83f7c"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-custom-tool-schema-keywords.json",
+      "sha256": "d9845f1df21518acdd41e10f50163beaa5e8ab2c16aff4de4d4f6e375e736ed0"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-distinct-tool-and-resource-annotations.json",
+      "sha256": "263239493c3173ceb770e131d2ff0f921e4a7d2003565c495664a26714de2339"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-elicitation-declarations.json",
+      "sha256": "9e4444d681d52c11dde84a8af9db25e987ad1d932717c7927592136015b78dfd"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-integrated-draft2-features.json",
+      "sha256": "50c8876d41933d5b298766d43519053dde9dceb401db6368784d2941c3954cb2"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-meta-literal-values.json",
+      "sha256": "c89a5bd600f519491f6974e211fb050f0c4f96773d4e17ba82b2da6db21c8ef1"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-minimal-zero-primitives.json",
+      "sha256": "12867a3dfcec4978fa7915f10eec7742942da646bd192fa854d36733ef889b58"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-named-completion-examples.json",
+      "sha256": "e5386869e26723459b6f1289c424e1dd83fb9a9e8ecf86ef50929ba1697e5b94"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-named-prompt-examples.json",
+      "sha256": "67b13e304dad22ecf99e4852643c6ee381946c3bb8f08532cfe43fd7294c749e"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-named-resource-examples.json",
+      "sha256": "9800f978aa5c9fca33a822d8090809741636f53287d7ed5a46c536981dc7f5b9"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-named-tool-examples.json",
+      "sha256": "c06af355b72a01dcd3aa41116e37ced515a58794b40a08ab2e00cbbc889ccb00"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-named-tool-interaction-examples.json",
+      "sha256": "b0c5ab183d7a79b21e3acfae7b741b1a16d49c1a21eb3ee0e0108b2acf0f52ff"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-object-level-specification-extensions.json",
+      "sha256": "95a1d31d3c9caccae5e10611d72a203a3abf4aa760a06c1c90e1321a224a896e"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-protocol-coverage-and-tool-schemas.json",
+      "sha256": "3d38942a4e3e659ea5190173847824b7571342ad90fd706b9cf71b6806676092"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-protocol-independent-info-metadata.json",
+      "sha256": "982d308cbf6e5cfedb2eb85d84d986e4d2608c9809dd0eabbc6f3208c0e7cb01"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-protocol-scoped-primitives.json",
+      "sha256": "d38c4dc6f75be93d72049d69ccf04a1c7296f2718156ad7b4e4e2a6a20750eea"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-protocol-version-inapplicable-mcp-header.json",
+      "sha256": "fda2ac30130b424b83eaf7b624a349eae9234a473132b803081e2e6a71699dd5"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-reusable-components.json",
+      "sha256": "cbaa034a80285052568b49eda35a8d7c0d8c10d800162da93114a2752eb052b8"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-security-composition-and-inheritance.json",
+      "sha256": "8937b3eab719c0897bcdaa8168effadbdf8b49c6f6cb1adde8213adbdcb58195"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-security-root-and-override.json",
+      "sha256": "cca6c9e737b45ca5eb28cd7fbf3578a5b8581e0ee4484e8013652bf72c999008"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-tagged-surface.json",
+      "sha256": "d2dc639eb4ef77f60e755776e47ccd6cd2ca72be9ddff52e76d294206b3c436f"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-valid-unknown-extension-identifier.json",
+      "sha256": "08824ab6b926b8e2ebb6e0f4fb267869edceac7f13b0a035d8921614dbdd65c9"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-warning-deprecated-client-capability-requirements.json",
+      "sha256": "22f15816b2593d38ecae252514e54184accfe76a6b8c41f97d08024169885c65"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-warning-legacy-completion-examples.json",
+      "sha256": "0db4148b019306d5ec058da2f7dfb3826c37bf975f2a1b5eb898eedbb48e5c4e"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-warning-legacy-sse-modern-protocol-version.json",
+      "sha256": "16925a8bdc17e722ea23f2e5d1523d4fa571f8d70a345f8301237912ffe11379"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-warning-logging-deprecated-2026.json",
+      "sha256": "9ea7504a0434ba5ab34e6d83ca73a8616d3d97e6f3a746926b61bcb31669bb7a"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-warning-pre-dialect-tool-example.json",
+      "sha256": "059f4fa1475c87b649b45875e685ebfc17b16442f18e974696e8c4cad43f83a8"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-warning-pre-dialect-tool-schema-shape.json",
+      "sha256": "02168f0f8a50258d37ad6fc4463a556f0f86592e96bb7d3bfdd5709355a9b7fa"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-warning-pre-standard-extension-capabilities.json",
+      "sha256": "9f8fc3c226e63e08bf7fc2f5e96fb8c5798a70cd3c8383f30719e073f3e18dce"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-warning-resource-example-consistency.json",
+      "sha256": "275133fb10ce8ff4f585995e0796f8881fface76abca03c632d59062dba422dc"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-warning-tool-interaction-client-requirements-contradictions.json",
+      "sha256": "47f373f9c2a88ef27047340358ae614e7d58733558909770070b9d05bafde67e"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-warning-uncatalogued-oauth-scope.json",
+      "sha256": "1bb976d5714f19e37f814aee1e72030dccb4467ae7fffa21a3c841c3471e63ba"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-warning-uncatalogued-openid-scope.json",
+      "sha256": "35acc1e6ac1d06c1cd354e6de6764b85c4fe8fa7f80df3d92ce7efcb00549bfe"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-warning-unknown-reserved-extension-identifier.json",
+      "sha256": "f63827ca485276026874319584f46297c9fe2f2fef51c61dde31a5a5eb2aaf55"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-warning-unknown-reserved-meta-key.json",
+      "sha256": "3f13d07fddc367c57431cece3aee98e07143592f2076562bda1caf05fce4661d"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-warning-unresolved-external-tool-example-ref.json",
+      "sha256": "3207b091b5fe221341bee51ccf0d8673f9fc2f37f5bc0cfcbdc4c918f97dae9e"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released-warning-unresolved-external-tool-ref.json",
+      "sha256": "3057f0262d6f44ac278cc4e666397b6ecda7e9bcdf6aadecccd5587f9fa0cd89"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/examples/client-requirements.yaml",
+      "sha256": "7562029d2412b739232ac9ba23abcefb6408d7731863c7d9dc608993b45c7926"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/examples/full-featured.yaml",
+      "sha256": "db1969122edb5131ef32a207ba46217dbdd2e627431d1838d6a91c254350bf34"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/examples/http-server.yaml",
+      "sha256": "ac617399b2cc142214e95252278ffb1168a9909560ecea014979ccf788ca1418"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/examples/minimal.yaml",
+      "sha256": "1f8f68613be5ce4589420de061c169769d8c6643548ee1384d90b5874bebbff4"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/examples/multi-transport.yaml",
+      "sha256": "71de8f5a019104acc203c894e7e3bd6c1a96ba0c565606de88770a34df48204a"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/examples/multi-version.yaml",
+      "sha256": "766ee794b08da5f35e35d1e94add74df87559d96c570cd808b6ceb6c570e3edd"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/examples/reusable-components.yaml",
+      "sha256": "27b3a12fc07a85adf2988d20aec350b5008fe4d8c68328763c60349c623afd92"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/examples/stdio-server.yaml",
+      "sha256": "a4a7782fc276790e0e84a5062d0e268a95c1dcd84114f9a28ee10b9874fbe819"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/client-capability-requirements.json",
+      "sha256": "73ab507d421b63b4a0748e4533566aef787c1c8b3dc0553bc74d1937fc08e979"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/custom-tool-schema-keywords.json",
+      "sha256": "15e26a4e64ac97b31ab72adb485e9a7c2ba5163fff951c77ce2d5f4ec183c502"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/distinct-tool-and-resource-annotations.json",
+      "sha256": "b0782f456a9368f60f89d139a9ca7d7ff765f2e13a9d3d3a74165f819702dbab"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/elicitation-declarations.json",
+      "sha256": "8551fa99e780c0d497aa910a87f9fbbbc2b7a2d8a7d02209ab756ce022d087e9"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/integrated-draft2-features.yaml",
+      "sha256": "50cf57add9d7cf91e94b9f4fe06b90861ff9d10a7e52eeab53d360ea9d0be59e"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/meta-literal-values.json",
+      "sha256": "fd5849578b87766253b46be67b7ca66f9e38e4235c44c8bce0ad2490c086be3f"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/minimal-zero-primitives.json",
+      "sha256": "6a170d395887982be9f949f22539a57dda6f0bc0f42906e093a23b46de10c4cd"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/named-completion-examples.json",
+      "sha256": "93691ddf201be439b6f4707cffffb6728b258111a77a4b7800acf4dff690ea3f"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/named-prompt-examples.json",
+      "sha256": "37972395641e851b1fde5b6719e52bb976d08c9108dd10b1fb5c5b8d9a29cbc6"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/named-resource-examples.json",
+      "sha256": "1c4de470e2e5c28b0dff7999ef3bd6b16479f9b3d8c85792358662f96d3d925b"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/named-tool-examples.json",
+      "sha256": "90b565dc0a3b98347af51421f0eb7dcee6c9503f4eb05602244a3302a58fd09d"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/named-tool-interaction-examples.json",
+      "sha256": "dc1d2b53fa44cd192e5c8f736b9ef512460f3c4c754dd5b21adce9a0261102d7"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/object-level-specification-extensions.json",
+      "sha256": "b3f49a0c7723139831ea1afb54afc9fbb439195ab22d8b84e7da95a6da9a7dda"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/protocol-coverage-and-tool-schemas.json",
+      "sha256": "8912cab887cdad1f4865c1e7e4bb5e77af219a90aa9046e7ba4309433e76f608"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/protocol-independent-info-metadata.json",
+      "sha256": "737fe3af4871816d2e9d6bcd62b73cdd77261f2070705b835f51af394c925cb6"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/protocol-scoped-primitives.json",
+      "sha256": "064ab18873d350c7f85b5c6d3e77cc122b40efcb9874bd2c44577ee04313c8a4"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/reusable-components.json",
+      "sha256": "c2c9664a0522f9d59792f446c5344e97a5cfbd42034f5b83e6e17ddb912bc338"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/revision-inapplicable-mcp-header.json",
+      "sha256": "d859109d64b60c75b5eb75936031c329c4fb7d6a12d189147d0036490c52cac3"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/security-composition-and-inheritance.json",
+      "sha256": "bc141b775f949fd2f45afcac88b6726dc81449020b2655feea7dc30bb063222c"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/security-root-and-override.json",
+      "sha256": "772dbb871a136e43c22cc79b679bbc9a358d33d5313e7a3bfaae1f95f272fd66"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/tagged-surface.json",
+      "sha256": "fd00f78ac66bb2b09b853a4ac4990729d4687ac45ea63adfa954ea9d8f397294"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-valid/unknown-extension-identifier.json",
+      "sha256": "c8a34a51a09e9013a3943f252a3bd0eafdd9f3e1515341d1e452ee20daec8306"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-warning/deprecated-client-capability-requirements.json",
+      "sha256": "63a28d1dbb9ce22f9f853d76be46b2cc988f79b24ee9c7f9bf1760c1bb2e1776"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-warning/legacy-completion-examples.json",
+      "sha256": "e0e9f6eb6172f5bc3dead982202768d93dfe55f97a3cadef2bfbc34d2c4dfcf2"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-warning/legacy-sse-modern-revision.json",
+      "sha256": "a101b1e7b8cec18770efbe03a8406528bd865c4570f1df3bed4fc2710f6b8789"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-warning/logging-deprecated-2026.json",
+      "sha256": "8c7733a7e13d9dda8fd1b5b7d3d298bccdc77a3ad269362b979f402a295030d4"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-warning/pre-dialect-tool-example.json",
+      "sha256": "a77429d5ab2e58d29493d67498975fcac15663edc67056dfa80518873c658f87"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-warning/pre-dialect-tool-schema-shape.json",
+      "sha256": "c270199c47d0652db180ce24bb5ea4c99a2af5b79d2f6c12b59732edd1fd53d8"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-warning/pre-standard-extension-capabilities.json",
+      "sha256": "989f50687c8bfe3286ebccc8160d37696f7b58920c3b1dea2a51d685decc922e"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-warning/resource-example-consistency.json",
+      "sha256": "d215d3c0f2393e69205f1b27534293024da9ac835332e0627622e4aff15ba61e"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-warning/tool-interaction-client-requirements-contradictions.json",
+      "sha256": "282ce911890e5a71872110e4490c3def3ca6cb62b11e82c73cb1c520b58707cd"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-warning/uncatalogued-oauth-scope.json",
+      "sha256": "cde13dd6c9aa038c107debe3122b0aba656c951d838fd6517dc2350af38dd29c"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-warning/uncatalogued-openid-scope.json",
+      "sha256": "1debf4757ec065895332630619c8ff783886d312a115c484e2c8ea58e69d14ec"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-warning/unknown-reserved-extension-identifier.json",
+      "sha256": "60dd5536253efd922503552bdcae6aa252c61b26b701d6d3215c18ee820cd0ef"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-warning/unknown-reserved-meta-key.json",
+      "sha256": "0373bb6ac0a90c1c798ae0885bfe0efdfbcdfd4b7ddc5867f0fe4b51e10d5d74"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-warning/unresolved-external-tool-example-ref.json",
+      "sha256": "1e6804c0aca36d4a86ab8d682a7a3f2eadc7a3e8a4ef03a93f9f3e0ab2495f79"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/released/0.8.0/fixtures/expected-warning/unresolved-external-tool-ref.json",
+      "sha256": "7b41d2eb364a8e2faf510999017a6e2c3fd5a291225af30978d17942f6d3e619"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/fixtures/source-invalid.json",
+      "sha256": "e6d9a2ff159869f05a34306adbe2616df1011bc268230509949c4b00fd70ecf7"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/schema/conversion-case.schema.json",
+      "sha256": "a2723cda240a0629b7eb004059160c22b220a1a79cd994feaa01d471a67290fd"
+    },
+    {
+      "path": "test/snapshots/0.9.0/conversion/schema/conversion-rules.schema.json",
+      "sha256": "e80e50cbc18741db1654f56a90f56b2262e859497f93354ef77aff519e0f6290"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/annotations-last-modified-before-2025-06-18.json",
+      "sha256": "02bc4df8cace20a4df6f7258fc78d37de3b9a0534cf11834a2647b6b06755eab"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/closed-protocol-enum.json",
+      "sha256": "d7ef15745b36cabf961b8dd1ee652f57f2a44c63d0b7ed293763e371e1bec63c"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/closed-step-responses-2026.json",
+      "sha256": "90cfd0c183ba69f6cd9b67de21c598edd937e6f9679f80e72bd1583ebe2477e1"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/completion-result-extra-field.json",
+      "sha256": "d50ae96b262415305f483bd72308dfd4019febd84182f2eb59ec1d04b2bb23b3"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/component-contextual-examples.json",
+      "sha256": "675312f66e61a4abc3c4f71292be6ba3b6ab00b8a5ea5421a002df70f08c97af"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/component-contextual-schemas.json",
+      "sha256": "a43ec6cea2ca2bf9387caf23e6afdd6d262ca1ee9222096430be4e2fe70e3e13"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/component-extension-boundaries.json",
+      "sha256": "ec2e15265575517f49ccdc44e97e24299fe2addf3db847c665780a7acdda9b74"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/component-reference-resolution.json",
+      "sha256": "3d02dc8006ec2981ca90495a81045f31ea09c7f26f2278892a7a43690fbd22ea"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/components-empty-and-reference-shapes.json",
+      "sha256": "49210ad8f2893a6cf8e71a59203aa5a42fd1d6899793d10ac5afd6050758f26a"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/content-annotations-unknown-property.json",
+      "sha256": "1d9377a5d2a0a0675341536428be90f2f75530ac517e7d73445c9c75a6288033"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/discriminated-resource-link-size.json",
+      "sha256": "1dd0942a970003f48174a79d5a3ee8be28258016a1c98e418250d0ea3ea2b553"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/discriminated-union-members.json",
+      "sha256": "271c9a448035659e549fdf8d50b6382b2da154831a5f00e0c1e330d0dc6b5d6e"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/duplicate-mcp-header.json",
+      "sha256": "8f905df24cf0c8e8de8ef44bab2a14f9df419d4cf5c9a2405fcd186b0c95ed67"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/duplicate-root-tag.json",
+      "sha256": "3f99f9804905df61dea6fe8daa5c6057fabb85076a33c410dd82c30d5d98c31d"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/duplicate-security-scope.json",
+      "sha256": "f9ab2966b2cc9163769919a8804df41d76d933c0fda3b7bab78fec36fed4cf1c"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/duplicate-tag-reference.json",
+      "sha256": "2ce43bbc0fa7c722c02d28e3af1ee45125fffc3a8058140a10b9463bced034eb"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/elicitation-branch-mixing.json",
+      "sha256": "2cd453a56aa08b170e5e5c4ccc9ce11525dd14dfd2f3781b920f64f8512e9cf2"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/elicitation-form-invalid-range.json",
+      "sha256": "91d958e335c90252c974689791fb853dfeaddd279b89fdd4290a506114f11c56"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/elicitation-form-schema-2025-06-18.json",
+      "sha256": "8cc447333ba13a1e5563ca28dd0f203aebac57856f2344a0ea4805a5ad80e229"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/elicitation-form-semantics.json",
+      "sha256": "98fa2b688d7aef82d969a88f6b826e694316049e26380f6a254e5b0e0fe863e8"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/elicitation-response-unknown-member.json",
+      "sha256": "589add8297e3b51c6bc816e94a1a02acfa8056b49ce72cdf522439ffbb7066c0"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/elicitation-scope-outside-parent.json",
+      "sha256": "fdad1152c8849d98d35f23a4a1e8f1b3bf4a9ffe282e3c0dfe438cddd98d00c4"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/elicitation-version-mismatch.json",
+      "sha256": "7b540844198cd05aa7923b27db3b07823882dc67ea83d5dae1f90a0b21e42f98"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/empty-client-capability-requirements.json",
+      "sha256": "4221fd2f86d8e8a447993aca9efabe3f0afe23a0a009b8bbe0c5105c914f3be7"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/empty-input-schema-before-2025-11-25.json",
+      "sha256": "af85e00deb2f1355a1939be1eb0a52594d00454e71aa7958ec6d6454f6968429"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/empty-ordinary-nested-collections.json",
+      "sha256": "3cd970f7b1221e60b820c68650bcd3c02fd8f882b3449b04dcfc0f536aa9d40f"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/empty-ordinary-root-collections.json",
+      "sha256": "0476579e93991c7fb29e2e71c5369454cf37157bda7ce5f8dca1515b9244745a"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/empty-tag-catalog-reference.json",
+      "sha256": "46fee9e4bf42d9e328b422f2eccef611c0bd22ee6b53cb3db3b739893d28da97"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/fractional-resource-link-size.json",
+      "sha256": "6ee65ae566ef2f6d012b3d92452795397081f9c68c802a77e8acb36c63b283ba"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/fractional-resource-size.json",
+      "sha256": "350b25276b3059eceda0c428f239e8aaf0a917329bb44c0c67c99581a9966748"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/fractional-ttl-ms.json",
+      "sha256": "5817f4762b5044985bb2bffaffd11ee06c1dbda3526b89e9b2163350715e66f0"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/invalid-client-requirement-value.json",
+      "sha256": "3f34129ced290d499dd80c280a3ca2898816b2f2d9cf506859d94678eecc6a06"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/invalid-completion-example-semantics.json",
+      "sha256": "f6671970d6d5eb5df753e2a3ea2d2deaf94ae02a32c7a4c8c221867625bfbb88"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/invalid-mcp-header-placement.json",
+      "sha256": "89658496a06f8920bc6361a192a3f428dc4e153867c846146c35b960261fc6a7"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/invalid-mcp-header-value.json",
+      "sha256": "f9dd19a7677e89e4d6443e9dff1574956a70c5d848f54e17526f85e5bb17a744"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/invalid-prompt-example-semantics.json",
+      "sha256": "e7295b8b61851bbc2bef429ff4c53718cc6321e1bd9e09ac05c39ee3b3274a4f"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/invalid-resource-annotations.json",
+      "sha256": "50c0024e058776ab5f29270157a879471aa1686c937d0cfdbe1fc5558c4924d8"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/invalid-resource-uri.json",
+      "sha256": "be42a5ce7ec23f5f2e206709deb9e698bcfd7598f6111c47451548c2b250b606"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/invalid-security-scheme-name.json",
+      "sha256": "b2f048a25784a98ca3e0c2a4b0ec2b63cdda6edff7f34c63b15d0d50a1398036"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/invalid-tool-example-result-semantics.json",
+      "sha256": "55722f7afcae0080fb123e5077be7a80bee09721f60e1a540b56f4bc76501573"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/invalid-tool-interaction-example-semantics.json",
+      "sha256": "e29b47c28bf3c14b6406b3cef9b6e0895f42155ebec0d9a21101c6a1b282f23b"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/malformed-completion-examples.json",
+      "sha256": "dd19b4c6bc1891f82e32578d0a6f5a74fd592a4da28715f44b3cff64ca0d2f5c"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/malformed-extension-identifier.json",
+      "sha256": "ac5322f0070ae35ef40a507d545eb8ef4c35ae6946ee8ea83e240f61ee034d66"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/malformed-info-transport-tag-resource.json",
+      "sha256": "e970fe6c793986279576d1ed7ed3f9a014ee114b6fc76a48816a06348776baeb"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/malformed-pre-dialect-tool-schema-shape.json",
+      "sha256": "7233a492132417cba7fe561562d573ff157f6e2bbe1fd92a77ba1e6d62f12130"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/malformed-prompt-examples.json",
+      "sha256": "c790424ca929f87562534ebede60a3b2cb9f093ed3095a540bbeae9f77360503"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/malformed-resource-examples.json",
+      "sha256": "bb39287ec262ea27d963ad6dd589469fc4064456c70bffaa8d1ec73210687ea7"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/malformed-resource-template-example.json",
+      "sha256": "8af6252effd74d3e8bdb220436b4ad6389c33efbf47d637c2f7b54e557d4c11c"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/malformed-sampling-step.json",
+      "sha256": "f4cb27975bb3d39538be495622efd97dcfdfeb39fd27b66ef5ffe70b5b2f620c"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/malformed-tool-examples.json",
+      "sha256": "1e294a18dd368c36cc77e0c492786c7ede288af89972036e26dc25af9e942f7c"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/malformed-tool-interaction-examples.json",
+      "sha256": "cfc7d51f3e399a158fca1940e14dbb72baca44e64baa0bc95af558949acfbf5d"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/malformed-tool-schema.json",
+      "sha256": "e630d2ed4a5f463b811445def7ff9f8761e99183e49768abde5db58a2a17fb93"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/malformed-uri-template-without-examples.json",
+      "sha256": "bd7f9f6fe94d22ff5f57d590e95d3badc823394b6fac36d310d5df0ad7bb4f90"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/meta-invalid-key.json",
+      "sha256": "b937f0b9ada3a182e7ad530a3a6c1de8e43b93a07ed18d615014e3167fbbda35"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/meta-key-invalid.json",
+      "sha256": "139b69916da8bcbe7fff615313b521691e7be2e523a923fa954b2f67e8664586"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/meta-reserved-key-misuse.json",
+      "sha256": "949e853511026c408c663353e135335395c774cf753102a06a455648b1101a94"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/meta-reserved-keys-in-carried-values.json",
+      "sha256": "f31e09eeee7299cec037707437fbe8bd84efe1a36b5701b1770f1bc4663a1444"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/missing-tool-input-schema.json",
+      "sha256": "66fd08076bf0ddd17468f8c97bcede5a8f2b7c6230762e1de7d93133258b2027"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/non-literal-object-input-schema-before-2025-11-25.json",
+      "sha256": "a0105c56c02fd8f215033439aa9143b8b5064a40a76f3bb1c223b85822cbae61"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/non-oauth-scopes.json",
+      "sha256": "6d72845ac179bb8982b241bea248826c1e317e9a75ade1b642efaba9045325cc"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/non-object-input-schema.json",
+      "sha256": "c298b75ce2039248f99be1fb04c58989d0c347e1f08849df7fa4dd26e14df972"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/non-object-output-schema-before-2026.json",
+      "sha256": "87de7baf6f23121aa3d2ba972786d6aae6c91f98cfb1bdde6993885c7ad5cc09"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/oauth-flow-missing-required-url.json",
+      "sha256": "57a084b873354715f248c9a9e492b1d815858d4c2581bfdb102bf405ee734fcb"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/object-level-extension-cannot-weaken-core.json",
+      "sha256": "d61a61b691b1b7c9af61d423ca3a588e41cb86291eb779678c97e871fd1cb141"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/object-level-extension-in-capability-map.json",
+      "sha256": "a0ac0a65713a94f995d2e2fdd4de5dbbe8f514592f3242502c4682ec1f97af47"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/object-level-extension-in-domain-map.json",
+      "sha256": "ab14e219ac70831425159405a064ac23bc81f1fc9ee831168b2ca328734ffac8"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/object-level-extension-in-native-content.json",
+      "sha256": "38b4c1c7478df769ee89d2d6d0374b209a58ef6cbc326b75d5e22db92b149506"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/object-level-extension-in-security-requirement.json",
+      "sha256": "227b858631abfecd3489fd25cfc7af7fc9ca91c4f9431000c0dcd40fb1cb61e6"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/object-level-unknown-property.json",
+      "sha256": "381805023d7dfb942b603134c4cd44f5d778e833dba100706425eec229bda13b"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/output-schema-before-2025-06-18.json",
+      "sha256": "f46e9ea7d196aea5bae07986b482edd8f25d9f6a7830f524d2950b83b8a42648"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/overlapping-capabilities.json",
+      "sha256": "6766920a95d16f9437ce2eb884490e1f29d6dce2c2c39779715362c9d963b95e"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/overlapping-tool-scope.json",
+      "sha256": "8d4dc988b4f9b70982cf644218f26287a7d711ae424ca76fb7c8dc0996b6705f"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/protocol-version-inapplicable-execution.json",
+      "sha256": "f3bec6556e8d3baa973ffb1a5e798eec35ca53b34cc6b506e8080c85eaab68df"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/protocol-version-inapplicable-streamable-http.json",
+      "sha256": "3fd9d257377c0ff46c8ec50b5c475a9861d79a2af42064df2be543c76cf4f417"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/protocol-version-inapplicable-tool-schema-dialect.json",
+      "sha256": "b5f171cf89a181a122eb29e2b186c7cadd43adcece47d3359d75b570c6ceda46"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/protocol-version-incompatible-client-capability-requirements.json",
+      "sha256": "7085358e1207b8c9619ef6ee633bac2b9b5650547642cc0ec3a06ce06ae37f45"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/protocol-version-incompatible-tool-example.json",
+      "sha256": "d409b493b70cfd53e1ca791c98074e6b5b506743e4c3ff7ea7cb4e7b5d7a1f71"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/resource-annotations-unknown-property.json",
+      "sha256": "4752ac1c53a0b27704ebb0d5da7f26b53b507796ef2dd2ed7bafab06cf3a5c56"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/resource-example-cache-fields.json",
+      "sha256": "8d3d186eade7c397aab5f207fecee05a97f53902b58df3a9b59b0415b5c814f8"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/resource-example-result-semantics.json",
+      "sha256": "61f622047facb2210007b69c8e110a514de035882c6329b361ce457f7a6f78fb"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/root-meta-before-2025-06-18.json",
+      "sha256": "bdf805ace84b302d73584d3c8b65cc8b07b80b1bf793d0b65c092b63521341bd"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/root-version-without-transport.json",
+      "sha256": "2b8fc7414e703c0b9e38dac1429ef75070034015e42d7dd4d330fa44e18c2c70"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/scoped-version-not-in-root.json",
+      "sha256": "ab2f531fa4c756cdbb08e78c8fb90f93509b8830514b965aaaa2ea1834eee316"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/tasks-capability-2026.json",
+      "sha256": "e26f5ec52c7e8783b1ae4b6bfef4abaced9f8f355da2e637d415a47e128d9654"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/tool-annotations-unknown-property.json",
+      "sha256": "ed739a60c39762dd158b899ad05ee264781080bf06e8b5c07d224487c8be9732"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/tool-example-schema-mismatches.json",
+      "sha256": "06348579a83c8822e28aef736fd2e569201b103252bb2e2055de353cb32090d7"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/transport-arg-typo.json",
+      "sha256": "b82de7ba4206e228e06d765708c2fbe34dc6b72851fc793c52493bb72c9989b8"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/transport-discriminator-errors.json",
+      "sha256": "318b31cfbe39baa9fc86dec1432dbf70847c7e4cc347eb27dabc392366abc557"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/transport-independent-defects.json",
+      "sha256": "37dc2c564fe61c8dcebd74a2a91740a9abfc74729d6c554133d292f9966320fb"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/unknown-client-capability-requirement.json",
+      "sha256": "93a88c432bec178615e3195683b8a89fb10e69e25305aeec513f84af1db5912d"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/unknown-security-reference.json",
+      "sha256": "3b1d44b491b8a6f9bd91ad951c1d6b767488f5d5f3c939edb2d0f61baeb532a4"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/unknown-server-capability.json",
+      "sha256": "fad68503d3162187a8ff746d4c3598bf0fecb38f3ecca72cb53ab3336257853b"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/unresolved-local-tool-ref.json",
+      "sha256": "4007b9b677c57f294d4b5210bf3934bbb09d36856e1ced34ee2e1ecfdb0feaf1"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-invalid/unsupported-tool-schema-dialect.json",
+      "sha256": "4bffadc48eb7475f6732c31bc71a47ad44c3fb8aa00cb648178ea85ce651b84f"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/client-capability-requirements.json",
+      "sha256": "1a778d3e70c563c317e9c8bde0006eee9f2d3aee83f148fee0d68bd4a550faf2"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/custom-tool-schema-keywords.json",
+      "sha256": "5ff7adbf468cbcf77f7e844eb8959095184b419e94d23049f5ea4e77586c7768"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/discriminated-unions.json",
+      "sha256": "82ed26701fea9ccd3781119bf0764c123ab6a71d74c8389ba772fbed6950c2a6"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/distinct-tool-and-resource-annotations.json",
+      "sha256": "1f71a98aea9111f2d9aa8c2cc9fbea73f17e197f60e9a982939b5e739033a669"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/elicitation-declarations.json",
+      "sha256": "8475cf0f9c3c4d4eeb252eade646068b4675bdd15f08d47f89450119e602cd93"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/integrated-draft2-features.yaml",
+      "sha256": "fcc0a02932139d8dff4f4bb17fc847e5f22a084e19968caf77470cfe1881d9d0"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/meta-literal-values.json",
+      "sha256": "4a651e1bf504d4edbc4682e25835a601fab79a818da305076a48d564babeae5f"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/minimal-zero-primitives.json",
+      "sha256": "84c6b92d4ab14418848e03a7fbcd40298ba1264588d39817b47c7c3c741c248b"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/named-completion-examples.json",
+      "sha256": "cb43c6505a2057b3ec85e58d826b2105b100336dfa28a51d5dd0736597e31173"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/named-prompt-examples.json",
+      "sha256": "e9ab3e2886f7aaf08b4837c2506175f12d0be590514ecc793206ebfe8dd82cca"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/named-resource-examples.json",
+      "sha256": "6a0c32281504b4107b6f63fb07ed69e4e0594313483724752f4f0c2f5a4d6998"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/named-tool-examples.json",
+      "sha256": "1f6b4f8636b0c211f567e785d0c97936431a75fd18d2b22e574241d444939b57"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/named-tool-interaction-examples.json",
+      "sha256": "ed146e294b553096146d08c6aba10ff2d83596bc6342724f22414fd4b3c192d8"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/object-level-specification-extensions.json",
+      "sha256": "e353c0bd83e35bf017da7f2a83f808d1b8e7a431b3d2c6c889a6b9479e71d04a"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/optional-schema-omitted.json",
+      "sha256": "afb5a62e7639f138479a3307170f94a1ea766fd203aa42caef7b51697c9e13b9"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/protocol-coverage-and-tool-schemas.json",
+      "sha256": "9601b8b91b7729dfc2749f81698aada52e3ee5e7b5c1830fdf0c6dda6ce6526f"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/protocol-independent-info-metadata.json",
+      "sha256": "0522de8cd013d8cb671cc9173e4a6a1439193882ef60d9f5c1db2d81452e3195"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/protocol-scoped-primitives.json",
+      "sha256": "c6d75b95c4b3e53f26b0d82b5e08f5044c9a658227bff431cdcd438e61c7d5b8"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/protocol-version-inapplicable-mcp-header.json",
+      "sha256": "32e9e11d95e0cd59cff8341809408053a4c37e64fdc76b261a302a8afd122a4c"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/reusable-components.json",
+      "sha256": "de8de185b44a55b967a69d81e9810477fb66ef55d43422c9ab2f8b4f5fbdacf0"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/security-composition-and-inheritance.json",
+      "sha256": "cef4d19a9fd0ba7f050697d54054f9856329406c48ab649147aa8a593495abb9"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/security-root-and-override.json",
+      "sha256": "f729a265c1254a200aa65e58bde4ec3067f95a4c001d1e07268cf130a641b7fd"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/tagged-surface.json",
+      "sha256": "deac4757178b0186f8c81d9714cc67b5c956f1ddd83610fdfb6faca99a28d12a"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/tool-schema-mcp-type-shapes.json",
+      "sha256": "5fcb171f331de7c62bbcc30683dfb54eaef886b7793d08cb9d89e43e7dffe69a"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-valid/unknown-extension-identifier.json",
+      "sha256": "56016f3892410ad575617fc77c64674f238a6895beb5dd6ef4f8503a4d5651ec"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/component-protocol-scope.json",
+      "sha256": "4ddaa92eef8879fc4bcc435c466e4d67183f1a94174cfd49847ab585818293dc"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/deprecated-client-capability-requirements.json",
+      "sha256": "2a21e7713dc21704a639a02d64e00d2f157c17a6e87d46f1cdcf572d460e20cd"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/empty-input-schema.json",
+      "sha256": "ee1aa1163d4ac3b3a2dd50f99d64c6e4c5740ab81a42a38adf92642e097e94c5"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/legacy-completion-examples.json",
+      "sha256": "0589c925d02486c80447b83ba283c4a129041e8ef49c6b84f0d77cc2850ee9db"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/legacy-result-meta.json",
+      "sha256": "3ceb32056b8a0fd0cd69764c9d971d8cf5d4bcb687044cd9cd95ac5fd53f46d1"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/legacy-sse-modern-protocol-version.json",
+      "sha256": "f05914f90e6e9d51eb9c7a54d6135f00e58d7fddb900c8208e83091ab385e832"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/logging-deprecated-2026.json",
+      "sha256": "dc0191ea2fd5f44f0332fe7df4c25c077d72317ffb04ba8d536a52125f716be3"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/open-result-unknown-properties.json",
+      "sha256": "ed223816ce4be266f36984a8aa11aaa36d4e09a91b1d54a37f5e875abacc3b77"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/open-results-shared-across-protocol-versions.json",
+      "sha256": "f4e471be4ff80c4c0d10df103ddc6bf162e22e1447a9dba7f477b3fa61a2af83"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/open-step-responses-before-2026.json",
+      "sha256": "e3e4f8f84969bfcdc0c5a06601ad857f900b232b147c38867755e5fbeb94413e"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/pre-dialect-tool-example.json",
+      "sha256": "e96a899f161ae8135aa1ff253dd3db455e3f2bfb53f6fcc7826cab6d2494425a"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/pre-dialect-tool-schema-shape.json",
+      "sha256": "61b598b65379eac6e42b77e1c5dfdc5a77d8b8416323874711b2467861c47fc7"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/pre-standard-extension-capabilities.json",
+      "sha256": "1bacd7136cf8c76df01648245ffbbef5cc0c2a6bc641b77856eecbb552c7c75e"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/resource-example-consistency.json",
+      "sha256": "13680de1944a05de77a91538a11662c9499f01decbd78aa086959bf56e702133"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/tool-interaction-client-requirements-contradictions.json",
+      "sha256": "a15d479b11336de68ad2bf1c69dcc310075beb83bd3f6fa1d061ed91f0fb998a"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/tool-schema-mcp-type-mismatch.json",
+      "sha256": "336a63422dce93ce2187760d71ab2cd63910ec6ebfc50ce15105735bcfd4520b"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/uncataloged-oauth-scope.json",
+      "sha256": "23683d20a5585f60e66bb0281763fc47d252d61eac83f753ee59c6e19800d8bb"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/uncataloged-openid-scope.json",
+      "sha256": "d78003c9035a82de5a24cb945400358899bc2ce837e0387b453ad698701ddff4"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/unknown-reserved-extension-identifier.json",
+      "sha256": "22ea6aa029c5e6c7eb49d6985ae98bcfeba203968184534895d9877568a9d8bb"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/unknown-reserved-meta-key.json",
+      "sha256": "4e516d82b4d72af28508470a4ebbb4a08ada3d79c78a7a57524a0d80bad20dda"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/unresolved-external-tool-example-ref.json",
+      "sha256": "ffc7ff9bf41533605e8c3dd69c6ee63ccb0ce03ea2acf1f2351ffaff1944eb13"
+    },
+    {
+      "path": "test/snapshots/0.9.0/fixtures/expected-warning/unresolved-external-tool-ref.json",
+      "sha256": "6287b380d8ce04c94ac54263bb16207400599a354e8a2a582edc37b6a6bec3e3"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/documents/boolean-property-schema.json",
+      "sha256": "1c996c6f495d63b44bb4b9ee4b6ca9bf1dbd067d9aabda0bba551275c1764b7d"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/documents/ref-root-input-schema.json",
+      "sha256": "84db279ecc3f38ead03435563698590856af482c83de2b05c31b2e8a7fea7955"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/documents/resources-and-prompts.json",
+      "sha256": "5a09c583b4de30923812643a468d7b0d699842233ad65b73589346b5754de8ff"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/documents/tools.json",
+      "sha256": "0ebe278dcbcc1d8c981d0e61800aa5179b5e03fe35f8c0272f92a40ffb1a43d4"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/prompt-arguments-2024-11-05.json",
+      "sha256": "6aeca3a20ea7dbb5ce70ca6a917f8f21486743d65df9db4e3ac18f0fc7644b9f"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/prompt-client-requirements-omitted.json",
+      "sha256": "f0cc23cdc2609762497ce5ff2f1f6cab682bbcf744a9d89221e4c5f2b01e9f96"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/prompt-completion-examples-omitted.json",
+      "sha256": "b0aee36fe503d334fb77e62c12f0a443edff7c39d9151d2e62d4bc5d2197f8ee"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/prompt-examples-omitted.json",
+      "sha256": "5c175fda27f5e7df0fe2742b25592ef5093676f1fa5498a51269ff3d1ad86919"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/prompt-icons-2026-07-28.json",
+      "sha256": "88ea58c9fd1622569e03b0b6d25e0d41535df8889e4842aa2fc22947eada5fe4"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/prompt-not-applicable.json",
+      "sha256": "e5b01b68926803f035eb86f989e31cb9cd363747e4a77dfb8afb659816eda86d"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/prompt-protocol-version-not-declared.json",
+      "sha256": "5f076b9a9f1ec4c513039e19ab0859566315912b065ce7b8fc157d327b6f74a3"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/prompt-scoped-2025-03-26.json",
+      "sha256": "0f7eca868c54547093d8581386a61336262eb3d7eeb13876afc948c032eca2a3"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/prompt-source-invalid.json",
+      "sha256": "27803894a3997b43c1fba68120dfabc16464d3b7be7cf66db1f292d8713bdb38"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/prompt-title-argument-title-meta-2025-06-18.json",
+      "sha256": "9b7bbd0acac5c110c759a02a8a6ccc763ebfc2a83e45793dcb61f8dc44cc4743"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/prompts-list-2025-11-25.json",
+      "sha256": "24c073074270052fc7d6be4d6b3bc0b7cc0001975b598287ad89d24340d0b89c"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/resource-client-requirements-omitted.json",
+      "sha256": "60e64d5eaf318486b16b198eaff4358accccd6bcf3d7ee435ee42985ed609e9b"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/resource-description-fields-omitted-2024-11-05.json",
+      "sha256": "7ed0332f8ff243f2059a07f32cee1fb6d441726773d13c6731dafb090ff25e36"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/resource-examples-omitted.json",
+      "sha256": "fcf532ee8d4138d1590c5c90ea707b1d4a4f96c0ff665617a6389f44a7f176c5"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/resource-icons-2026-07-28.json",
+      "sha256": "68dfadba45eae7eead69d4a0ff4838e7c1b73eb9f6610bb370e59dc7fb35bad4"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/resource-not-applicable-2025-11-25.json",
+      "sha256": "c076d0f5021af101f54336bcef5a7f1eb62a7a0ca36bcbf5eb670a424dc87f6f"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/resource-protocol-version-not-declared.json",
+      "sha256": "c1a046af7ac075cf28203b8105cfdcdcbda42542a0636ba8cab90930f0c188d5"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/resource-scoped-2025-03-26.json",
+      "sha256": "647f5770d2046576de4dac435baa361d9b8d1217e8f64ba6d48b76bdc8d6d1d5"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/resource-source-invalid.json",
+      "sha256": "a1e5f06d94316a1d2015fd65fbbcf336e83bfd1d6de95194e09cd52bcd0ff0a7"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/resource-template-completion-examples-omitted.json",
+      "sha256": "fc9135ffb229f588a60de2fdcf5c5f2a99fa53eddd0184d0d842d3524fec9a79"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/resource-template-description-fields-omitted-2024-11-05.json",
+      "sha256": "72017c7d7938ebbf7429d3a78456816dcf2f8955fe7595aa406b1fddc9af4ff9"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/resource-template-examples-omitted.json",
+      "sha256": "e0e1d89f4c4c573afec67c09647ffb38e9fd9ade0d4d6979df6afe94148bdde4"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/resource-template-not-applicable-2025-03-26.json",
+      "sha256": "506be1dc6179136d53fab2cb72f03f496b8063f59862cf3aeb68e6cc903b8e99"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/resource-template-protocol-version-not-declared.json",
+      "sha256": "9a7d89ca719c4b54280152aef33482156b7e2b432cee4d0fc24bd9881799ea47"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/resource-template-source-invalid.json",
+      "sha256": "8d1010c0c8efbcfba3e4e3161582fc4b53acdacd2425ba274bfc2c8030685db8"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/resource-template-title-icons-meta-2025-11-25.json",
+      "sha256": "e2fc708ec467ea849995952978f8b4947123ebe6e6307ea28d188cb07cef92b0"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/resource-template-title-meta-2025-06-18.json",
+      "sha256": "7e6287e76163b47ea41cd30035e03051ddf8307ff93e72eab094ef289ca1962f"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/resource-template-unscoped-2025-03-26.json",
+      "sha256": "d6b25c93232ba3ea7e6ecdc174a210dc7180e7bde48706f2108bd1e71246af3b"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/resource-templates-list-2026-07-28.json",
+      "sha256": "fc6855bb150ae3d09972a65c55ce54e29abc46e4d002b77709bbf6c59a444d5e"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/resource-title-meta-last-modified-2025-06-18.json",
+      "sha256": "2848d4eca89c643325b1cb3b0ae6fde0accc9e0fab4a1047c48499958f1ada78"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/resources-list-2026-07-28.json",
+      "sha256": "48f7adf4d8eae49c20c55d081f969776e558b8fa73498a5c8c00af401fe3026b"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/schema/projection-case.schema.json",
+      "sha256": "c6560c494d3fb7212890feeae3389774116bff56c22ec758e213da5cd79a2a96"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tool-annotations-2025-03-26.json",
+      "sha256": "2ae4ddd9390b4bc8db2fbad4a784a46e630c29770587c5e416460a7c633ef8aa"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tool-boolean-property-schema-2026-07-28.json",
+      "sha256": "0cc918a17462719c7fda86e54ddf273ef6d56c3313d22efad60534cd4ab0d72a"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tool-client-requirements-omitted.json",
+      "sha256": "aa7560e940613f389dbc834a0c54a25dfeccf47b79c5da05db0521d6f21aab33"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tool-component-input-array-output-2026-07-28.json",
+      "sha256": "49c7a93c17d7d1322f2625d1267cfa33895b040055bb0d72f002716540ccb156"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tool-components-examples-omitted-2026-07-28.json",
+      "sha256": "c9194bbd3e7237f4fb0fcafce9ab2cd9244e91a4d3c7d19136ae8d49bd5dfafe"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tool-description-fields-omitted-2024-11-05.json",
+      "sha256": "b2e11c1efcfad59c628f18b87dfe37c64b98ae95436a65f3927cd5ef7934536f"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tool-execution-2025-11-25.json",
+      "sha256": "30f54f0360fc54fe01ae15b2289fae0c1c5796348ddff8e0618f0626ee899522"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tool-icons-execution-component-2025-11-25.json",
+      "sha256": "2bdd256e4300cc099fff519d946c90a012b14929f22ec07084761bc995a7adb1"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tool-interaction-examples-elicitations-omitted.json",
+      "sha256": "8e38a6a657e4669074fd59870cec42421f812e6d7ee425e28418abe4412f3ca4"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tool-not-applicable-2024-11-05.json",
+      "sha256": "cc29a9f5451603513ff8b68a2713f154079cca0306cda1cafe1b20cd046d5d07"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tool-postcondition-failed-2025-11-25.json",
+      "sha256": "591c5cb1c76992c2cac88ce1a936b1471377a90e956820e7caa394c664aec710"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tool-protocol-version-not-declared.json",
+      "sha256": "b84bec923660bfe08251fd445a168231246d02c725e07a9f722bcad36c48434f"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tool-ref-root-postcondition-failed-2025-11-25.json",
+      "sha256": "9d134a11247ff302bc9d38cd4fceebb2e5791d03aefd2c933e65e53359b5c470"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tool-ref-root-postcondition-failed-2026-07-28.json",
+      "sha256": "5e31e9e270f4a6f8a5be209689748a04b71e815a4e4e5b8ac2e9c0818f9a5a53"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tool-same-declaration-2026-07-28.json",
+      "sha256": "13d13568fcb1fac22a01deac3b2a21c0e96f506c9c530258026800247314de0a"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tool-security-omitted.json",
+      "sha256": "9ac9932699177047eee548aee9ad48342f40632d505c0ee188a1cd98d432946d"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tool-source-invalid.json",
+      "sha256": "d5299b7b36ec82da2b99d38ed436e0b1069b3e55a4a9d8e11d770c74cb1e3579"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tool-title-output-schema-meta-2025-06-18.json",
+      "sha256": "c6f5858104e33830a80a1e53a878e752602ee59aeacfd29f096eb28d1644b55a"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tool-without-execution-2026-07-28.json",
+      "sha256": "ea64cd04896bc7818dba8f02dfd2469937332ed76eebe0b0bdcfaf8b790b336a"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tool-x-mcp-header-opaque-2025-11-25.json",
+      "sha256": "bb8397838f888743847c9aa8d4e00bcc7ba325c9494cc5dfb1bb18f515b93dbd"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tools-list-2024-11-05.json",
+      "sha256": "3155b380b32293bd00ceb4f68d77092f06447c1d6d503e03b832c5a0b94539c7"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tools-list-2025-11-25.json",
+      "sha256": "a0305c53caf8fa5b55633fc1fac5fd8d74de42f7f0b7c4e70962c64e74a5382b"
+    },
+    {
+      "path": "test/snapshots/0.9.0/projection-fixtures/tools-list-postcondition-failed-2025-11-25.json",
+      "sha256": "2c4ae28048b1304c0520bd1ac2410be7cd570d6f3351fd01f17d53cd726bb71a"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/expected/merge-component-name-collision.json",
+      "sha256": "907fc2409ebfe6ec79586c9f160d1677f37768ba387832de9323fb2b40a0d013"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/expected/merge-object-extensions-variants.json",
+      "sha256": "7b95a5a30564fdef240b2bfa9573df262e0457d925de8d9810678e0008b11c3d"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/expected/merge-protocol-scoped-primitives.json",
+      "sha256": "7f8cac18b97fde05894ac4b3682cecb860d442f902610b2cb1d56df894a042b6"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/expected/merge-security-forms.json",
+      "sha256": "33413bb9399024b3e221e5f5591e37a84564b69e78584c019e4f4f6a93a66b72"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/expected/view-client-requirements-2026-07-28.json",
+      "sha256": "3bb165b45c6159614ddba4fd5050c836691412dd7468d13d46156afc64db2592"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/expected/view-completion-examples-2026-07-28.json",
+      "sha256": "63a6b81f46fde309d257a356a5050d6601369a64c69b5f7fa5c56d5803a15955"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/expected/view-component-pruning-2026-07-28.json",
+      "sha256": "b41d3c9e27eeb63662b30770957f447d030e557ae8bfebba144c7886ad6cf781"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/expected/view-prompt-examples-2026-07-28.json",
+      "sha256": "1a618743dc460560ec66d252aa137e57439d995d5876da8510234224a34abf9a"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/expected/view-protocol-scoped-primitives-2025-11-25.json",
+      "sha256": "2b2041330920360eb1c871c94be8204af4ea1f4aecc3db2f7fc58235dc3d0776"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/expected/view-protocol-scoped-primitives-2026-07-28.json",
+      "sha256": "9a689630757dd52c12c736e2dc451f88b31251e5581004d1685ba398d046d2e9"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/expected/view-resource-examples-2026-07-28.json",
+      "sha256": "a070485d31bc497aa38d85ad19063662e754ae30c1ae368a53bf796458456462"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/expected/view-security-forms-2025-11-25.json",
+      "sha256": "f72afdc504a661287875ca5bccabfea384052e83bf09ca873e61792b84b57178"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/expected/view-security-forms-2026-07-28.json",
+      "sha256": "9a8588e46391074b2273e5120d550a1a81f74584f490286eac00209ffe246f2e"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/expected/view-specification-extensions-2025-11-25.json",
+      "sha256": "8320c1a54112dab6d8c1b31b93bbfa1bdfe3bebfe95f1472f1172f9c37cc73db"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/expected/view-tool-interaction-examples-2025-11-25.json",
+      "sha256": "90f7161d7896af44f8b63eaffb6dbf2e6983a29d11d053b7518d64e87bc2030f"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/expected/view-tool-schema-keywords-2025-11-25.json",
+      "sha256": "26be7f8f684ea9dd5e6519d8ebae78e81b80c9662b6bc3095eaa1f71e81ac261"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/inputs/component-a-2025-11-25.json",
+      "sha256": "895a5085740bdf841d8fd656a74e404eacb7d16a8a9f161caf77b4040bd100a5"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/inputs/component-b-2026-07-28.json",
+      "sha256": "b433941311c471f51fe1a014e5b22cf23a92507da47ea585da1e6757fd01ff49"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/inputs/component-extension-other-2026-07-28.json",
+      "sha256": "3057e9c03248fc2b212491c2259341309152fcef9da60330047a4036c9c8a742"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/inputs/component-pruning.json",
+      "sha256": "0bfb8f91ad091b093a87689628528572a41c3bf4e51d89c8fb14e2697792f0f4"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/inputs/description-other-2026-07-28.json",
+      "sha256": "f3a1b81805d90bd8c3c91bc3b5433534809e872116fff6e23f238a8d5a00026f"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/inputs/extension-2025-11-25.json",
+      "sha256": "439f3723fb8dd7a767fac5a37ddfce0f27051281633abe45e5e006f1e4f1301e"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/inputs/extension-2026-07-28.json",
+      "sha256": "5022a1310ca1dfdc802ee6a44a693f220a3bdce8fb8cac890ed07d18ab94c6dc"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/inputs/extension-other-2026-07-28.json",
+      "sha256": "39470d4a68850503f6c482e8d240eb1ba510f24a111c2d32c337580e2c2d45fc"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/inputs/info-other-2026-07-28.json",
+      "sha256": "b4030e27ac32e5809c934cdea384d7d68923a55c9aa8e5f96c7cddbb3a18a7b0"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/inputs/security-forms.json",
+      "sha256": "6f1e2be8b7c2c25fd2179909047f3f5f49dd1aa71e045c14fd5ab41944031370"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/inputs/tags-a-2025-11-25.json",
+      "sha256": "1f2cb377b97a7a29c2115d7a6ae47362c70f56d4e36569d3ea2b2c188b6fa193"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/inputs/tags-b-2026-07-28.json",
+      "sha256": "4d33e1c46643d4ad9ca94f8adb44f22470f0457a6afbd946de229007789ff05d"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/merge-component-extension-conflict.json",
+      "sha256": "e09fe2d83a65bc5afa9758a0d51e08cc866bab3a37807885ed84238e14e4f9f5"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/merge-component-name-collision.json",
+      "sha256": "69ba46d762d23f4af5afc7908f598f2886f4bb2222d83b3891ca82d4dfeb34ff"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/merge-invalid-input.json",
+      "sha256": "8741342aba0b2b7fb601991369d0a0917997c199ca8e99d1ccd2c3bca3cfaeef"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/merge-object-extension-conflict.json",
+      "sha256": "fa7cf3e84e88afae2f1e31d6bbaba1657cddfe46de0c14732f0b20c9a13b1de2"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/merge-object-extensions-variants.json",
+      "sha256": "3e47592120c7a773975b97f2cbdb2e6e509e3ad1c87dd49ab98fed758d244c87"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/merge-protocol-scoped-primitives.json",
+      "sha256": "a80813449307aee69e6818863f651acc8a43f1a7e4f066c14d8d0a10928619d1"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/merge-same-protocol-version-conflict.json",
+      "sha256": "b541af4acf8c217e13de4aa67fa9a0f934fd1669000e5046473285d95db932ca"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/merge-security-forms.json",
+      "sha256": "7b9997dca37645393d2d9384cac74b6277f7229bd10a7e3b57b491fd7f1e5eec"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/merge-tag-catalog-conflict.json",
+      "sha256": "b1a208fe9b53e835b3d9ba5e5931286e1db3dc73d073a99c65457c7b191d253b"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/merge-unscoped-conflict.json",
+      "sha256": "1d84681ac5910c6d29596588e544effe4a061f16be41a37f65e6d6ed0f588249"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/schema/view-case.schema.json",
+      "sha256": "c86e9411a27df4058e16149db527d147586039811d7808e47eb670af5bde6a2a"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/view-client-requirements-2026-07-28.json",
+      "sha256": "19f1b58c73b0e2b8dba56bae0f5835437e2fc7d13f9950ef8e2e406c3e9b50a6"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/view-completion-examples-2026-07-28.json",
+      "sha256": "58b6cd1c556666bff0c8807536b804d46ec21ec66685474fa98036e3bce4727b"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/view-component-pruning-2026-07-28.json",
+      "sha256": "030dc3fee8be2da4c1acce80b97c8e50fb22f3d5c62e7feea91003cd765ef632"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/view-prompt-examples-2026-07-28.json",
+      "sha256": "a54f639f1c89e142d84c9e5f97fdfcd62c4f61d1535b83234505c812bd2e5c3b"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/view-protocol-scoped-primitives-2025-11-25.json",
+      "sha256": "0ea1bc19adfeca2935e5fb7a6e6e3e91fbe616cc8143b0078e23475903593fc3"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/view-protocol-scoped-primitives-2026-07-28.json",
+      "sha256": "918663b76a7e6e294e946ba508457e1f0f80839104ad74c26d2ca59329cc9c4e"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/view-protocol-version-not-declared.json",
+      "sha256": "c22f496d12a2dfdee2311726610e837ef209df841ed561330c1e2fda63a374e7"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/view-resource-examples-2026-07-28.json",
+      "sha256": "1dd88a59739d70a8dbaef19a0576c1070fad16f6489dd44c7b3005c1f50f320c"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/view-security-forms-2025-11-25.json",
+      "sha256": "aabb7ed670f24a8fcdb8aba46f6777e31d7a92f174bc0ec84158b729c3679008"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/view-security-forms-2026-07-28.json",
+      "sha256": "193b0fc12b714efd69307f9c8ebdd30b5c17a6201d70f5aad383ded7a0a65963"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/view-source-invalid.json",
+      "sha256": "388ae2f5abd64795f631cfb1e99c9b7555c53d7a93b265fde22956d75195b779"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/view-specification-extensions-2025-11-25.json",
+      "sha256": "aac4b217315fd721e754dc336bedb7ff13a47e075df915c0b44cc05081c12436"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/view-tool-interaction-examples-2025-11-25.json",
+      "sha256": "300647e77719c4f7b1881d9e25b4b6c1e70302ea4f5007850b2c1f8fa4d4c906"
+    },
+    {
+      "path": "test/snapshots/0.9.0/view-fixtures/view-tool-schema-keywords-2025-11-25.json",
       "sha256": "a99301bc540eb0b14210a73a0abfb10a474d49072a9299cfda7e88a987087026"
     }
   ]

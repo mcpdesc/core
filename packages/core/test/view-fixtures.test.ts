@@ -9,10 +9,11 @@ import {
   mergeEffectiveProtocolViews,
   projectEffectiveProtocolView,
   resolveMcpDescriptionComponentReferences,
+  V0_9_SPECIFICATION,
   V0_9_RC_3_SPECIFICATION,
 } from '../src/index.js';
 
-for (const selector of [V0_9_RC_3_SPECIFICATION]) {
+for (const selector of [V0_9_SPECIFICATION, V0_9_RC_3_SPECIFICATION]) {
   const fixtureRoot = fileURLToPath(
     new URL(
       `../../validator/test/snapshots/${selector}/view-fixtures/`,

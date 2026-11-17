@@ -42,15 +42,16 @@ test('exports the active validator API', () => {
   assert.equal(typeof resolveMcpDescriptionComponentReferences, 'function');
   assert.deepEqual(supportedSpecifications, expectedSupportedSpecifications);
   assert.deepEqual(supportedSpecifications, [
+    '0.9.0',
     '0.9.0-rc.3',
     '0.8.0',
     '0.8.0-rev.20261021'
   ]);
   assert.deepEqual(deprecatedSpecifications, expectedDeprecatedSpecifications);
-  assert.deepEqual(deprecatedSpecifications, ['0.8.0']);
+  assert.deepEqual(deprecatedSpecifications, ['0.9.0-rc.3', '0.8.0']);
   assert.deepEqual(defaultSpecifications, {
     '0.8.0': { selector: '0.8.0-rev.20261021', schemaPins: false },
-    '0.9.0': { selector: '0.9.0-rc.3', schemaPins: false }
+    '0.9.0': { selector: '0.9.0', schemaPins: false }
   });
   assert.deepEqual(supportedProtocolVersions, [
     '2024-11-05',
@@ -62,9 +63,9 @@ test('exports the active validator API', () => {
   assert.deepEqual(Object.keys(specificationProvenance), supportedSpecifications);
 });
 
-test('rejects retired selector pins while defaulting 0.9.0 documents to RC.3', () => {
+test('rejects retired selector pins while defaulting 0.9.0 documents to stable', () => {
   const document = fixture('expected-valid', 'minimal-zero-primitives.json', '0.9.0-rc.3');
-  assert.equal(validateMcpDescription(document).selector, '0.9.0-rc.3');
+  assert.equal(validateMcpDescription(document).selector, '0.9.0');
   for (const selector of [
     '0.8.0-rc.4',
     '0.9.0-draft.1',
@@ -92,7 +93,7 @@ test('defaults 0.9.0 with or without a schema identity and preserves exact rule 
     if (schema === undefined) delete source.$schema;
     const result = validateMcpDescription(source);
     assert.equal(result.valid, true);
-    assert.equal(result.selector, '0.9.0-rc.3');
+    assert.equal(result.selector, '0.9.0');
     assert.equal(result.defaulted, true);
     assert.ok(result.results.some(({ rule }) => rule === 'mcp.tool.output-schema.protocol-version'));
     assert.ok(!result.results.some(({ rule }) => rule.includes('revision-availability')));
@@ -372,7 +373,7 @@ test('uses maintainer defaults and fails unsupported format versions without fal
 test('per-call schema policy rejects retired identities and optionally falls back', () => {
   const document = fixture('expected-valid', 'minimal-zero-primitives.json', '0.9.0-rc.3');
   document.$schema = 'https://mcpdesc.org/schema/mcp-description/0.9.0-rc.1.json';
-  assert.equal(validateMcpDescription(document).selector, '0.9.0-rc.3');
+  assert.equal(validateMcpDescription(document).selector, '0.9.0');
 
   const unavailableResolution = resolveMcpDescriptionSpecification(document, {
     schemaPolicyIfPresent: true
@@ -390,21 +391,21 @@ test('per-call schema policy rejects retired identities and optionally falls bac
   delete noSchema.$schema;
   assert.equal(validateMcpDescription(noSchema, {
     schemaPolicyIfPresent: true
-  }).selector, '0.9.0-rc.3');
+  }).selector, '0.9.0');
 
   const fallbackResolution = resolveMcpDescriptionSpecification(document, {
     schemaPolicyIfPresent: true,
     fallbackIfSelectorIsUnknown: true
   });
   assert.equal(fallbackResolution.status, 'resolved');
-  assert.equal(fallbackResolution.selector, '0.9.0-rc.3');
+  assert.equal(fallbackResolution.selector, '0.9.0');
   assert.equal(fallbackResolution.defaulted, true);
 
   const fallbackValidation = validateMcpDescription(document, {
     schemaPolicyIfPresent: true,
     fallbackIfSelectorIsUnknown: true
   });
-  assert.equal(fallbackValidation.selector, '0.9.0-rc.3');
+  assert.equal(fallbackValidation.selector, '0.9.0');
   assert.equal(fallbackValidation.defaulted, true);
 });
 

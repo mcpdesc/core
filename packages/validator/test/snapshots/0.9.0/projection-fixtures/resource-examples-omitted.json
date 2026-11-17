@@ -1,0 +1,13 @@
+{
+  "description": "Resource examples are omitted.",
+  "document": "../fixtures/expected-valid/named-resource-examples.json",
+  "kind": "resource",
+  "identifier": "asset:///pixel.bin",
+  "expected": {
+    "uri": "asset:///pixel.bin",
+    "name": "pixel",
+    "mimeType": "application/octet-stream",
+    "size": 3
+  },
+  "protocolVersion": "2025-11-25"
+}

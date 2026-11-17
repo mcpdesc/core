@@ -1,0 +1,9 @@
+{
+  "description": "Projection of an invalid document fails.",
+  "operation": "view",
+  "inputs": [
+    "../fixtures/expected-invalid/missing-tool-input-schema.json"
+  ],
+  "expectedFailure": "req-view-projection",
+  "protocolVersion": "2026-07-28"
+}
