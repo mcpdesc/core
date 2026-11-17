@@ -1,13 +1,12 @@
 # @mcpdesc/core
 
 [![npm](https://img.shields.io/npm/v/@mcpdesc/core.svg)](https://www.npmjs.com/package/@mcpdesc/core)
-[![mcpdesc: 0.8](https://img.shields.io/badge/mcpdesc-0.8-blue.svg)](https://mcpdesc.org)
-[![Node.js: >=22](https://img.shields.io/badge/Node.js-%3E%3D22-brightgreen.svg)](https://nodejs.org/)
+[![mcpdesc](https://img.shields.io/badge/mcpdesc-0.9-blue.svg)](https://mcpdesc.org)
+[![Node.js: >=22](htts://img.shields.io/badge/mcpdesc-0.9-blue.svg)](https://mcpdesc.org)ps://img.shields.io/badge/Node.js-%3E%3D22-brightgreen.svg)](https://nodejs.org/)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/mcpdesc/core/blob/main/LICENSE)
 
 Read, write, and transform [MCP Description](https://mcpdesc.org) documents.
-Supported selectors are `0.8.0-rev.20261021`, `0.8.0`, and stable `0.9.0`.
-`0.9.0-rc.3` remains available as a deprecated selector for reproducibility.
+Supported selectors are `0.8.0-rev.20261021`, `0.8.0`, and `0.9.0`.
 
 `@mcpdesc/core` provides pure functions to:
 
@@ -124,6 +123,29 @@ version, fails with a `source` diagnostic like `unsupported-format-version`;
 core never falls back to older rules. Merge resolves the default from its first
 document. Earlier drafts and release candidates are available from older package
 releases.
+
+### Upgrading from 0.12
+
+Core 0.13 makes stable `0.9.0` the default for unpinned 0.9.0 documents and
+conversion. The `0.8.0` default is unchanged. Before upgrading:
+
+- If code pins a retired selector, switch to a supported selector for that
+  document's format. Pin `0.9.0-rc.3` only when reproducing RC.3 behavior; older
+  selectors require their historical package release. See the
+  [selector support table](#choosing-a-selector).
+- Review unquoted YAML scalars: `0o12`, `0x12`, `012`, `TRUE`, and `~` are now
+  strings. Use JSON spellings for typed values and quote strings for
+  portability; non-finite numbers and unresolved tags are rejected. See
+  [normalized YAML presentation](#normalized-yaml-presentation) for details.
+- If you depend on sorted serializer output, pass `keyOrder: 'sorted'`; the
+  default is now `preserve`. The new normalized and document-oriented output
+  policies are opt-in. See
+  [JSON and YAML serialization](#parse-and-serialize-json-or-yaml).
+
+To move a document to 0.9.0, use the separate
+[0.8.0-to-0.9.0 conversion](#convert-mcp-description-08-to-09) and, when needed,
+[native MCP projection](#project-native-mcp-values-09). There is no direct
+0.7.0-to-0.9.0 migration; migrate 0.7.0 to 0.8.0 first.
 
 ### Upgrading from 0.11
 

@@ -1,12 +1,12 @@
 # @mcpdesc/validator
 
 [![npm](https://img.shields.io/npm/v/@mcpdesc/validator.svg)](https://www.npmjs.com/package/@mcpdesc/validator)
-[![mcpdesc: 0.8](https://img.shields.io/badge/mcpdesc-0.8-blue.svg)](https://mcpdesc.org)
+[![mcpdesc](https://img.shields.io/badge/mcpdesc-0.9-blue.svg)](https://mcpdesc.org)
 [![Node.js: >=20](https://img.shields.io/badge/Node.js-%3E%3D20-brightgreen.svg)](https://nodejs.org/)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/mcpdesc/core/blob/main/LICENSE)
 
 Validate [MCP Description](https://mcpdesc.org) documents. Tested for MCP
-Description v0.8 and stable v0.9.0.
+Description v0.8 and v0.9.
 
 The validator:
 
