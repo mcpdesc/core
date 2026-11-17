@@ -59,6 +59,8 @@ try {
       import assert from 'node:assert/strict';
       import {
         V0_8_SCHEMA_URI,
+        V0_9_SCHEMA_URI,
+        V0_9_SPECIFICATION,
         V0_9_RC_3_SCHEMA_URI,
         V0_9_RC_3_SPECIFICATION,
         convertMcpDescriptionVersion,
@@ -67,6 +69,7 @@ try {
         projectMcpNativeValue,
         mergeEffectiveProtocolViews,
         v0_8Snapshot,
+        v0_9Snapshot,
         v0_9Rc3Snapshot,
         resolveMcpDescriptionComponentReferences,
         serializeMcpDescriptionMigrationReport,
@@ -234,12 +237,13 @@ try {
       for (const [specification, schemaUri] of [
         ['0.8.0', V0_8_SCHEMA_URI],
         ['0.8.0-rev.20261021', 'https://mcpdesc.org/schema/mcp-description/0.8.0-rev.20261021.json'],
+        [v0_9Snapshot.specification, V0_9_SCHEMA_URI],
         [v0_9Rc3Snapshot.specification, V0_9_RC_3_SCHEMA_URI],
       ]) {
         const reusable = {
           ...source,
           $schema: schemaUri,
-          mcpdesc: specification.startsWith('0.9.0-') ? '0.9.0' : '0.8.0',
+          mcpdesc: specification.startsWith('0.9.0') ? '0.9.0' : '0.8.0',
           components: {
             schemas: {
               Input: { type: 'object', additionalProperties: false },
@@ -262,7 +266,7 @@ try {
             targetPath: ['components', 'schemas', 'Input'],
           }]);
         }
-        if (specification.startsWith('0.9.0-')) {
+        if (specification.startsWith('0.9.0')) {
           const native = projectMcpNativeValue(reusable, {
             specification,
             protocolVersion: '2026-07-28',
@@ -304,8 +308,8 @@ try {
         tools: [{ name: 'lookup', inputSchema: { type: 'object' } }],
       }, { from: '0.8.0', to: '0.9.0' });
       assert.equal(converted.ok, true, JSON.stringify(converted.diagnostics));
-      assert.equal(converted.value.$schema, V0_9_RC_3_SCHEMA_URI);
-      assert.equal(validateMcpDescription(converted.value).selector, V0_9_RC_3_SPECIFICATION);
+      assert.equal(converted.value.$schema, V0_9_SCHEMA_URI);
+      assert.equal(validateMcpDescription(converted.value).selector, V0_9_SPECIFICATION);
       assert.equal(validateMcpDescription(converted.value).defaulted, true);
       const defaultNative = projectMcpNativeValue(converted.value, {
         protocolVersion: '2026-07-28', kind: 'tool', identifier: 'lookup',
@@ -343,6 +347,9 @@ try {
         type MigrateMcpDescription07To08Options,
         projectMcpNativeValue,
         v0_9Rc3Snapshot,
+        v0_9Snapshot,
+        V0_9_SPECIFICATION,
+        V0_9_SCHEMA_URI,
         V0_9_RC_3_SPECIFICATION,
         V0_9_RC_3_SCHEMA_URI,
         convertMcpDescriptionVersion,
@@ -394,6 +401,17 @@ try {
       const rc3Schema: string = V0_9_RC_3_SCHEMA_URI;
       void rc3Selector;
       void rc3Schema;
+      const stableSelector: '0.9.0' = V0_9_SPECIFICATION;
+      const stableSchema: string = V0_9_SCHEMA_URI;
+      const stableSnapshotSelector: '0.9.0' = v0_9Snapshot.specification;
+      const stableNativeOptions: ProjectMcpNativeValueOptions = {
+        selector: stableSnapshotSelector,
+        protocolVersion: '2026-07-28',
+        kind: 'tool',
+      };
+      projectMcpNativeValue({}, stableNativeOptions);
+      void stableSelector;
+      void stableSchema;
       const conversionFixes: McpDescriptionConversionFix[] = [];
       const conversion = convertMcpDescriptionVersion(
         { mcpdesc: '0.8.0' },

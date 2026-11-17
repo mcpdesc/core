@@ -11,6 +11,9 @@ export const V0_8_SPECIFICATION = '0.8.0' as const;
 export const V0_8_SCHEMA_URI =
   'https://mcpdesc.org/schema/mcp-description/0.8.0.json' as const;
 export const V0_8_REV_20261021_SPECIFICATION = '0.8.0-rev.20261021' as const;
+export const V0_9_SPECIFICATION = '0.9.0' as const;
+export const V0_9_SCHEMA_URI =
+  'https://mcpdesc.org/schema/mcp-description/0.9.0.json' as const;
 export const V0_9_RC_3_SPECIFICATION = '0.9.0-rc.3' as const;
 export const V0_9_RC_3_SCHEMA_URI =
   'https://mcpdesc.org/schema/mcp-description/0.9.0-rc.3.json' as const;
@@ -18,13 +21,16 @@ export const V0_9_RC_3_SCHEMA_URI =
 export type SupportedCoreSpecification =
   | typeof V0_8_SPECIFICATION
   | typeof V0_8_REV_20261021_SPECIFICATION
+  | typeof V0_9_SPECIFICATION
   | typeof V0_9_RC_3_SPECIFICATION;
 
 export const deprecatedCoreSpecifications = Object.freeze([
   V0_8_SPECIFICATION,
+  V0_9_RC_3_SPECIFICATION,
 ] as const);
 
 const v0_8Provenance = specificationProvenance[V0_8_SPECIFICATION];
+const v0_9Provenance = specificationProvenance[V0_9_SPECIFICATION];
 const v0_9Rc3Provenance = specificationProvenance[V0_9_RC_3_SPECIFICATION];
 
 export const v0_8Snapshot = Object.freeze({
@@ -43,12 +49,21 @@ export const v0_9Rc3Snapshot = Object.freeze({
   protocolVersions: supportedProtocolVersions,
 });
 
+export const v0_9Snapshot = Object.freeze({
+  specification: V0_9_SPECIFICATION,
+  schemaUri: V0_9_SCHEMA_URI,
+  snapshotTag: v0_9Provenance.snapshotTag,
+  schemaSha256: v0_9Provenance.schemaSha256,
+  protocolVersions: supportedProtocolVersions,
+});
+
 export function isSupportedCoreSpecification(
   specification: unknown,
 ): specification is SupportedCoreSpecification {
   return (
     specification === V0_8_SPECIFICATION ||
     specification === V0_8_REV_20261021_SPECIFICATION ||
+    specification === V0_9_SPECIFICATION ||
     specification === V0_9_RC_3_SPECIFICATION
   );
 }

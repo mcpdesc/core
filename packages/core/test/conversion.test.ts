@@ -11,6 +11,8 @@ import {
   projectMcpNativeValue,
   serializeMcpDescription,
   V0_8_SCHEMA_URI,
+  V0_9_SCHEMA_URI,
+  V0_9_SPECIFICATION,
   V0_9_RC_3_SPECIFICATION,
   V0_9_RC_3_SCHEMA_URI,
 } from '../src/index.js';
@@ -51,7 +53,9 @@ function errorDiagnostics(
     );
 }
 
-function testConversionProfile(selector: typeof V0_9_RC_3_SPECIFICATION): void {
+function testConversionProfile(
+  selector: typeof V0_9_SPECIFICATION | typeof V0_9_RC_3_SPECIFICATION,
+): void {
   const fixtureRoot = conversionFixtureDirectory(selector);
   describe(`convertMcpDescriptionVersion frozen profile conformance: ${selector}`, () => {
     for (const filename of readdirSync(fixtureRoot)
@@ -112,6 +116,7 @@ function testConversionProfile(selector: typeof V0_9_RC_3_SPECIFICATION): void {
 }
 
 testConversionProfile(V0_9_RC_3_SPECIFICATION);
+testConversionProfile(V0_9_SPECIFICATION);
 
 describe('convert then serialize', () => {
   it.each(['json', 'yaml'] as const)(
@@ -204,7 +209,7 @@ describe('convert then project', () => {
       });
   });
 
-  it('defaults conversion and subsequent native projection to RC.3', () => {
+  it('defaults conversion and subsequent native projection to stable 0.9.0', () => {
     const source = {
       $schema: V0_8_SCHEMA_URI,
       mcpdesc: '0.8.0',
@@ -220,7 +225,7 @@ describe('convert then project', () => {
 
     expect(converted.ok, JSON.stringify(converted.diagnostics)).toBe(true);
     if (!converted.ok) return;
-    expect(converted.value.$schema).toBe(V0_9_RC_3_SCHEMA_URI);
+    expect(converted.value.$schema).toBe(V0_9_SCHEMA_URI);
 
     const projected = projectMcpNativeValue(converted.value, {
       protocolVersion: '2026-07-28',

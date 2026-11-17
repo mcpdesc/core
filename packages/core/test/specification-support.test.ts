@@ -4,6 +4,8 @@ import {
   V0_8_REV_20261021_SPECIFICATION,
   V0_8_SCHEMA_URI,
   V0_8_SPECIFICATION,
+  V0_9_SCHEMA_URI,
+  V0_9_SPECIFICATION,
   V0_9_RC_3_SCHEMA_URI,
   V0_9_RC_3_SPECIFICATION,
   deprecatedCoreSpecifications,
@@ -45,6 +47,15 @@ const supportBySpecification = {
     selection: 'supported',
     conversionFrom08: 'unsupported: operation does not apply',
   },
+  '0.9.0': {
+    componentResolution: 'supported',
+    merge: 'supported',
+    migrationFrom07: 'unsupported: operation does not apply',
+    nativeProjection: 'supported',
+    projection: 'supported',
+    selection: 'supported',
+    conversionFrom08: 'supported',
+  },
   '0.9.0-rc.3': {
     componentResolution: 'supported',
     merge: 'supported',
@@ -62,6 +73,7 @@ const supportBySpecification = {
 const schemaBySpecification = {
   '0.8.0': V0_8_SCHEMA_URI,
   '0.8.0-rev.20261021': V0_8_SCHEMA_URI,
+  '0.9.0': V0_9_SCHEMA_URI,
   '0.9.0-rc.3': V0_9_RC_3_SCHEMA_URI,
 } as const satisfies Record<SupportedCoreSpecification, string>;
 
@@ -81,10 +93,12 @@ const legacyDocument = {
 };
 
 function documentFor(specification: SupportedCoreSpecification) {
-  const isRc3 = specification === V0_9_RC_3_SPECIFICATION;
+  const isV09 =
+    specification === V0_9_SPECIFICATION ||
+    specification === V0_9_RC_3_SPECIFICATION;
   return {
     $schema: schemaBySpecification[specification],
-    mcpdesc: isRc3 ? '0.9.0' : '0.8.0',
+    mcpdesc: isV09 ? '0.9.0' : '0.8.0',
     info: { name: 'support-matrix', version: '1.0.0' },
     protocolVersions: ['2025-11-25'],
     transports: [{ type: 'stdio', command: 'server' }],
@@ -102,9 +116,13 @@ describe('selector-sensitive operation support', () => {
     expect(specifications).toEqual([
       V0_8_SPECIFICATION,
       V0_8_REV_20261021_SPECIFICATION,
+      V0_9_SPECIFICATION,
       V0_9_RC_3_SPECIFICATION,
     ]);
-    expect(deprecatedCoreSpecifications).toEqual([V0_8_SPECIFICATION]);
+    expect(deprecatedCoreSpecifications).toEqual([
+      V0_8_SPECIFICATION,
+      V0_9_RC_3_SPECIFICATION,
+    ]);
     expect(Object.isFrozen(deprecatedCoreSpecifications)).toBe(true);
   });
 
@@ -148,7 +166,8 @@ describe('selector-sensitive operation support', () => {
       if (support.nativeProjection === 'supported') {
         expect(
           projectMcpNativeValue(document, {
-            selector: V0_9_RC_3_SPECIFICATION,
+            selector: specification as
+              typeof V0_9_SPECIFICATION | typeof V0_9_RC_3_SPECIFICATION,
             protocolVersion: '2025-11-25',
             kind: 'tool',
             identifier: 'search',

@@ -1,0 +1,17 @@
+{
+  "description": "Annotations appear from MCP 2025-03-26; absent hints stay absent.",
+  "document": "documents/tools.json",
+  "kind": "tool",
+  "identifier": "report",
+  "expected": {
+    "name": "report",
+    "description": "Build a usage report.",
+    "inputSchema": {
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true
+    }
+  },
+  "protocolVersion": "2025-03-26"
+}

@@ -6,7 +6,54 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this package follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Dates for published releases are the UTC publication dates recorded by npm.
 
-## Unreleased
+## [0.14.0] - 2026-11-16
+
+Upgrading from `0.13.x`? Stable `0.9.0` is now the default for `0.9.0`
+documents, which can change validation outcomes and diagnostics; earlier draft
+and release-candidate pins have been retired. The `0.8.0` default is unchanged.
+See the README's [Choosing validation rules](README.md#choosing-validation-rules)
+and [Understanding results](README.md#understanding-results), then the migration
+guide's [acceptance change](MIGRATING-0.14.md#acceptance-change),
+[diagnostic changes](MIGRATING-0.14.md#diagnostic-changes), and
+[retired selectors](MIGRATING-0.14.md#retired-selectors).
+
+### Added
+
+- Imported the immutable stable `0.9.0` snapshot from specification tag
+	`v0.9.0`, including the manifest-verified schema, runtime, conformance,
+	projection, view/merge, and conversion fixtures. The schema SHA-256 is
+	`8e00472b1db1e0da30691c5a05a48be2dd3917f00698f907059a909696535f57`.
+- Added opt-in `schemaPolicyIfPresent` and `fallbackIfSelectorIsUnknown` options
+	to validation and selector resolution. Callers can select a shipped snapshot
+	from a recognized `$schema` identity or explicitly fall back to the configured
+	format default when that selector is unavailable.
+- Added stable `0.9.0` diagnostics using validation-result format `1.4.0`,
+	including registered rule identifiers, rule-level results, structured details
+	for schema findings, and related component-definition locations.
+
+### Changed
+
+- **Breaking:** default `mcpdesc: "0.9.0"` validation to stable `0.9.0` and
+	retain `0.9.0-rc.3` as a deprecated explicit pin. Stable 0.9.0 rejects unknown
+	members on Elicitation Interaction Response Objects in Tool Interaction
+	Examples. Pin RC.3 to reproduce its behavior.
+- Changed stable 0.9.0 diagnostic paths, rule attribution, warning codes, and
+	rule results to match the final specification. This includes
+	`mcpdesc.extensions.catalog-maturity` and `uncataloged-oauth-scope`; diagnostic
+	counts and locations can differ from RC.3.
+- Added stable-selector rule-owner instrumentation to the generated CSP-safe
+	standalone bundle so rule attribution matches the standard entry point.
+
+### Supported selectors
+
+- The package supports `0.8.0-rev.20261021` (default for format `0.8.0`),
+	deprecated `0.8.0` (explicit pin), stable `0.9.0` (default for format
+	`0.9.0`), and deprecated `0.9.0-rc.3` (explicit pin). The 0.8.0 schema and
+	default selector remain unchanged from 0.13.0.
+- **Breaking:** retired `0.8.0-rc.4`, `0.9.0-draft.1` through `.4`, and
+	`0.9.0-rc.1` and `.2` from the registry, declarations, browser and standalone
+	bundles, and package contents. Those pins are unsupported in 0.14.0; use the
+	historical package release to reproduce them.
 
 ## [0.14.0-rc.9] - 2026-11-09
 

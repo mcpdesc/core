@@ -137,8 +137,15 @@ repository.
       required CI pass.
 - [x] Prepare core `0.13.0-rc.10` with opt-in sorted ordering for normalized
       YAML; keep validator `0.14.0-rc.9` unchanged.
-- [ ] Publish core `0.13.0-rc.10` on `next` after the reviewed PR merge and
-      required CI pass.
+- [x] Supersede the pending core `0.13.0-rc.10` publication with the approved
+      stable releases for the final MCP Description 0.9.0 selector.
+- [x] Import the tagged stable `0.9.0` snapshot, freeze it as the validator and
+      core default, adopt it across supported core operations, and retain RC.3
+      as deprecated for explicit reproducibility.
+- [x] Prepare validator `0.14.0` followed by core `0.13.0`, with core pinned to
+      the exact validator version.
+- [ ] Publish validator `0.14.0` then core `0.13.0` on `latest` after reviewed
+      PR merge, required CI, and specification-tag verification.
 - Add normalization or comparison operations only where multiple consumers
   demonstrate the same requirement.
 

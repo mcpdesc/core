@@ -1,12 +1,12 @@
 # @mcpdesc/core
 
 [![npm](https://img.shields.io/npm/v/@mcpdesc/core.svg)](https://www.npmjs.com/package/@mcpdesc/core)
-[![mcpdesc: 0.8](https://img.shields.io/badge/mcpdesc-0.8-blue.svg)](https://mcpdesc.org)
-[![Node.js: >=22](https://img.shields.io/badge/Node.js-%3E%3D22-brightgreen.svg)](https://nodejs.org/)
+[![mcpdesc](https://img.shields.io/badge/mcpdesc-0.9-blue.svg)](https://mcpdesc.org)
+[![Node.js: >=22](htts://img.shields.io/badge/mcpdesc-0.9-blue.svg)](https://mcpdesc.org)ps://img.shields.io/badge/Node.js-%3E%3D22-brightgreen.svg)](https://nodejs.org/)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/mcpdesc/core/blob/main/LICENSE)
 
 Read, write, and transform [MCP Description](https://mcpdesc.org) documents.
-Supported selectors are `0.8.0-rev.20261021`, `0.8.0`, and `0.9.0-rc.3`.
+Supported selectors are `0.8.0-rev.20261021`, `0.8.0`, and `0.9.0`.
 
 `@mcpdesc/core` provides pure functions to:
 
@@ -75,7 +75,7 @@ human-readable `message`, and a `path` into the document, such as
 | `operation` | The request could not be carried out, for example an undeclared protocol revision. |
 | `result`    | The produced document failed validation and was not returned.                      |
 
-With RC.3, schema-derived diagnostics also expose structured `detail`. A finding
+For 0.9.0, schema-derived diagnostics expose structured `detail`. A finding
 reached through `$componentRef` points to the use site and includes the
 component definition in `relatedLocations`. Render recognized detail kinds and
 fall back to `message` for unknown kinds or diagnostics without detail.
@@ -85,9 +85,8 @@ fall back to `message` for unknown kinds or diagnostics without detail.
 A selector names one exact set of validation rules. Normally you omit the
 `selector` option: each operation uses the validator's default selector for the
 document's `mcpdesc` format version, currently `0.8.0-rev.20261021` for `0.8.0`
-documents, and `0.9.0-rc.3` for `0.9.0` documents. Upgrading the package can
-then deliver validator corrections and newer approved 0.9 RC snapshots, until
-the 0.9 default is frozen to the final `0.9.0` release.
+documents and stable `0.9.0` for `0.9.0` documents. The 0.9.0 default is frozen;
+pin `0.9.0-rc.3` only when reproducing RC.3 results.
 
 Pass `selector` to pin exact rules, for example in CI that must produce
 identical results across upgrades:
@@ -102,20 +101,21 @@ projectEffectiveProtocolView(document, {
 The older `specification` option remains a deprecated alias for `selector`.
 Passing both with different values fails with `conflicting-selector-options`.
 
-| Operation                          | `0.8.0-rev.20261021` (default) | `0.8.0` (deprecated) | `0.9.0-rc.3` (default) |
-| ---------------------------------- | ------------------------------ | -------------------- | ---------------------- |
-| Effective Protocol View projection | Supported                      | Supported            | Supported              |
-| Effective Protocol View merge      | Supported                      | Supported            | Supported              |
-| Declaration selection              | Supported                      | Supported            | Supported              |
-| Component reference resolution     | Supported                      | Supported            | Supported              |
-| Migration from 0.7.0               | Supported                      | Supported            | Not supported          |
-| Native MCP value projection        | Not supported                  | Not supported        | Supported              |
-| Conversion from 0.8.0              | Not supported                  | Not supported        | Supported              |
+| Operation                          | `0.8.0-rev.20261021` (default) | `0.8.0` (deprecated) | `0.9.0` (default) | `0.9.0-rc.3` (deprecated) |
+| ---------------------------------- | ------------------------------ | -------------------- | ----------------- | ------------------------- |
+| Effective Protocol View projection | Supported                      | Supported            | Supported         | Supported                 |
+| Effective Protocol View merge      | Supported                      | Supported            | Supported         | Supported                 |
+| Declaration selection              | Supported                      | Supported            | Supported         | Supported                 |
+| Component reference resolution     | Supported                      | Supported            | Supported         | Supported                 |
+| Migration from 0.7.0               | Supported                      | Supported            | Not supported     | Not supported             |
+| Native MCP value projection        | Not supported                  | Not supported        | Supported         | Supported                 |
+| Conversion from 0.8.0              | Not supported                  | Not supported        | Supported         | Supported                 |
 
-The original `0.8.0` selector remains supported but deprecated and is listed in
-`deprecatedCoreSpecifications`. Retired selectors are not supported by current
-packages; use their historical package releases to reproduce earlier behavior.
-Unpinned 0.9.0 documents use RC.3.
+The original `0.8.0` and `0.9.0-rc.3` selectors remain supported but deprecated
+and are listed in `deprecatedCoreSpecifications`. Retired selectors are not
+supported by current packages; use their historical package releases to
+reproduce earlier behavior. Unpinned 0.9.0 documents use the stable `0.9.0`
+selector.
 
 Unsupported selectors fail with an `unsupported-specification` diagnostic. A
 document whose selector cannot be determined, such as an unknown `mcpdesc`
@@ -123,6 +123,29 @@ version, fails with a `source` diagnostic like `unsupported-format-version`;
 core never falls back to older rules. Merge resolves the default from its first
 document. Earlier drafts and release candidates are available from older package
 releases.
+
+### Upgrading from 0.12
+
+Core 0.13 makes stable `0.9.0` the default for unpinned 0.9.0 documents and
+conversion. The `0.8.0` default is unchanged. Before upgrading:
+
+- If code pins a retired selector, switch to a supported selector for that
+  document's format. Pin `0.9.0-rc.3` only when reproducing RC.3 behavior; older
+  selectors require their historical package release. See the
+  [selector support table](#choosing-a-selector).
+- Review unquoted YAML scalars: `0o12`, `0x12`, `012`, `TRUE`, and `~` are now
+  strings. Use JSON spellings for typed values and quote strings for
+  portability; non-finite numbers and unresolved tags are rejected. See
+  [normalized YAML presentation](#normalized-yaml-presentation) for details.
+- If you depend on sorted serializer output, pass `keyOrder: 'sorted'`; the
+  default is now `preserve`. The new normalized and document-oriented output
+  policies are opt-in. See
+  [JSON and YAML serialization](#parse-and-serialize-json-or-yaml).
+
+To move a document to 0.9.0, use the separate
+[0.8.0-to-0.9.0 conversion](#convert-mcp-description-08-to-09) and, when needed,
+[native MCP projection](#project-native-mcp-values-09). There is no direct
+0.7.0-to-0.9.0 migration; migrate 0.7.0 to 0.8.0 first.
 
 ### Upgrading from 0.11
 
@@ -390,8 +413,7 @@ source, applies only the profile's version and schema rewrites, reports
 incompatibilities, and applies a fix only when requested at its blocker path.
 The result includes an RFC 6902 patch; the input is never mutated. The profile
 does not convert 0.7.0 documents directly. `selector` chooses the exact 0.9
-snapshot for output; omission follows the configured 0.9.0 default, currently
-RC.3.
+snapshot for output; omission follows the frozen stable `0.9.0` default.
 
 ```ts
 import {
@@ -402,7 +424,7 @@ import {
 const converted = convertMcpDescriptionVersion(document, {
   from: '0.8.0',
   to: '0.9.0',
-  selector: '0.9.0-rc.3',
+  selector: '0.9.0',
   fixes: [
     {
       fix: 'remove-property',
@@ -413,7 +435,7 @@ const converted = convertMcpDescriptionVersion(document, {
 
 if (converted.ok) {
   const tool = projectMcpNativeValue(converted.value, {
-    selector: '0.9.0-rc.3',
+    selector: '0.9.0',
     protocolVersion: '2026-07-28',
     kind: 'tool',
     identifier: 'search',
@@ -424,16 +446,16 @@ if (converted.ok) {
 Without a requested fix, incompatible values are reported as blockers and no
 converted document is returned. Native projection never converts implicitly.
 
-### Project native MCP values (0.9 RC.3)
+### Project native MCP values (0.9.0)
 
-MCP Description 0.9 RC.3 defines how a declaration becomes the value an MCP
-server returns, for example a `Tool` in a `tools/list` result:
+MCP Description 0.9.0 defines how a declaration becomes the value an MCP server
+returns, for example a `Tool` in a `tools/list` result:
 
 ```ts
 import { projectMcpNativeValue } from '@mcpdesc/core';
 
 const tool = projectMcpNativeValue(draftDocument, {
-  selector: '0.9.0-rc.3',
+  selector: '0.9.0',
   protocolVersion: '2026-07-28',
   kind: 'tool',
   identifier: 'search',
@@ -441,7 +463,7 @@ const tool = projectMcpNativeValue(draftDocument, {
 if (tool.ok) console.log(tool.value); // { name: 'search', inputSchema: {...} }
 
 const tools = projectMcpNativeValue(draftDocument, {
-  selector: '0.9.0-rc.3',
+  selector: '0.9.0',
   protocolVersion: '2026-07-28',
   kind: 'tool',
 });

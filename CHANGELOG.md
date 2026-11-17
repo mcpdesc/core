@@ -9,6 +9,16 @@ scripts, and release infrastructure.
 > - [`@mcpdesc/core`](packages/core/CHANGELOG.md)
 > - [`@mcpdesc/validator`](packages/validator/CHANGELOG.md)
 
+## 2026-11-16
+
+### Changed
+
+- Imported the immutable stable `0.9.0` validator snapshot and adopted it as the
+  frozen default across validator and supported core operations. Updated the
+  standalone generator and package checks to cover the stable selector. Prepared
+  validator `0.14.0` followed by core `0.13.0`; publication awaits review,
+  merge, and required CI.
+
 ## 2026-11-10
 
 ### Changed

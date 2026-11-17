@@ -576,7 +576,7 @@ describe('document ordering schema inventory', () => {
         let pointer = testCase.definition
           ? `/$defs/${testCase.definition}`
           : '';
-        if (conditionalAlternative && selector === '0.9.0-rc.3') {
+        if (conditionalAlternative && selector.startsWith('0.9.0')) {
           pointer =
             conditionalAlternative[1] === 'resourceContents'
               ? `/$defs/resourceContents/allOf/0/${
@@ -601,7 +601,7 @@ describe('document ordering schema inventory', () => {
         );
         covered.add(pointer);
       }
-      if (selector === '0.9.0-rc.3') {
+      if (selector.startsWith('0.9.0')) {
         covered.add('/$defs/elicitationDeclaration/allOf/0');
       }
       const opaque = [
@@ -622,7 +622,7 @@ describe('document ordering schema inventory', () => {
         const node = value as Record<string, unknown>;
         if (node.properties && !covered.has(pointer)) {
           const conditionalRoot =
-            selector === '0.9.0-rc.3' &&
+            selector.startsWith('0.9.0') &&
             Array.isArray(node.allOf) &&
             node.allOf.some(
               (branch) =>
@@ -630,10 +630,9 @@ describe('document ordering schema inventory', () => {
                 typeof branch === 'object' &&
                 Object.hasOwn(branch, 'if'),
             );
-          const elicitationBranch =
-            selector === '0.9.0-rc.3'
-              ? /^\/\$defs\/elicitationDeclaration\/allOf\/[12]\/then$/
-              : /^\/\$defs\/elicitationDeclaration\/oneOf\/[01]$/;
+          const elicitationBranch = selector.startsWith('0.9.0')
+            ? /^\/\$defs\/elicitationDeclaration\/allOf\/[12]\/then$/
+            : /^\/\$defs\/elicitationDeclaration\/oneOf\/[01]$/;
           if (conditionalRoot) {
             covered.add(pointer);
           } else {

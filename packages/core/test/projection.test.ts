@@ -6,6 +6,7 @@ import path from 'node:path';
 
 import {
   V0_8_SCHEMA_URI,
+  V0_9_SPECIFICATION,
   V0_9_RC_3_SPECIFICATION,
   projectEffectiveProtocolView,
   projectMcpNativeValue,
@@ -39,7 +40,10 @@ describe('pinned MCP postcondition schemas', () => {
   });
 });
 
-for (const specification of [V0_9_RC_3_SPECIFICATION] as const) {
+for (const specification of [
+  V0_9_SPECIFICATION,
+  V0_9_RC_3_SPECIFICATION,
+] as const) {
   const projectionFixtureRoot = fileURLToPath(
     new URL(
       `../../validator/test/snapshots/${specification}/projection-fixtures/`,
@@ -131,7 +135,7 @@ for (const specification of [V0_9_RC_3_SPECIFICATION] as const) {
             expect('value' in result).toBe(false);
             if (fixture.expectedError === 'projection-postcondition-failed') {
               const postconditionPath =
-                specification === V0_9_RC_3_SPECIFICATION &&
+                specification.startsWith('0.9.0') &&
                 filename.startsWith('tool-ref-root-')
                   ? ['tools', 0, 'inputSchema']
                   : ['tools', 1, 'inputSchema', 'properties', 'enabled'];

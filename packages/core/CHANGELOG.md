@@ -2,6 +2,48 @@
 
 All notable changes to `@mcpdesc/core` are documented in this file.
 
+## [0.13.0] - 2026-11-16
+
+Upgrading from `0.12.x`? See the README's
+[migration notes](README.md#upgrading-from-012) for the selector, YAML parsing,
+and serialization changes.
+
+### Added
+
+- Adopted stable MCP Description `0.9.0` across projection, merge, declaration
+  selection, component reference resolution, native projection, and conversion.
+  Export its selector identity, schema URI, and provenance; retain `0.9.0-rc.3`
+  as a deprecated selector for reproducibility.
+- Added native MCP value projection and 0.8.0-to-0.9.0 conversion with explicit
+  fixes, blocker diagnostics, and RFC 6902 patches. Conversion and native
+  projection are separate operations.
+- Added opt-in serializer ordering policies (`preserve`, `sorted`, and
+  `document`) and normalized YAML presentation. Document ordering is also
+  available for native MCP projection.
+- Propagated structured 0.9 diagnostic details, related component locations,
+  protocol versions, and rule identities through core results.
+
+### Changed
+
+- **Breaking:** unpinned `0.9.0` operations and conversion now use stable
+  selector `0.9.0`. Validation outcomes and diagnostics can differ from earlier
+  0.9 drafts or RCs; pin `0.9.0-rc.3` only to reproduce RC.3 behavior.
+  Conversion emits the final canonical `$schema` identity.
+- YAML parsing now recognizes JSON null, boolean, and number spellings, treating
+  other untagged plain scalars as strings. Non-finite values and unresolved tags
+  are rejected. `serializeMcpDescription` now preserves object-key order by
+  default instead of sorting; use `keyOrder: 'sorted'` for the previous
+  ordering.
+- Pin `@mcpdesc/validator` `0.14.0`; the `0.8.0` default and support remain
+  unchanged.
+
+### Removed
+
+- **Breaking:** retired `0.8.0-rc.4`, `0.9.0-draft.1` through `.4`, and
+  `0.9.0-rc.1` and `.2` from current core support. The RC.4-specific 0.7.0
+  migration operation and retired selector exports are also removed. Use an
+  earlier package release to reproduce behavior tied to those selectors.
+
 ## [0.13.0-rc.10] - 2026-11-10
 
 ### Added

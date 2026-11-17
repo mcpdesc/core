@@ -85,7 +85,7 @@ for (const specification of supportedSpecifications) {
           ]) {
             if (diagnostic[optional] !== undefined) keys.push(optional);
           }
-          if (specification.startsWith('0.9.0-') && diagnostic.rule !== undefined) {
+          if (specification.startsWith('0.9.0') && diagnostic.rule !== undefined) {
             assert.match(diagnostic.rule, /^(?:mcp|mcpdesc|json-schema)\.[a-z0-9.-]+$/);
             keys.push('rule');
           }

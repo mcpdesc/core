@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MCP Description Effective Protocol View and merge fixture case",
+  "description": "Structure of each JSON file directly under view-fixtures/. See Sections 4.12 and 4.13 and Proposal 0033.",
+  "type": "object",
+  "required": [
+    "description",
+    "operation",
+    "inputs"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "description": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "expected": {
+      "description": "The expected result document, compared by semantic equivalence (Section 4.13).",
+      "pattern": "^expected/[a-z0-9-]+\\.json$",
+      "type": "string"
+    },
+    "expectedFailure": {
+      "description": "The requirement anchor that makes the operation fail instead of returning a document.",
+      "pattern": "^req-[a-z0-9-]+$",
+      "type": "string"
+    },
+    "inputs": {
+      "description": "Input MCP Description documents, as paths relative to this file.",
+      "items": {
+        "pattern": "^(inputs/[a-z0-9-]+\\.json|expected/[a-z0-9-]+\\.json|\\.\\./fixtures/expected-(valid|invalid|warning)/[a-z0-9-]+\\.(json|ya?ml))$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "operation": {
+      "description": "view projects one input to one protocol version (Section 4.12); merge combines the inputs (Section 4.13).",
+      "enum": [
+        "view",
+        "merge"
+      ]
+    },
+    "protocolVersion": {
+      "description": "The MCP protocol version of a view case.",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "type": "string"
+    }
+  },
+  "else": {
+    "not": {
+      "required": [
+        "protocolVersion"
+      ]
+    }
+  },
+  "if": {
+    "properties": {
+      "operation": {
+        "const": "view"
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "required": [
+        "expected"
+      ]
+    },
+    {
+      "required": [
+        "expectedFailure"
+      ]
+    }
+  ],
+  "then": {
+    "properties": {
+      "inputs": {
+        "maxItems": 1,
+        "type": "array"
+      }
+    },
+    "required": [
+      "protocolVersion"
+    ]
+  }
+}

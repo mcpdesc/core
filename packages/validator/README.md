@@ -1,12 +1,12 @@
 # @mcpdesc/validator
 
 [![npm](https://img.shields.io/npm/v/@mcpdesc/validator.svg)](https://www.npmjs.com/package/@mcpdesc/validator)
-[![mcpdesc: 0.8](https://img.shields.io/badge/mcpdesc-0.8-blue.svg)](https://mcpdesc.org)
+[![mcpdesc](https://img.shields.io/badge/mcpdesc-0.9-blue.svg)](https://mcpdesc.org)
 [![Node.js: >=20](https://img.shields.io/badge/Node.js-%3E%3D20-brightgreen.svg)](https://nodejs.org/)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/mcpdesc/core/blob/main/LICENSE)
 
 Validate [MCP Description](https://mcpdesc.org) documents. Tested for MCP
-Description v0.8 and v0.9 RC.3.
+Description v0.8 and v0.9.
 
 The validator:
 
@@ -66,7 +66,7 @@ interface McpDescriptionValidationResult {
     path: Array<string | number>; // location, for example ['tools', 0, 'inputSchema']
     rule?: string; // registered rule, for example 'mcp.meta.key-format'
     protocolVersions?: string[]; // revisions the finding concerns, when applicable
-    detail?: McpDescriptionDiagnosticDetail; // factual explanation for RC.3 schema findings
+    detail?: McpDescriptionDiagnosticDetail; // factual explanation for 0.9 schema findings
     relatedLocations?: McpDescriptionRelatedLocation[]; // component definition locations
   }>;
   results?: Array<{
@@ -108,17 +108,17 @@ interface McpDescriptionDiagnosticExplanation {
 - **Errors** make a document invalid.
 - **Warnings** leave it valid but point out risks, such as deprecated features
   or checks that could not be completed offline.
-- Paths are relative to the source document. In RC.3, a missing member points
+- Paths are relative to the source document. In 0.9.0, a missing member points
   to its enclosing object and names the absent member in `detail.member`;
   unexpected members point to the member that exists in the source.
 - Diagnostics are deterministic: the same document and selector always produce
   the same results.
-- RC.3 diagnostics include factual `detail` for schema-derived findings.
+- 0.9.0 diagnostics include factual `detail` for schema-derived findings.
   `detail.kind` is extensible: render known kinds and fall back to `message`
   when the kind is unknown or detail is absent. Findings reached through a
   `$componentRef` use the reference site as `path` and add a related
   `component-definition` location.
-- RC.3 diagnostics identify the specification `rule` they report and use result
+- 0.9.0 diagnostics identify the specification `rule` they report and use result
   format `1.4.0`. Treat `not-applicable` and `not-evaluated` as unconfirmed, not
   passed. The retained 0.8 selectors keep their four-field diagnostic output.
 
@@ -132,7 +132,8 @@ uses the default selector chosen for it.
 | -------------------- | ------------------------ | ---------------------------------------- |
 | `0.8.0-rev.20261021` | Default for `0.8.0`      | Current rules for MCP Description 0.8.   |
 | `0.8.0`              | Deprecated, pin only     | Original 0.8.0 rules.                    |
-| `0.9.0-rc.3`         | Default for `0.9.0`      | MCP Description 0.9 Release Candidate 3. |
+| `0.9.0`              | Default for `0.9.0`      | Stable MCP Description 0.9.0 rules.      |
+| `0.9.0-rc.3`         | Deprecated, pin only    | MCP Description 0.9 Release Candidate 3. |
 
 Pin a selector when results must stay identical across upgrades, for example in
 CI:
@@ -141,11 +142,11 @@ CI:
 validateMcpDescription(document, { selector: '0.8.0-rev.20261021' });
 ```
 
-`mcpdesc: "0.9.0"` defaults to RC.3, with or without `$schema`. RC.3 selects
-applicable union branches through guarded schemas and returns structured,
-source-aware diagnostics. It intentionally rejects unknown members on
-Elicitation Interaction Response Objects in Tool Interaction Examples. Earlier
-selectors are available from their historical package releases.
+`mcpdesc: "0.9.0"` defaults to stable `0.9.0`, with or without `$schema`.
+Stable 0.9.0 uses guarded union schemas and returns structured, source-aware
+diagnostics. The deprecated RC.3 selector remains available for exact
+reproduction; earlier selectors are available from their historical package
+releases.
 
 ```js
 validateMcpDescription(document, { selector: '0.9.0-rc.3' });
